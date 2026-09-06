@@ -5,10 +5,65 @@
     <field name="name" type="text" label="COM_DECARODCL_FIELD_NAME" required="true" maxlength="190" />
     <field name="code" type="text" label="COM_DECARODCL_FIELD_CODE" description="COM_DECARODCL_TOURNAMENT_CODE_DESC" required="true" maxlength="50" filter="cmd" />
     <field name="discipline" type="text" label="COM_DECARODCL_FIELD_DISCIPLINE" description="COM_DECARODCL_FIELD_DISCIPLINE_DESC" required="true" maxlength="50" />
-    <field name="gender" type="list" label="COM_DECARODCL_FIELD_GENDER" default="open"><option value="open">COM_DECARODCL_GENDER_OPEN</option><option value="men">COM_DECARODCL_GENDER_MEN</option><option value="women">COM_DECARODCL_GENDER_WOMEN</option><option value="mixed">COM_DECARODCL_GENDER_MIXED</option></field>
-    <field name="state" type="list" label="JSTATUS" default="1"><option value="1">JPUBLISHED</option><option value="0">JUNPUBLISHED</option></field>
+    <field name="gender" type="list" label="COM_DECARODCL_FIELD_GENDER" default="open">
+      <option value="open">COM_DECARODCL_GENDER_OPEN</option>
+      <option value="men">COM_DECARODCL_GENDER_MEN</option>
+      <option value="women">COM_DECARODCL_GENDER_WOMEN</option>
+      <option value="mixed">COM_DECARODCL_GENDER_MIXED</option>
+    </field>
+    <field name="state" type="list" label="JSTATUS" default="1">
+      <option value="1">JPUBLISHED</option>
+      <option value="0">JUNPUBLISHED</option>
+    </field>
     <field name="ordering" type="number" label="JFIELD_ORDERING_LABEL" default="0" min="0" />
   </fieldset>
+
+  <fieldset name="scope" label="COM_DECARODCL_TOURNAMENT_SCOPE_DETAILS">
+    <field name="scope_type" type="list" label="COM_DECARODCL_FIELD_SCOPE_TYPE" default="international" required="true">
+      <option value="international">COM_DECARODCL_SCOPE_INTERNATIONAL</option>
+      <option value="zone">COM_DECARODCL_SCOPE_ZONE</option>
+      <option value="national">COM_DECARODCL_SCOPE_NATIONAL</option>
+      <option value="local">COM_DECARODCL_SCOPE_LOCAL</option>
+    </field>
+    <field name="participant_type" type="list" label="COM_DECARODCL_FIELD_PARTICIPANT_TYPE" default="club" required="true">
+      <option value="club">COM_DECARODCL_PARTICIPANT_CLUB</option>
+      <option value="national">COM_DECARODCL_PARTICIPANT_NATIONAL</option>
+    </field>
+    <field
+      name="country_id"
+      type="sql"
+      label="COM_DECARODCL_FIELD_SCOPE_COUNTRY"
+      description="COM_DECARODCL_FIELD_SCOPE_COUNTRY_DESC"
+      showon="scope_type:national[OR]scope_type:local"
+      query="SELECT id AS value, CONCAT(name, ' (', code, ')') AS text FROM #__dcl_countries WHERE state &lt;&gt; -2 ORDER BY name ASC"
+      key_field="value"
+      value_field="text"
+    >
+      <option value="0">JSELECT</option>
+    </field>
+    <field
+      name="zone_ids"
+      type="sql"
+      label="COM_DECARODCL_FIELD_SCOPE_ZONES"
+      description="COM_DECARODCL_FIELD_SCOPE_ZONES_DESC"
+      multiple="true"
+      size="8"
+      filter="array"
+      showon="scope_type:zone"
+      query="SELECT z.id AS value, CONCAT(z.name, IF(o.name IS NULL, '', CONCAT(' — ', o.name))) AS text FROM #__dcl_zones AS z LEFT JOIN #__dcl_organizations AS o ON o.id = z.organization_id WHERE z.state &lt;&gt; -2 ORDER BY z.ordering ASC, z.name ASC"
+      key_field="value"
+      value_field="text"
+    />
+    <field
+      name="local_area"
+      type="text"
+      label="COM_DECARODCL_FIELD_LOCAL_AREA"
+      description="COM_DECARODCL_FIELD_LOCAL_AREA_DESC"
+      maxlength="190"
+      showon="scope_type:local"
+    />
+  </fieldset>
+
   <fieldset name="organizations" label="COM_DECARODCL_ORGANIZATION_ASSIGNMENTS" description="COM_DECARODCL_ORGANIZATION_ASSIGNMENTS_DESC">
     <field name="organizer_ids" type="sql" label="COM_DECARODCL_FIELD_ORGANIZER" multiple="true" size="6" filter="array" query="SELECT id AS value, CONCAT(name, IF(short_name IS NULL OR short_name = '', '', CONCAT(' (', short_name, ')'))) AS text FROM #__dcl_organizations WHERE state &lt;&gt; -2 ORDER BY ordering ASC, name ASC" key_field="value" value_field="text" />
     <field name="governing_body_ids" type="sql" label="COM_DECARODCL_FIELD_GOVERNING_BODY" multiple="true" size="6" filter="array" query="SELECT id AS value, CONCAT(name, IF(short_name IS NULL OR short_name = '', '', CONCAT(' (', short_name, ')'))) AS text FROM #__dcl_organizations WHERE state &lt;&gt; -2 ORDER BY ordering ASC, name ASC" key_field="value" value_field="text" />
