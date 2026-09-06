@@ -9,6 +9,7 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Table\Table;
 use Joomla\Database\DatabaseDriver;
 use Joomla\Database\ParameterType;
+use Xdecaro\Component\Decarodcl\Administrator\Helper\TournamentScopeHelper;
 
 final class TeamTable extends Table
 {
@@ -28,6 +29,7 @@ final class TeamTable extends Table
         $this->rejection_reason = trim((string) $this->rejection_reason) ?: null;
         $this->owner_user_id = (int) $this->owner_user_id;
         $this->federation_id = (int) $this->federation_id;
+        $this->team_type = strtolower(trim((string) $this->team_type)) ?: 'club';
         $this->approval_status = trim((string) $this->approval_status) ?: 'pending';
 
         if ($this->name === '') {
@@ -37,6 +39,11 @@ final class TeamTable extends Table
 
         if ($this->federation_id <= 0) {
             $this->setError(Text::_('COM_DECARODCL_ERROR_TEAM_FEDERATION_REQUIRED'));
+            return false;
+        }
+
+        if (!in_array($this->team_type, TournamentScopeHelper::TEAM_TYPES, true)) {
+            $this->setError(Text::_('COM_DECARODCL_ERROR_TEAM_TYPE_INVALID'));
             return false;
         }
 
