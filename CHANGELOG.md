@@ -1,5 +1,25 @@
 # Changelog
 
+## 0.5.0 - 2026-09-06
+
+- Added complete administrator CRUD for Teams using the existing `#__dcl_teams` table.
+- Added Federation and Country context to Team lists without duplicating country data.
+- Added Joomla responsible-user assignment while keeping sports data separate from Joomla user profiles; changing that ownership link is protected by `core.edit.state`.
+- Added server-side validation for Team name, Federation, manager account, alias, email, URL and approval state.
+- Synchronizes the legacy three-character `country_code` field from Federation → Country when a compatible ISO/code value exists, avoiding truncation of longer neutral country codes.
+- Added Team approval workflow: pending, approved and rejected.
+- Approval changes require `core.edit.state` server-side; approval and publication state fields are also protected against direct-form tampering when that permission is missing.
+- Added complete administrator CRUD for Participations using the existing `#__dcl_participations` table.
+- Added Team → Season participation workflow: draft, submitted, approved and rejected.
+- Added automatic submitted/reviewed timestamps and reviewer tracking.
+- Prevented approval of a Participation until its Team is approved.
+- Prevented duplicate Team + Season participations.
+- Added search, filters, sorting, pagination, publish/unpublish, trash and responsive mobile layouts.
+- Added Teams and Participations to the Competitions submenu and Dashboard.
+- Preserved the Joomla 6 administrator asset-loading workaround verified in 0.3.5.
+- No destructive database migration; all existing `#__dcl_*` data is preserved.
+- Bumped component, package, plugin, modules, Web Asset registry and update feed to 0.5.0.
+
 ## 0.4.0 - 2026-09-06
 
 - Added complete administrator CRUD for Tournaments using the existing `#__dcl_tournaments` table.

@@ -17,7 +17,7 @@ The repository keeps the historical/internal `dcl` technical identifiers for upg
 
 ## Current version
 
-**0.4.0**
+**0.5.0**
 
 ## Architecture
 
@@ -30,19 +30,22 @@ Competitions separates authentication, sport data and presentation:
 - `com_decarodcl` is the central administrator component.
 - Frontend modules can be placed directly in YOOtheme layouts.
 
-## 0.4.0
+## 0.5.0
 
-Tournament and season management:
+Team and participation management:
 
-- added complete Joomla administrator CRUD for Tournaments;
-- added complete Joomla administrator CRUD for Seasons;
-- Seasons are linked to a Tournament and can use the existing Countries registry as host country;
-- added server-side validation for tournament codes, disciplines, categories, dates and referenced records;
-- added search, filters, sorting, pagination, publish/unpublish and trash actions;
-- enabled Tournaments and Seasons in the Competitions administrator submenu and Dashboard;
-- Dashboard counts now exclude trashed records;
-- improved administrator responsiveness with stackable list cards on small screens;
-- preserved all existing `#__dcl_*` tables and data without destructive migrations.
+- added complete Joomla administrator CRUD for Teams using the existing `#__dcl_teams` table;
+- Teams are linked to Federations and derive their country from Federation → Country;
+- a Joomla user can be assigned as the responsible team account without mixing authentication data with sport data;
+- added team approval states (`pending`, `approved`, `rejected`) with server-side ACL enforcement;
+- added complete administrator CRUD for Participations using `#__dcl_participations`;
+- Participations link a Team to a Season and support `draft`, `submitted`, `approved` and `rejected`;
+- participation approval is blocked until the Team itself is approved;
+- submission/review timestamps and reviewer are maintained automatically;
+- duplicate Team + Season participations are rejected server-side;
+- added search, filters, sorting, pagination, state actions and mobile-friendly list layouts;
+- enabled Teams and Participations in the Competitions submenu and Dashboard;
+- preserved all existing `#__dcl_*` data and schema without destructive migrations.
 
 ## Requirements
 
