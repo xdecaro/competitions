@@ -13,5 +13,6 @@ final class LanguageHelper
         $language->load('com_decarodcl.070', JPATH_ADMINISTRATOR, null, true);
         $language->load('com_decarodcl.071', JPATH_ADMINISTRATOR, null, true);
         $language->load('com_decarodcl.080', JPATH_ADMINISTRATOR, null, true);
+        $language->load('com_decarodcl.082', JPATH_ADMINISTRATOR, null, true);
     }
 }

@@ -68,9 +68,11 @@ EXPECTED_COMPONENT_FILES = {
     "admin/language/en-GB/com_decarodcl.070.ini",
     "admin/language/en-GB/com_decarodcl.071.ini",
     "admin/language/en-GB/com_decarodcl.080.ini",
+    "admin/language/en-GB/com_decarodcl.082.ini",
     "admin/language/it-IT/com_decarodcl.070.ini",
     "admin/language/it-IT/com_decarodcl.071.ini",
     "admin/language/it-IT/com_decarodcl.080.ini",
+    "admin/language/it-IT/com_decarodcl.082.ini",
     "media/admin.css",
     "media/joomla.asset.json",
 }
@@ -137,6 +139,18 @@ def validate_versions() -> None:
         if required_view not in submenu_views:
             fail(f"component submenu is missing view {required_view}")
 
+    component_languages = {
+        (node.text or "").strip()
+        for node in component_manifest.findall("./administration/languages/language")
+        if node.text
+    }
+    for required_language in (
+        "en-GB/com_decarodcl.082.ini",
+        "it-IT/com_decarodcl.082.ini",
+    ):
+        if required_language not in component_languages:
+            fail(f"component manifest is missing language file {required_language}")
+
     install_sql = {
         (node.text or "").strip()
         for node in component_manifest.findall("./install/sql/file")
@@ -168,6 +182,26 @@ def validate_versions() -> None:
     ):
         if required not in migration_080:
             fail(f"0.8.0 migration is missing {required}")
+
+    information_model = (ROOT / "component/admin/src/Model/InformationModel.php").read_text(encoding="utf-8")
+    for required in (
+        "extension_versions",
+        "installation_consistent",
+        "mod_dcl_matchtimeline",
+        "mod_dcl_countriesfederations",
+        "plg_system_decarodcl" if False else "decarodcl",
+    ):
+        if required not in information_model:
+            fail(f"InformationModel integrity diagnostics are missing {required}")
+
+    information_template = (ROOT / "component/admin/tmpl/information/default.php").read_text(encoding="utf-8")
+    for required in ("dcl-info-summary", "dcl-info-panels", "dcl-version-list"):
+        if required not in information_template:
+            fail(f"Information template is missing compact UI class {required}")
+
+    language_helper = (ROOT / "component/admin/src/Helper/LanguageHelper.php").read_text(encoding="utf-8")
+    if "com_decarodcl.082" not in language_helper:
+        fail("LanguageHelper does not load the 0.8.2 language file")
 
     package = ET.parse(ROOT / "package/pkg_decarodcl.xml").getroot()
     shipped = {node.text.strip() for node in package.findall("./files/file") if node.text}

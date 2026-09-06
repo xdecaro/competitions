@@ -3,8 +3,8 @@ namespace Xdecaro\Component\Decarodcl\Administrator\Model;
 
 defined('_JEXEC') or die;
 
-use Joomla\CMS\Version;
 use Joomla\CMS\MVC\Model\BaseDatabaseModel;
+use Joomla\CMS\Version;
 use Joomla\Database\ParameterType;
 
 final class InformationModel extends BaseDatabaseModel
@@ -14,9 +14,31 @@ final class InformationModel extends BaseDatabaseModel
     public function getInfo(): array
     {
         $db = $this->getDatabase();
+
         $component = $this->getExtension('component', 'com_decarodcl');
         $package = $this->getExtension('package', 'pkg_decarodcl');
-        $installedVersion = $this->getManifestVersion($package) ?: $this->getManifestVersion($component) ?: '0.0.0';
+        $plugin = $this->getExtension('plugin', 'decarodcl', 'system');
+        $timelineModule = $this->getExtension('module', 'mod_dcl_matchtimeline', null, 0);
+        $countriesModule = $this->getExtension('module', 'mod_dcl_countriesfederations', null, 0);
+
+        $versions = [
+            'package' => $this->getManifestVersion($package),
+            'component' => $this->getManifestVersion($component),
+            'plugin' => $this->getManifestVersion($plugin),
+            'timeline_module' => $this->getManifestVersion($timelineModule),
+            'countries_module' => $this->getManifestVersion($countriesModule),
+        ];
+
+        $installedVersion = $versions['package'] ?: $versions['component'] ?: '0.0.0';
+        $installationConsistent = $installedVersion !== '0.0.0';
+
+        foreach ($versions as $version) {
+            if ($version === '' || $version !== $installedVersion) {
+                $installationConsistent = false;
+                break;
+            }
+        }
+
         $update = null;
         $updateSite = null;
 
@@ -51,16 +73,17 @@ final class InformationModel extends BaseDatabaseModel
 
         $latestVersion = $update !== null ? trim((string) $update->version) : '';
         $updateAvailable = $latestVersion !== '' && version_compare($latestVersion, $installedVersion, 'gt');
-        $joomlaVersion = (new Version())->getShortVersion();
 
         return [
             'installed_version' => $installedVersion,
+            'extension_versions' => $versions,
+            'installation_consistent' => $installationConsistent,
             'latest_version' => $latestVersion,
             'update_available' => $updateAvailable,
             'update_site_enabled' => $updateSite !== null && (int) $updateSite->enabled === 1,
             'update_site_url' => self::UPDATE_SITE_URL,
             'last_check_timestamp' => $updateSite !== null ? (int) $updateSite->last_check_timestamp : 0,
-            'joomla_version' => $joomlaVersion,
+            'joomla_version' => (new Version())->getShortVersion(),
             'php_version' => PHP_VERSION,
             'database_type' => method_exists($db, 'getServerType') ? (string) $db->getServerType() : (string) $db->getName(),
             'database_version' => (string) $db->getVersion(),
@@ -70,16 +93,34 @@ final class InformationModel extends BaseDatabaseModel
         ];
     }
 
-    private function getExtension(string $type, string $element): ?object
+    private function getExtension(string $type, string $element, ?string $folder = null, ?int $clientId = null): ?object
     {
         $db = $this->getDatabase();
+        $typeValue = $type;
+        $elementValue = $element;
+
         $query = $db->getQuery(true)
-            ->select([$db->quoteName('extension_id'), $db->quoteName('manifest_cache')])
+            ->select([
+                $db->quoteName('extension_id'),
+                $db->quoteName('manifest_cache'),
+            ])
             ->from($db->quoteName('#__extensions'))
             ->where($db->quoteName('type') . ' = :type')
             ->where($db->quoteName('element') . ' = :element')
-            ->bind(':type', $type)
-            ->bind(':element', $element);
+            ->bind(':type', $typeValue)
+            ->bind(':element', $elementValue);
+
+        if ($folder !== null) {
+            $folderValue = $folder;
+            $query->where($db->quoteName('folder') . ' = :folder')
+                ->bind(':folder', $folderValue);
+        }
+
+        if ($clientId !== null) {
+            $clientIdValue = $clientId;
+            $query->where($db->quoteName('client_id') . ' = :clientId')
+                ->bind(':clientId', $clientIdValue, ParameterType::INTEGER);
+        }
 
         $row = $db->setQuery($query, 0, 1)->loadObject();
 
