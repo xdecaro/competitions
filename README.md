@@ -17,7 +17,7 @@ The repository keeps the historical/internal `dcl` technical identifiers for upg
 
 ## Current version
 
-**0.8.2**
+**0.8.3**
 
 ## Architecture
 
@@ -60,6 +60,8 @@ Version 0.8.1 fixes Joomla database parameter binding in the Information view by
 
 Version 0.8.2 redesigns Information as a compact responsive overview and adds an installation-integrity check. The page now compares the installed versions of the package, component, system plugin, Match Timeline module and Countries/Federations module, clearly warning when a partial update leaves the installation out of sync.
 
+Version 0.8.3 fixes the package postflight update-site repair itself. Joomla's database `bind()` API requires variables passed by reference; the previous installer script passed constants/literals for update-site values, so the repair could fail silently and Competitions would not appear in Joomla's extension update list. The installer now binds local variables and recreates/enables the package update-site association on installation or update.
+
 The package registers `https://raw.githubusercontent.com/xdecaro/dcl/main/updates/pkg_decarodcl.xml` as its Joomla update server. The package installer also repairs the update-site association on install/update if it is missing or disabled. Joomla automatically checks extension update availability when an administrator signs in; installing an available release remains managed through Joomla's native extension updater.
 
 ## 0.7.0
@@ -89,4 +91,4 @@ Organizations and native Match management:
 
 ## Data preservation
 
-Updates and uninstall routines do not delete `#__dcl_*` data tables automatically. The 0.7.0 migration adds Organizations and native Matches while preserving the previous `article_id` event relation. Version 0.8.0 adds Zones and Country mappings using additive tables and `INSERT IGNORE`, so existing Country records and sports data are not overwritten or deleted. Versions 0.8.1 and 0.8.2 change administrator diagnostics/UI and release metadata only; they do not modify sports data or database schema. Destructive data removal must be an explicit administrator action.
+Updates and uninstall routines do not delete `#__dcl_*` data tables automatically. The 0.7.0 migration adds Organizations and native Matches while preserving the previous `article_id` event relation. Version 0.8.0 adds Zones and Country mappings using additive tables and `INSERT IGNORE`, so existing Country records and sports data are not overwritten or deleted. Versions 0.8.1 through 0.8.3 change administrator diagnostics/UI, installer update-site handling and release metadata only; they do not modify sports data or database schema. Destructive data removal must be an explicit administrator action.
