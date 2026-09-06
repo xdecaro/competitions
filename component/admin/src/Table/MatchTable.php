@@ -5,6 +5,7 @@ defined('_JEXEC') or die;
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\Log\Log;
 use Joomla\CMS\Table\Table;
 use Joomla\Database\DatabaseDriver;
 use Joomla\Database\ParameterType;
@@ -213,7 +214,39 @@ final class MatchTable extends Table
         $this->modified = $now;
         $this->modified_by = $userId;
 
-        return parent::store($updateNulls);
+        if (!parent::store($updateNulls)) {
+            return false;
+        }
+
+        $this->linkLegacyEventsByArticle();
+
+        return true;
+    }
+
+    private function linkLegacyEventsByArticle(): void
+    {
+        if ((int) $this->id <= 0 || (int) $this->article_id <= 0) {
+            return;
+        }
+
+        try {
+            $db = $this->getDbo();
+            $query = $db->getQuery(true)
+                ->update($db->quoteName('#__dcl_match_events'))
+                ->set($db->quoteName('match_id') . ' = :matchId')
+                ->where($db->quoteName('match_id') . ' = 0')
+                ->where($db->quoteName('article_id') . ' = :articleId')
+                ->bind(':matchId', $this->id, ParameterType::INTEGER)
+                ->bind(':articleId', $this->article_id, ParameterType::INTEGER);
+
+            $db->setQuery($query)->execute();
+        } catch (\Throwable $e) {
+            Log::add(
+                'Competitions could not link legacy match events to match #' . (int) $this->id . ': ' . $e->getMessage(),
+                Log::WARNING,
+                'dcl'
+            );
+        }
     }
 
     private function isApprovedParticipant(int $teamId, int $seasonId): bool
