@@ -16,10 +16,15 @@ final class UiHelper
         $document = Factory::getApplication()->getDocument();
         $wa = $document->getWebAssetManager();
         $styleName = 'com_decarodcl.admin.runtime';
+        $syncStyleName = 'com_decarodcl.live-sync-style.runtime';
         $scriptName = 'com_decarodcl.live-sync.runtime';
 
         if (!$wa->assetExists('style', $styleName)) {
             $wa->registerStyle($styleName, 'com_decarodcl/admin.css', ['version' => '0.10.0']);
+        }
+
+        if (!$wa->assetExists('style', $syncStyleName)) {
+            $wa->registerStyle($syncStyleName, 'com_decarodcl/live-sync.css', ['version' => '0.10.0']);
         }
 
         if (!$wa->assetExists('script', $scriptName)) {
@@ -43,6 +48,7 @@ final class UiHelper
         ]);
 
         $wa->useStyle($styleName);
+        $wa->useStyle($syncStyleName);
         $wa->useScript($scriptName);
     }
 }
