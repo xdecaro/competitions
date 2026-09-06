@@ -26,6 +26,8 @@ final class HtmlView extends BaseHtmlView
             ToolbarHelper::preferences('com_decarodcl');
         }
 
+        $this->addTemplatePath(JPATH_COMPONENT_ADMINISTRATOR . '/tmpl/dashboard');
+
         parent::display($tpl);
     }
 }

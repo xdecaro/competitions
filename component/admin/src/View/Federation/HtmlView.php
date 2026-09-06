@@ -44,6 +44,8 @@ final class HtmlView extends BaseHtmlView
 
         ToolbarHelper::cancel('federation.cancel', $isNew ? 'JTOOLBAR_CANCEL' : 'JTOOLBAR_CLOSE');
 
+        $this->addTemplatePath(JPATH_COMPONENT_ADMINISTRATOR . '/tmpl/federation');
+
         parent::display($tpl);
     }
 }

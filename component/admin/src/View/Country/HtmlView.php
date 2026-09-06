@@ -44,6 +44,8 @@ final class HtmlView extends BaseHtmlView
 
         ToolbarHelper::cancel('country.cancel', $isNew ? 'JTOOLBAR_CANCEL' : 'JTOOLBAR_CLOSE');
 
+        $this->addTemplatePath(JPATH_COMPONENT_ADMINISTRATOR . '/tmpl/country');
+
         parent::display($tpl);
     }
 }

@@ -46,6 +46,8 @@ final class HtmlView extends BaseHtmlView
             ToolbarHelper::trash('countries.trash');
         }
 
+        $this->addTemplatePath(JPATH_COMPONENT_ADMINISTRATOR . '/tmpl/countries');
+
         parent::display($tpl);
     }
 }

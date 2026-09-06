@@ -48,6 +48,8 @@ final class HtmlView extends BaseHtmlView
             ToolbarHelper::trash('federations.trash');
         }
 
+        $this->addTemplatePath(JPATH_COMPONENT_ADMINISTRATOR . '/tmpl/federations');
+
         parent::display($tpl);
     }
 }
