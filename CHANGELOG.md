@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.8.2 - 2026-09-06
+
+- Redesigned **Information** as a compact responsive administrator overview with smaller summary cards and two balanced detail panels.
+- Added installation-integrity diagnostics comparing package, component, system plugin, Match Timeline module and Countries/Federations module versions.
+- Added clear consistent/inconsistent status badges so partial Joomla updates are immediately visible.
+- Kept Joomla native update discovery and update-site shortcuts while reducing visual clutter and preserving dark/light compatibility.
+- Kept the 0.8.1 Joomla `DatabaseQuery::bind()` by-reference fix.
+- Preserved Zones, Countries, Organizations, Matches and all existing `#__dcl_*` sports data; no database migration is introduced.
+- Bumped component, package, plugin, modules, Web Asset registry and update feed to 0.8.2.
+
 ## 0.8.1 - 2026-09-06
 
 - Fixed the administrator **Information** view fatal error `Joomla\Database\DatabaseQuery::bind(): Argument #2 ($value) could not be passed by reference`.

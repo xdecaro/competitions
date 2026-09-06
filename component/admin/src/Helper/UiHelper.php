@@ -16,7 +16,7 @@ final class UiHelper
         $assetName = 'com_decarodcl.admin.runtime';
 
         if (!$wa->assetExists('style', $assetName)) {
-            $wa->registerStyle($assetName, 'com_decarodcl/admin.css', ['version' => '0.8.1']);
+            $wa->registerStyle($assetName, 'com_decarodcl/admin.css', ['version' => '0.8.2']);
         }
 
         $wa->useStyle($assetName);
