@@ -11,6 +11,7 @@ final class DashboardModel extends BaseDatabaseModel
     {
         $tables = [
             'organizations' => '#__dcl_organizations',
+            'zones' => '#__dcl_zones',
             'countries' => '#__dcl_countries',
             'federations' => '#__dcl_federations',
             'tournaments' => '#__dcl_tournaments',

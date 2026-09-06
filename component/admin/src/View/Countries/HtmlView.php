@@ -14,6 +14,7 @@ final class HtmlView extends BaseHtmlView
     public $items;
     public $pagination;
     public $state;
+    public array $zoneOptions = [];
 
     public function display($tpl = null): void
     {
@@ -27,6 +28,7 @@ final class HtmlView extends BaseHtmlView
         $this->items = $this->get('Items');
         $this->pagination = $this->get('Pagination');
         $this->state = $this->get('State');
+        $this->zoneOptions = $this->getModel()->getZoneOptions();
 
         if (count($errors = $this->get('Errors'))) {
             throw new \RuntimeException(implode("\n", $errors));

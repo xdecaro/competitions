@@ -6,6 +6,7 @@ use Joomla\CMS\Router\Route;
 
 $cards = [
     ['key' => 'organizations', 'label' => 'COM_DECARODCL_ORGANIZATIONS', 'link' => 'index.php?option=com_decarodcl&view=organizations'],
+    ['key' => 'zones', 'label' => 'COM_DECARODCL_ZONES', 'link' => 'index.php?option=com_decarodcl&view=zones'],
     ['key' => 'countries', 'label' => 'COM_DECARODCL_COUNTRIES', 'link' => 'index.php?option=com_decarodcl&view=countries'],
     ['key' => 'federations', 'label' => 'COM_DECARODCL_FEDERATIONS', 'link' => 'index.php?option=com_decarodcl&view=federations'],
     ['key' => 'tournaments', 'label' => 'COM_DECARODCL_TOURNAMENTS', 'link' => 'index.php?option=com_decarodcl&view=tournaments'],
@@ -42,5 +43,5 @@ $cards = [
         <?php endforeach; ?>
     </div>
 
-    <div class="alert alert-info mt-4"><?= Text::_('COM_DECARODCL_DASHBOARD_PHASE_NOTE_070'); ?></div>
+    <div class="alert alert-info mt-4"><?= Text::_('COM_DECARODCL_DASHBOARD_PHASE_NOTE_080'); ?></div>
 </div>
