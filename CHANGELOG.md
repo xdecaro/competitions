@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.3.3 - 2026-09-06
+
+- Fixed the root cause of `500 Layout default not found`: restored `<folder>tmpl</folder>` inside the administrator file list of `com_decarodcl`.
+- Kept explicit template paths for Dashboard, Countries, Country, Federations and Federation views as a defensive fallback.
+- Keeps the visible product name `Competitions` while preserving all technical identifiers and existing `#__dcl_*` data.
+- Bumped all shipped manifests/assets to 0.3.3; 0.3.2 remains immutable.
+
 ## 0.3.2 - 2026-09-06
 
 - Renamed the visible product and administrator area to `Competitions`.

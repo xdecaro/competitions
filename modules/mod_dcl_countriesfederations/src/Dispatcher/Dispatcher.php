@@ -98,13 +98,13 @@ final class Dispatcher extends AbstractModuleDispatcher
             'mod_dcl_countriesfederations.site',
             'media/mod_dcl_countriesfederations/css/site.css',
             [],
-            ['version' => '0.3.2']
+            ['version' => '0.3.3']
         );
         $wa->registerAndUseScript(
             'mod_dcl_countriesfederations.site',
             'media/mod_dcl_countriesfederations/js/site.js',
             [],
-            ['version' => '0.3.2'],
+            ['version' => '0.3.3'],
             ['defer' => true]
         );
 
