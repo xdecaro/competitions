@@ -5,7 +5,7 @@
   <creationDate>2026-09-06</creationDate>
   <copyright>(C) 2026 xdecaro</copyright>
   <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
-  <version>0.8.3</version>
+  <version>0.9.0</version>
   <description>MOD_DCL_COUNTRIESFEDERATIONS_XML_DESCRIPTION</description>
   <namespace path="src">Xdecaro\Module\DclCountriesFederations</namespace>
   <files>
