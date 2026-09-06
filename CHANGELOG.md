@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.8.1 - 2026-09-06
+
+- Fixed the administrator **Information** view fatal error `Joomla\Database\DatabaseQuery::bind(): Argument #2 ($value) could not be passed by reference`.
+- Joomla query parameters in `InformationModel` now bind local variables for package extension ID and update-server URL, matching Joomla's by-reference database API.
+- Preserved Zones, Countries, Organizations, Matches and all existing `#__dcl_*` sports data; no database migration is introduced.
+- Bumped component, package, plugin, modules, Web Asset registry and update feed to 0.8.1.
+
 ## 0.8.0 - 2026-09-06
 
 - Added native `#__dcl_zones` and `#__dcl_zone_countries` tables.
