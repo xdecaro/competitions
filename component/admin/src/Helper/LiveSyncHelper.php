@@ -133,8 +133,6 @@ final class LiveSyncHelper
 
             $db->setQuery($query)->execute();
         } catch (\Throwable $e) {
-            // Live sync must never make a normal CRUD operation fail. A partial
-            // or interrupted upgrade can temporarily leave the sync table absent.
             Log::add('Competitions live-sync change log warning: ' . $e->getMessage(), Log::WARNING, 'dcl');
         }
     }
@@ -212,20 +210,27 @@ final class LiveSyncHelper
 
         try {
             $query = $db->getQuery(true)
-                ->update($db->quoteName('#__dcl_edit_sessions'))
-                ->set($db->quoteName('user_id') . ' = :userId')
-                ->set($db->quoteName('touched_at') . ' = :touchedAt')
+                ->select($db->quoteName('id'))
+                ->from($db->quoteName('#__dcl_edit_sessions'))
                 ->where($db->quoteName('entity_type') . ' = :entity')
                 ->where($db->quoteName('entity_id') . ' = :entityId')
                 ->where($db->quoteName('client_id') . ' = :clientId')
-                ->bind(':userId', $userId, ParameterType::INTEGER)
-                ->bind(':touchedAt', $touchedAt)
                 ->bind(':entity', $entity)
                 ->bind(':entityId', $entityId, ParameterType::INTEGER)
                 ->bind(':clientId', $clientId);
-            $db->setQuery($query)->execute();
+            $sessionId = (int) $db->setQuery($query, 0, 1)->loadResult();
 
-            if ((int) $db->getAffectedRows() > 0) {
+            if ($sessionId > 0) {
+                $query = $db->getQuery(true)
+                    ->update($db->quoteName('#__dcl_edit_sessions'))
+                    ->set($db->quoteName('user_id') . ' = :userId')
+                    ->set($db->quoteName('touched_at') . ' = :touchedAt')
+                    ->where($db->quoteName('id') . ' = :sessionId')
+                    ->bind(':userId', $userId, ParameterType::INTEGER)
+                    ->bind(':touchedAt', $touchedAt)
+                    ->bind(':sessionId', $sessionId, ParameterType::INTEGER);
+                $db->setQuery($query)->execute();
+
                 return;
             }
 
@@ -246,7 +251,6 @@ final class LiveSyncHelper
                 ->bind(':touchedAt', $touchedAt);
             $db->setQuery($query)->execute();
         } catch (\Throwable) {
-            // Presence is advisory only and must not block administration.
         }
     }
 
@@ -309,7 +313,6 @@ final class LiveSyncHelper
                 ->bind(':changeCutoff', $changeCutoff);
             $db->setQuery($query)->execute();
         } catch (\Throwable) {
-            // Cleanup is opportunistic.
         }
     }
 }
