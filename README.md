@@ -17,7 +17,7 @@ The repository keeps the historical/internal `dcl` technical identifiers for upg
 
 ## Current version
 
-**0.3.3**
+**0.3.4**
 
 ## Architecture
 
@@ -30,17 +30,15 @@ Competitions separates authentication, sport data and presentation:
 - `com_decarodcl` is the central administrator component.
 - Frontend modules can be placed directly in YOOtheme layouts.
 
-## 0.3.3
+## 0.3.4
 
-Installation fix and branding release:
+Administrator asset-loading fix:
 
-- visible product renamed from `DCL Manager` to `Competitions`;
-- component, package, plugin and module visible labels made consistent;
-- technical identifiers and existing database tables deliberately preserved for safe upgrades;
-- genericised visible wording such as country code labels so the interface is not tied to a single federation or sport;
-- restored the administrator `tmpl` folder declaration in the component manifest, fixing the root cause of `500 Layout default not found`;
-- kept explicit administrator template paths as an additional defensive measure;
-- version bumped without replacing immutable 0.3.1 or 0.3.2 releases.
+- added a central `UiHelper` for administrator assets;
+- explicitly loads the `com_decarodcl` Web Asset registry before requesting the stylesheet;
+- includes a safe direct registration fallback for `com_decarodcl/css/admin.css`;
+- applies the loader to Dashboard, Countries, Country, Federations and Federation views;
+- preserves the existing component identifiers and all `#__dcl_*` data.
 
 ## Requirements
 
