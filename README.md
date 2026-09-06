@@ -17,7 +17,7 @@ The repository keeps the historical/internal `dcl` technical identifiers for upg
 
 ## Current version
 
-**0.8.0**
+**0.8.1**
 
 ## Architecture
 
@@ -56,6 +56,8 @@ Existing Country records are preserved. Missing Countries from the supplied clas
 
 Version 0.7.1 added an **Information** administrator view with the installed package version, Joomla/PHP/database information, native Joomla update status, configured update-server URL and shortcuts to Joomla Updates, Update Sites and GitHub Releases.
 
+Version 0.8.1 fixes Joomla database parameter binding in the Information view by binding local variables instead of object properties/constants, as required by Joomla's by-reference query API.
+
 The package registers `https://raw.githubusercontent.com/xdecaro/dcl/main/updates/pkg_decarodcl.xml` as its Joomla update server. The package installer also repairs the update-site association on install/update if it is missing or disabled. Joomla automatically checks extension update availability when an administrator signs in; installing an available release remains managed through Joomla's native extension updater.
 
 ## 0.7.0
@@ -85,4 +87,4 @@ Organizations and native Match management:
 
 ## Data preservation
 
-Updates and uninstall routines do not delete `#__dcl_*` data tables automatically. The 0.7.0 migration adds Organizations and native Matches while preserving the previous `article_id` event relation. Version 0.8.0 adds Zones and Country mappings using additive tables and `INSERT IGNORE`, so existing Country records and sports data are not overwritten or deleted. Destructive data removal must be an explicit administrator action.
+Updates and uninstall routines do not delete `#__dcl_*` data tables automatically. The 0.7.0 migration adds Organizations and native Matches while preserving the previous `article_id` event relation. Version 0.8.0 adds Zones and Country mappings using additive tables and `INSERT IGNORE`, so existing Country records and sports data are not overwritten or deleted. Version 0.8.1 changes only administrator query binding and release metadata; it does not modify sports data or database schema. Destructive data removal must be an explicit administrator action.
