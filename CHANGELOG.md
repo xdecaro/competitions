@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.8.0 - 2026-09-06
+
+- Added native `#__dcl_zones` and `#__dcl_zone_countries` tables.
+- Added complete administrator CRUD for Zones with optional Organization scope.
+- Added many-to-many Zone → Country assignments so a Country can belong to different sporting Zones without changing the Country record.
+- Added Zone search, Organization filter, publication state, ordering, Country counts and responsive Country summaries.
+- Added a Zone filter and Zone column to the Countries administrator list.
+- Added Zones to the Competitions submenu and Dashboard.
+- Added the project-provided initial sporting Zones: African, Asian, European, North/Central American and Caribbean, Oceania and South American.
+- Added missing Countries from the supplied Zone classification without replacing existing Country records.
+- Seeded the supplied Country → Zone mappings using additive `INSERT IGNORE` migrations.
+- Preserved Organization, Country, Federation, Tournament, Season, Team, Player, Match and other existing sports data.
+- Bumped component, package, plugin, modules, Web Asset registry and update feed to 0.8.0.
+
 ## 0.7.1 - 2026-09-06
 
 - Added a dedicated **Information** administrator menu/view for fast access to the installed Competitions version and system details.

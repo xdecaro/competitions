@@ -25,6 +25,13 @@ $listDirn = $this->escape($this->state->get('list.direction'));
             <option value="country" <?= $this->state->get('filter.entity_type') === 'country' ? 'selected' : ''; ?>><?= Text::_('COM_DECARODCL_ENTITY_COUNTRY'); ?></option>
             <option value="sport_territory" <?= $this->state->get('filter.entity_type') === 'sport_territory' ? 'selected' : ''; ?>><?= Text::_('COM_DECARODCL_ENTITY_SPORT_TERRITORY'); ?></option>
         </select>
+        <select name="filter_zone_id" onchange="this.form.submit()">
+            <option value="0"><?= Text::_('COM_DECARODCL_FILTER_ALL_ZONES'); ?></option>
+            <?php foreach ($this->zoneOptions as $zone) : ?>
+                <?php $label = $zone->name . ($zone->organization_name ? ' — ' . $zone->organization_name : ''); ?>
+                <option value="<?= (int) $zone->id; ?>" <?= (int) $this->state->get('filter.zone_id') === (int) $zone->id ? 'selected' : ''; ?>><?= $this->escape($label); ?></option>
+            <?php endforeach; ?>
+        </select>
         <select name="filter_state" onchange="this.form.submit()">
             <option value=""><?= Text::_('JOPTION_SELECT_PUBLISHED'); ?></option>
             <option value="1" <?= (string) $this->state->get('filter.state') === '1' ? 'selected' : ''; ?>><?= Text::_('JPUBLISHED'); ?></option>
@@ -36,13 +43,14 @@ $listDirn = $this->escape($this->state->get('list.direction'));
     </div>
 
     <div class="table-responsive">
-        <table class="table table-striped align-middle">
+        <table class="table table-striped align-middle dcl-responsive-table">
             <thead>
                 <tr>
                     <th class="w-1 text-center"><?= HTMLHelper::_('grid.checkall'); ?></th>
                     <th><?= HTMLHelper::_('searchtools.sort', 'COM_DECARODCL_FIELD_NAME', 'a.name', $listDirn, $listOrder); ?></th>
                     <th><?= HTMLHelper::_('searchtools.sort', 'COM_DECARODCL_FIELD_CODE', 'a.code', $listDirn, $listOrder); ?></th>
                     <th><?= HTMLHelper::_('searchtools.sort', 'COM_DECARODCL_FIELD_ENTITY_TYPE', 'a.entity_type', $listDirn, $listOrder); ?></th>
+                    <th><?= HTMLHelper::_('searchtools.sort', 'COM_DECARODCL_ZONES', 'zones_count', $listDirn, $listOrder); ?></th>
                     <th class="text-center"><?= HTMLHelper::_('searchtools.sort', 'COM_DECARODCL_FEDERATIONS', 'federations_count', $listDirn, $listOrder); ?></th>
                     <th class="text-center"><?= Text::_('JSTATUS'); ?></th>
                     <th class="text-center"><?= Text::_('JGRID_HEADING_ID'); ?></th>
@@ -51,8 +59,8 @@ $listDirn = $this->escape($this->state->get('list.direction'));
             <tbody>
             <?php foreach ($this->items as $i => $item) : ?>
                 <tr>
-                    <td class="text-center"><?= HTMLHelper::_('grid.id', $i, $item->id); ?></td>
-                    <td>
+                    <td class="text-center dcl-responsive-table__check"><?= HTMLHelper::_('grid.id', $i, $item->id); ?></td>
+                    <td data-label="<?= Text::_('COM_DECARODCL_FIELD_NAME'); ?>">
                         <a class="fw-semibold" href="<?= Route::_('index.php?option=com_decarodcl&task=country.edit&id=' . (int) $item->id); ?>">
                             <?= $this->escape($item->name); ?>
                         </a>
@@ -60,15 +68,23 @@ $listDirn = $this->escape($this->state->get('list.direction'));
                             <div class="small text-muted"><?= $this->escape(trim(($item->iso2 ?: '') . ' ' . ($item->iso3 ?: ''))); ?></div>
                         <?php endif; ?>
                     </td>
-                    <td><span class="badge bg-secondary"><?= $this->escape($item->code); ?></span></td>
-                    <td><?= Text::_($item->entity_type === 'sport_territory' ? 'COM_DECARODCL_ENTITY_SPORT_TERRITORY' : 'COM_DECARODCL_ENTITY_COUNTRY'); ?></td>
-                    <td class="text-center"><?= (int) $item->federations_count; ?></td>
-                    <td class="text-center"><?= HTMLHelper::_('jgrid.published', $item->state, $i, 'countries.', $canChange, 'cb'); ?></td>
-                    <td class="text-center"><?= (int) $item->id; ?></td>
+                    <td data-label="<?= Text::_('COM_DECARODCL_FIELD_CODE'); ?>"><span class="badge bg-secondary"><?= $this->escape($item->code); ?></span></td>
+                    <td data-label="<?= Text::_('COM_DECARODCL_FIELD_ENTITY_TYPE'); ?>"><?= Text::_($item->entity_type === 'sport_territory' ? 'COM_DECARODCL_ENTITY_SPORT_TERRITORY' : 'COM_DECARODCL_ENTITY_COUNTRY'); ?></td>
+                    <td data-label="<?= Text::_('COM_DECARODCL_ZONES'); ?>">
+                        <?php if ((int) $item->zones_count > 0) : ?>
+                            <span class="badge bg-info text-dark me-1"><?= (int) $item->zones_count; ?></span>
+                            <span class="small"><?= $this->escape((string) $item->zone_names); ?></span>
+                        <?php else : ?>
+                            <span class="text-muted">—</span>
+                        <?php endif; ?>
+                    </td>
+                    <td class="text-center" data-label="<?= Text::_('COM_DECARODCL_FEDERATIONS'); ?>"><?= (int) $item->federations_count; ?></td>
+                    <td class="text-center" data-label="<?= Text::_('JSTATUS'); ?>"><?= HTMLHelper::_('jgrid.published', $item->state, $i, 'countries.', $canChange, 'cb'); ?></td>
+                    <td class="text-center" data-label="<?= Text::_('JGRID_HEADING_ID'); ?>"><?= (int) $item->id; ?></td>
                 </tr>
             <?php endforeach; ?>
             <?php if (!$this->items) : ?>
-                <tr><td colspan="7" class="text-center py-5 text-muted"><?= Text::_('COM_DECARODCL_NO_COUNTRIES'); ?></td></tr>
+                <tr><td colspan="8" class="text-center py-5 text-muted"><?= Text::_('COM_DECARODCL_NO_COUNTRIES'); ?></td></tr>
             <?php endif; ?>
             </tbody>
         </table>

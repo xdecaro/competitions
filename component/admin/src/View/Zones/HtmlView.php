@@ -1,5 +1,5 @@
 <?php
-namespace Xdecaro\Component\Decarodcl\Administrator\View\Countries;
+namespace Xdecaro\Component\Decarodcl\Administrator\View\Zones;
 
 defined('_JEXEC') or die;
 
@@ -14,7 +14,7 @@ final class HtmlView extends BaseHtmlView
     public $items;
     public $pagination;
     public $state;
-    public array $zoneOptions = [];
+    public array $organizationOptions = [];
 
     public function display($tpl = null): void
     {
@@ -25,32 +25,36 @@ final class HtmlView extends BaseHtmlView
         }
 
         UiHelper::loadAssets();
+
         $this->items = $this->get('Items');
         $this->pagination = $this->get('Pagination');
         $this->state = $this->get('State');
-        $this->zoneOptions = $this->getModel()->getZoneOptions();
+        $this->organizationOptions = $this->getModel()->getOrganizationOptions();
 
         if (count($errors = $this->get('Errors'))) {
             throw new \RuntimeException(implode("\n", $errors));
         }
 
-        ToolbarHelper::title(Text::_('COM_DECARODCL_COUNTRIES'), 'flag');
+        ToolbarHelper::title(Text::_('COM_DECARODCL_ZONES'), 'globe');
 
         if ($user->authorise('core.create', 'com_decarodcl')) {
-            ToolbarHelper::addNew('country.add');
-        }
-        if ($user->authorise('core.edit', 'com_decarodcl')) {
-            ToolbarHelper::editList('country.edit');
-        }
-        if ($user->authorise('core.edit.state', 'com_decarodcl')) {
-            ToolbarHelper::publish('countries.publish', 'JTOOLBAR_PUBLISH', true);
-            ToolbarHelper::unpublish('countries.unpublish', 'JTOOLBAR_UNPUBLISH', true);
-        }
-        if ($user->authorise('core.delete', 'com_decarodcl')) {
-            ToolbarHelper::trash('countries.trash');
+            ToolbarHelper::addNew('zone.add');
         }
 
-        $this->addTemplatePath(JPATH_COMPONENT_ADMINISTRATOR . '/tmpl/countries');
+        if ($user->authorise('core.edit', 'com_decarodcl')) {
+            ToolbarHelper::editList('zone.edit');
+        }
+
+        if ($user->authorise('core.edit.state', 'com_decarodcl')) {
+            ToolbarHelper::publish('zones.publish', 'JTOOLBAR_PUBLISH', true);
+            ToolbarHelper::unpublish('zones.unpublish', 'JTOOLBAR_UNPUBLISH', true);
+        }
+
+        if ($user->authorise('core.delete', 'com_decarodcl')) {
+            ToolbarHelper::trash('zones.trash');
+        }
+
+        $this->addTemplatePath(JPATH_COMPONENT_ADMINISTRATOR . '/tmpl/zones');
 
         parent::display($tpl);
     }

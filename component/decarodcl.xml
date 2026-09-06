@@ -6,7 +6,7 @@
   <copyright>Copyright (C) 2026 Luca De Caro. All rights reserved.</copyright>
   <license>GNU General Public License version 2 or later</license>
   <authorUrl>https://github.com/xdecaro/dcl</authorUrl>
-  <version>0.7.1</version>
+  <version>0.8.0</version>
   <description>COM_DECARODCL_XML_DESCRIPTION</description>
   <targetplatform name="joomla" version="6.*" />
   <namespace path="src">Xdecaro\Component\Decarodcl</namespace>
@@ -21,6 +21,7 @@
     <submenu>
       <menu view="dashboard">COM_DECARODCL_DASHBOARD</menu>
       <menu view="organizations">COM_DECARODCL_ORGANIZATIONS</menu>
+      <menu view="zones">COM_DECARODCL_ZONES</menu>
       <menu view="countries">COM_DECARODCL_COUNTRIES</menu>
       <menu view="federations">COM_DECARODCL_FEDERATIONS</menu>
       <menu view="tournaments">COM_DECARODCL_TOURNAMENTS</menu>
@@ -45,10 +46,12 @@
       <language tag="en-GB">en-GB/com_decarodcl.ini</language>
       <language tag="en-GB">en-GB/com_decarodcl.070.ini</language>
       <language tag="en-GB">en-GB/com_decarodcl.071.ini</language>
+      <language tag="en-GB">en-GB/com_decarodcl.080.ini</language>
       <language tag="en-GB">en-GB/com_decarodcl.sys.ini</language>
       <language tag="it-IT">it-IT/com_decarodcl.ini</language>
       <language tag="it-IT">it-IT/com_decarodcl.070.ini</language>
       <language tag="it-IT">it-IT/com_decarodcl.071.ini</language>
+      <language tag="it-IT">it-IT/com_decarodcl.080.ini</language>
       <language tag="it-IT">it-IT/com_decarodcl.sys.ini</language>
     </languages>
   </administration>
@@ -63,6 +66,7 @@
     <sql>
       <file driver="mysql" charset="utf8mb4">sql/install.mysql.utf8mb4.sql</file>
       <file driver="mysql" charset="utf8mb4">sql/install.0.7.mysql.utf8mb4.sql</file>
+      <file driver="mysql" charset="utf8mb4">sql/install.0.8.mysql.utf8mb4.sql</file>
     </sql>
   </install>
 
