@@ -1,14 +1,15 @@
 {
   "$schema": "https://developer.joomla.org/schemas/json-schema/web_assets.json",
   "name": "com_decarodcl",
-  "version": "0.3.4",
+  "version": "0.3.5",
   "description": "Competitions administrator assets",
   "license": "GPL-2.0-or-later",
   "assets": [
     {
       "name": "com_decarodcl.admin",
       "type": "style",
-      "uri": "com_decarodcl/css/admin.css"
+      "uri": "com_decarodcl/admin.css",
+      "version": "0.3.5"
     }
   ]
 }
