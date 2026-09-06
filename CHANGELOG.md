@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.8.3 - 2026-09-07
+
+- Fixed the Competitions package postflight update-site repair so Joomla can reliably discover future releases.
+- Replaced constants and string literals passed directly to `DatabaseQuery::bind()` with local variables because Joomla binds values by reference.
+- Fixed the silent failure path that could leave `pkg_decarodcl` without a valid `#__update_sites` / `#__update_sites_extensions` association.
+- The installer now recreates or re-enables the Competitions update site and re-associates it with the package on install/update.
+- Preserved the compact Information page and installation-integrity diagnostics from 0.8.2.
+- Preserved all existing `#__dcl_*` sports data; no database migration or destructive change is introduced.
+- Bumped component, package, plugin, modules, Web Asset registry and update feed to 0.8.3.
+
 ## 0.8.2 - 2026-09-06
 
 - Redesigned **Information** as a compact responsive administrator overview with smaller summary cards and two balanced detail panels.
@@ -47,7 +57,7 @@
 
 - Added `#__dcl_organizations` and complete administrator CRUD for reusable competition organizations.
 - Added Tournament → Organization role relations for organizer, governing body, co-organizer and partner.
-- Added Season → Organization role relations, including local organizer.
+- Added Season organization roles, including local organizer.
 - Added native `#__dcl_matches` as the authoritative sports-data source for Matches.
 - Added complete Match administrator CRUD with Season, Home/Away Team, optional Venue, date/time, stage, group, round, matchday, status, scores, attendance and notes.
 - Match creation validates that both Teams have an approved Participation in the selected Season.
@@ -63,7 +73,7 @@
 ## 0.6.0 - 2026-09-06
 
 - Added complete administrator CRUD for Players using the existing `#__dcl_players` table.
-- Added Player fields for first name, last name, optional external reference, birth date, nationality, photo, approval and publication state.
+- Added Player fields for first name, last name, optional external reference, birth date, nationality, photo, approval and state.
 - Added server-side validation for required names, valid/non-future birth dates, nationality references and unique external references.
 - Added Player approval workflow with `core.edit.state` protection against direct-form tampering.
 - Added complete administrator CRUD for Rosters using the existing `#__dcl_rosters` table.
