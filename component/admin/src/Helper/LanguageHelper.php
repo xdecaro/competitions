@@ -9,8 +9,8 @@ final class LanguageHelper
 {
     public static function load(): void
     {
-        Factory::getApplication()
-            ->getLanguage()
-            ->load('com_decarodcl.070', JPATH_ADMINISTRATOR, null, true);
+        $language = Factory::getApplication()->getLanguage();
+        $language->load('com_decarodcl.070', JPATH_ADMINISTRATOR, null, true);
+        $language->load('com_decarodcl.071', JPATH_ADMINISTRATOR, null, true);
     }
 }
