@@ -14,6 +14,11 @@ $approvalLabels = [
     'approved' => ['COM_DECARODCL_APPROVAL_APPROVED', 'bg-success'],
     'rejected' => ['COM_DECARODCL_APPROVAL_REJECTED', 'bg-danger'],
 ];
+
+$teamTypeLabels = [
+    'club' => ['COM_DECARODCL_TEAM_TYPE_CLUB', 'is-muted'],
+    'national' => ['COM_DECARODCL_TEAM_TYPE_NATIONAL', 'is-success'],
+];
 ?>
 <form action="<?= Route::_('index.php?option=com_decarodcl&view=teams'); ?>" method="post" name="adminForm" id="adminForm" class="dcl-admin">
     <div class="dcl-filterbar dcl-filterbar--wide">
@@ -27,6 +32,15 @@ $approvalLabels = [
                 placeholder="<?= Text::_('COM_DECARODCL_SEARCH_TEAMS'); ?>"
             >
         </div>
+
+        <select name="filter_team_type" onchange="this.form.submit()">
+            <option value=""><?= Text::_('COM_DECARODCL_FILTER_ALL_TEAM_TYPES'); ?></option>
+            <?php foreach ($teamTypeLabels as $value => $meta) : ?>
+                <option value="<?= $value; ?>" <?= (string) $this->state->get('filter.team_type') === $value ? 'selected' : ''; ?>>
+                    <?= Text::_($meta[0]); ?>
+                </option>
+            <?php endforeach; ?>
+        </select>
 
         <select name="filter_country_id" onchange="this.form.submit()">
             <option value="0"><?= Text::_('COM_DECARODCL_FILTER_ALL_COUNTRIES'); ?></option>
@@ -82,15 +96,21 @@ $approvalLabels = [
             </thead>
             <tbody>
             <?php foreach ($this->items as $i => $item) : ?>
-                <?php $approval = $approvalLabels[$item->approval_status] ?? ['COM_DECARODCL_APPROVAL_PENDING', 'bg-secondary']; ?>
+                <?php
+                $approval = $approvalLabels[$item->approval_status] ?? ['COM_DECARODCL_APPROVAL_PENDING', 'bg-secondary'];
+                $teamType = $teamTypeLabels[$item->team_type] ?? ['COM_DECARODCL_TEAM_TYPE_CLUB', 'is-muted'];
+                ?>
                 <tr>
                     <td class="text-center dcl-responsive-table__check"><?= HTMLHelper::_('grid.id', $i, $item->id); ?></td>
                     <td data-label="<?= Text::_('COM_DECARODCL_FIELD_NAME'); ?>">
                         <a class="fw-semibold" href="<?= Route::_('index.php?option=com_decarodcl&task=team.edit&id=' . (int) $item->id); ?>">
                             <?= $this->escape($item->name); ?>
                         </a>
+                        <div class="d-flex flex-wrap gap-1 mt-1">
+                            <span class="dcl-badge <?= $teamType[1]; ?>"><?= Text::_($teamType[0]); ?></span>
+                        </div>
                         <?php if ($item->short_name || $item->city) : ?>
-                            <div class="small text-muted">
+                            <div class="small text-muted mt-1">
                                 <?= $this->escape(trim(($item->short_name ?: '') . ($item->short_name && $item->city ? ' · ' : '') . ($item->city ?: ''))); ?>
                             </div>
                         <?php endif; ?>
