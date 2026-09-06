@@ -21,11 +21,14 @@ final class InformationModel extends BaseDatabaseModel
         $updateSite = null;
 
         if ($package !== null) {
+            $extensionId = (int) $package->extension_id;
+            $location = self::UPDATE_SITE_URL;
+
             $query = $db->getQuery(true)
                 ->select([$db->quoteName('version'), $db->quoteName('detailsurl')])
                 ->from($db->quoteName('#__updates'))
                 ->where($db->quoteName('extension_id') . ' = :extensionId')
-                ->bind(':extensionId', $package->extension_id, ParameterType::INTEGER)
+                ->bind(':extensionId', $extensionId, ParameterType::INTEGER)
                 ->order($db->quoteName('update_id') . ' DESC');
             $update = $db->setQuery($query, 0, 1)->loadObject();
 
@@ -41,8 +44,8 @@ final class InformationModel extends BaseDatabaseModel
                 ->innerJoin($db->quoteName('#__update_sites_extensions', 'm') . ' ON ' . $db->quoteName('m.update_site_id') . ' = ' . $db->quoteName('s.update_site_id'))
                 ->where($db->quoteName('m.extension_id') . ' = :extensionId')
                 ->where($db->quoteName('s.location') . ' = :location')
-                ->bind(':extensionId', $package->extension_id, ParameterType::INTEGER)
-                ->bind(':location', self::UPDATE_SITE_URL);
+                ->bind(':extensionId', $extensionId, ParameterType::INTEGER)
+                ->bind(':location', $location);
             $updateSite = $db->setQuery($query, 0, 1)->loadObject();
         }
 
