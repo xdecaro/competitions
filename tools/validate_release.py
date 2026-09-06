@@ -132,6 +132,18 @@ def validate_versions() -> None:
         fail("updates/pkg_decarodcl.xml has no <update>")
     if (update.findtext("version") or "").strip() != VERSION:
         fail("update-server version does not match VERSION")
+    if (update.findtext("element") or "").strip() != "pkg_decarodcl":
+        fail("update-server element must be pkg_decarodcl")
+    if (update.findtext("type") or "").strip() != "package":
+        fail("update-server type must be package")
+    if (update.findtext("client") or "").strip() != "site":
+        fail("update-server client must be site for the Competitions package")
+
+    targetplatform = update.find("targetplatform")
+    if targetplatform is None or (targetplatform.get("name") or "").strip().lower() != "joomla":
+        fail("update-server targetplatform must target Joomla")
+    if (targetplatform.get("version") or "").strip() != r"6\.[0-9]+":
+        fail("update-server Joomla targetplatform regex is not the expected Joomla 6 pattern")
 
     download_url = (update.findtext("./downloads/downloadurl") or "").strip()
     expected_download = f"/v{VERSION}/pkg_decarodcl_{VERSION}.zip"
@@ -204,14 +216,20 @@ def validate_versions() -> None:
         if required not in information_template:
             fail(f"Information template is missing design-system class {required}")
 
-    page_header = (ROOT / "component/admin/layouts/page/header.php").read_text(encoding="utf-8")
+    page_header_layout = (ROOT / "component/admin/layouts/page/header.php").read_text(encoding="utf-8")
     for required in ("dcl-page-header", "dcl-page-header__eyebrow", "dcl-page-header__title", "dcl-page-header__description"):
-        if required not in page_header:
+        if required not in page_header_layout:
             fail(f"shared page header is missing {required}")
 
     display_controller = (ROOT / "component/admin/src/Controller/DisplayController.php").read_text(encoding="utf-8")
     if "PageHeaderHelper::render" not in display_controller:
         fail("DisplayController does not render the shared page header")
+    if "getInt('id', 0)" not in display_controller:
+        fail("DisplayController must provide a zero default for the optional record id")
+
+    page_header_helper = (ROOT / "component/admin/src/Helper/PageHeaderHelper.php").read_text(encoding="utf-8")
+    if "?int $id = null" not in page_header_helper or "max(0, (int) $id)" not in page_header_helper:
+        fail("PageHeaderHelper must defensively normalize an absent record id")
 
     language_helper = (ROOT / "component/admin/src/Helper/LanguageHelper.php").read_text(encoding="utf-8")
     if "com_decarodcl.090" not in language_helper:

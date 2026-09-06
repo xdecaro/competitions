@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.9.1 - 2026-09-07
+
+- Fixed the administrator fatal error `PageHeaderHelper::render(): Argument #3 ($id) must be of type int, null given` introduced by the shared 0.9.0 page header.
+- Root cause: Joomla `Input::getInt('id')` returns `null` when the query parameter is absent unless an explicit default is supplied; Dashboard, list and Information views normally have no record ID.
+- `DisplayController` now normalizes the optional ID to integer `0` before rendering the shared header.
+- `PageHeaderHelper` now defensively accepts a nullable ID and normalizes it, preventing the same regression from future callers.
+- Added release validation for the page-header ID default and Joomla update-feed client/target-platform metadata.
+- Preserved the 0.9.0 design system, all CRUD behaviour and all existing `#__dcl_*` sports data; no database migration or destructive change is introduced.
+- Bumped component, package, plugin, modules, Web Asset registry and update feed to 0.9.1.
+
 ## 0.9.0 - 2026-09-07
 
 - Added a shared administrator design system for all Competitions views, aligned with the established xdecaro Courses visual language.
