@@ -15,7 +15,7 @@
 
 ## Current version
 
-**0.3.0**
+**0.3.1**
 
 ## Architecture
 
@@ -28,7 +28,9 @@ DCL separates authentication, sport data and presentation:
 - `com_decarodcl` is the central administrator manager.
 - Frontend modules can be placed directly in YOOtheme layouts.
 
-## 0.3.0
+## 0.3.1
+
+Packaging correction before Joomla installation: removed an empty site template folder reference so the component ZIP contains only declared paths that actually exist.
 
 First administrator component release:
 

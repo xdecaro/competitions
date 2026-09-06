@@ -1,7 +1,9 @@
 # Changelog
 
-## 0.3.0 - 2026-09-06
+## 0.3.1 - 2026-09-06
 
+- Fixed component package manifest by removing the unused empty site template folder reference.
+- Rebuilt and republished as 0.3.1; 0.3.0 remains immutable.
 - Added `com_decarodcl` / DCL Manager.
 - Added Dashboard.
 - Added Countries administrator CRUD.
