@@ -55,6 +55,14 @@ final class PkgDecarodclInstallerScript
 
     private function ensureUpdateSite(DatabaseInterface $db): void
     {
+        // Joomla DatabaseQuery::bind() binds by reference, so every bound value
+        // must be stored in a local variable rather than passed as a constant or
+        // literal. Keeping these values local also prevents a silent postflight
+        // failure from leaving the package without an update-site association.
+        $location = self::UPDATE_SITE_URL;
+        $siteName = self::UPDATE_SITE_NAME;
+        $siteType = 'extension';
+
         $query = $db->getQuery(true)
             ->select($db->quoteName('extension_id'))
             ->from($db->quoteName('#__extensions'))
@@ -71,7 +79,7 @@ final class PkgDecarodclInstallerScript
             ->select($db->quoteName('update_site_id'))
             ->from($db->quoteName('#__update_sites'))
             ->where($db->quoteName('location') . ' = :location')
-            ->bind(':location', self::UPDATE_SITE_URL);
+            ->bind(':location', $location);
         $updateSiteId = (int) $db->setQuery($query, 0, 1)->loadResult();
 
         if ($updateSiteId <= 0) {
@@ -84,9 +92,9 @@ final class PkgDecarodclInstallerScript
                     $db->quoteName('enabled'),
                 ])
                 ->values(':name, :type, :location, 1')
-                ->bind(':name', self::UPDATE_SITE_NAME)
-                ->bind(':type', 'extension')
-                ->bind(':location', self::UPDATE_SITE_URL);
+                ->bind(':name', $siteName)
+                ->bind(':type', $siteType)
+                ->bind(':location', $location);
             $db->setQuery($query)->execute();
             $updateSiteId = (int) $db->insertid();
         } else {
@@ -96,8 +104,8 @@ final class PkgDecarodclInstallerScript
                 ->set($db->quoteName('type') . ' = :type')
                 ->set($db->quoteName('enabled') . ' = 1')
                 ->where($db->quoteName('update_site_id') . ' = :updateSiteId')
-                ->bind(':name', self::UPDATE_SITE_NAME)
-                ->bind(':type', 'extension')
+                ->bind(':name', $siteName)
+                ->bind(':type', $siteType)
                 ->bind(':updateSiteId', $updateSiteId, ParameterType::INTEGER);
             $db->setQuery($query)->execute();
         }
