@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.3.4 - 2026-09-06
+
+- Fixed administrator CSS not loading on Joomla 6.
+- Added a central `UiHelper` that explicitly loads the `com_decarodcl` Web Asset registry.
+- Added a defensive fallback that registers `com_decarodcl/css/admin.css` directly if the registry asset is still unavailable.
+- Applied the asset loader to Dashboard, Countries, Country, Federations and Federation administrator views.
+- Bumped component, package, plugin, modules, Web Asset registry and update feed to 0.3.4.
+- Preserved all technical identifiers and existing `#__dcl_*` data.
+
 ## 0.3.3 - 2026-09-06
 
 - Fixed the root cause of `500 Layout default not found`: restored `<folder>tmpl</folder>` inside the administrator file list of `com_decarodcl`.
