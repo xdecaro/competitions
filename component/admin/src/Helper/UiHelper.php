@@ -11,21 +11,19 @@ final class UiHelper
     {
         $document = Factory::getApplication()->getDocument();
         $wa = $document->getWebAssetManager();
+        $assetName = 'com_decarodcl.admin.runtime';
 
-        if (!$wa->assetExists('style', 'com_decarodcl.admin')) {
-            $wa->getRegistry()->addExtensionRegistryFile('com_decarodcl');
-        }
-
-        // Defensive fallback: keep the administrator usable even if the
-        // extension asset registry has not been discovered yet.
-        if (!$wa->assetExists('style', 'com_decarodcl.admin')) {
+        // Register the administrator stylesheet explicitly instead of relying
+        // on automatic extension-registry discovery. This avoids stale or
+        // undiscovered Web Asset registry entries during component rendering.
+        if (!$wa->assetExists('style', $assetName)) {
             $wa->registerStyle(
-                'com_decarodcl.admin',
-                'com_decarodcl/css/admin.css',
-                ['version' => '0.3.4']
+                $assetName,
+                'com_decarodcl/admin.css',
+                ['version' => '0.3.5']
             );
         }
 
-        $wa->useStyle('com_decarodcl.admin');
+        $wa->useStyle($assetName);
     }
 }
