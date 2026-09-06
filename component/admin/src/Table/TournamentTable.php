@@ -8,6 +8,7 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Table\Table;
 use Joomla\Database\DatabaseDriver;
 use Joomla\Database\ParameterType;
+use Xdecaro\Component\Decarodcl\Administrator\Helper\TournamentScopeHelper;
 
 final class TournamentTable extends Table
 {
@@ -22,6 +23,9 @@ final class TournamentTable extends Table
         $this->code = strtoupper(trim((string) $this->code));
         $this->discipline = trim((string) $this->discipline) ?: null;
         $this->gender = trim((string) $this->gender) ?: null;
+        $this->scope_type = strtolower(trim((string) $this->scope_type)) ?: 'international';
+        $this->participant_type = strtolower(trim((string) $this->participant_type)) ?: 'club';
+        $this->local_area = trim((string) $this->local_area) ?: null;
 
         if ($this->name === '') {
             $this->setError(Text::_('COM_DECARODCL_ERROR_TOURNAMENT_NAME_REQUIRED'));
@@ -43,6 +47,20 @@ final class TournamentTable extends Table
         if (!in_array($this->gender, $allowedGenders, true)) {
             $this->setError(Text::_('COM_DECARODCL_ERROR_TOURNAMENT_GENDER_INVALID'));
             return false;
+        }
+
+        if (!in_array($this->scope_type, TournamentScopeHelper::SCOPES, true)) {
+            $this->setError(Text::_('COM_DECARODCL_ERROR_SCOPE_INVALID'));
+            return false;
+        }
+
+        if (!in_array($this->participant_type, TournamentScopeHelper::PARTICIPANT_TYPES, true)) {
+            $this->setError(Text::_('COM_DECARODCL_ERROR_PARTICIPANT_TYPE_INVALID'));
+            return false;
+        }
+
+        if ($this->scope_type !== 'local') {
+            $this->local_area = null;
         }
 
         $db = $this->getDbo();
