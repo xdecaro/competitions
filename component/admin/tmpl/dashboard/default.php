@@ -20,11 +20,6 @@ $cards = [
 ];
 ?>
 <div class="dcl-admin">
-    <div class="dcl-admin__intro">
-        <h2><?= Text::_('COM_DECARODCL_DASHBOARD_TITLE'); ?></h2>
-        <p><?= Text::_('COM_DECARODCL_DASHBOARD_DESC'); ?></p>
-    </div>
-
     <div class="dcl-dashboard-grid">
         <?php foreach ($cards as $card) : ?>
             <?php

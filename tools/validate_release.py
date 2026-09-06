@@ -28,6 +28,8 @@ EXPECTED_COMPONENT_FILES = {
     "admin/forms/organization.xml",
     "admin/forms/zone.xml",
     "admin/forms/match.xml",
+    "admin/layouts/page/header.php",
+    "admin/src/Controller/DisplayController.php",
     "admin/src/Controller/OrganizationController.php",
     "admin/src/Controller/OrganizationsController.php",
     "admin/src/Controller/ZoneController.php",
@@ -35,6 +37,7 @@ EXPECTED_COMPONENT_FILES = {
     "admin/src/Controller/MatchController.php",
     "admin/src/Controller/MatchesController.php",
     "admin/src/Helper/LanguageHelper.php",
+    "admin/src/Helper/PageHeaderHelper.php",
     "admin/src/Helper/OrganizationAssignmentHelper.php",
     "admin/src/Model/OrganizationModel.php",
     "admin/src/Model/OrganizationsModel.php",
@@ -69,10 +72,12 @@ EXPECTED_COMPONENT_FILES = {
     "admin/language/en-GB/com_decarodcl.071.ini",
     "admin/language/en-GB/com_decarodcl.080.ini",
     "admin/language/en-GB/com_decarodcl.082.ini",
+    "admin/language/en-GB/com_decarodcl.090.ini",
     "admin/language/it-IT/com_decarodcl.070.ini",
     "admin/language/it-IT/com_decarodcl.071.ini",
     "admin/language/it-IT/com_decarodcl.080.ini",
     "admin/language/it-IT/com_decarodcl.082.ini",
+    "admin/language/it-IT/com_decarodcl.090.ini",
     "media/admin.css",
     "media/joomla.asset.json",
 }
@@ -139,6 +144,10 @@ def validate_versions() -> None:
         if required_view not in submenu_views:
             fail(f"component submenu is missing view {required_view}")
 
+    admin_folders = {(node.text or "").strip() for node in component_manifest.findall("./administration/files/folder") if node.text}
+    if "layouts" not in admin_folders:
+        fail("component manifest is missing the shared administrator layouts folder")
+
     component_languages = {
         (node.text or "").strip()
         for node in component_manifest.findall("./administration/languages/language")
@@ -147,6 +156,8 @@ def validate_versions() -> None:
     for required_language in (
         "en-GB/com_decarodcl.082.ini",
         "it-IT/com_decarodcl.082.ini",
+        "en-GB/com_decarodcl.090.ini",
+        "it-IT/com_decarodcl.090.ini",
     ):
         if required_language not in component_languages:
             fail(f"component manifest is missing language file {required_language}")
@@ -184,24 +195,27 @@ def validate_versions() -> None:
             fail(f"0.8.0 migration is missing {required}")
 
     information_model = (ROOT / "component/admin/src/Model/InformationModel.php").read_text(encoding="utf-8")
-    for required in (
-        "extension_versions",
-        "installation_consistent",
-        "mod_dcl_matchtimeline",
-        "mod_dcl_countriesfederations",
-        "plg_system_decarodcl" if False else "decarodcl",
-    ):
+    for required in ("extension_versions", "installation_consistent", "mod_dcl_matchtimeline", "mod_dcl_countriesfederations", "decarodcl"):
         if required not in information_model:
             fail(f"InformationModel integrity diagnostics are missing {required}")
 
     information_template = (ROOT / "component/admin/tmpl/information/default.php").read_text(encoding="utf-8")
-    for required in ("dcl-info-summary", "dcl-info-panels", "dcl-version-list"):
+    for required in ("dcl-information-grid", "dcl-card", "dcl-information-row", "dcl-badge"):
         if required not in information_template:
-            fail(f"Information template is missing compact UI class {required}")
+            fail(f"Information template is missing design-system class {required}")
+
+    page_header = (ROOT / "component/admin/layouts/page/header.php").read_text(encoding="utf-8")
+    for required in ("dcl-page-header", "dcl-page-header__eyebrow", "dcl-page-header__title", "dcl-page-header__description"):
+        if required not in page_header:
+            fail(f"shared page header is missing {required}")
+
+    display_controller = (ROOT / "component/admin/src/Controller/DisplayController.php").read_text(encoding="utf-8")
+    if "PageHeaderHelper::render" not in display_controller:
+        fail("DisplayController does not render the shared page header")
 
     language_helper = (ROOT / "component/admin/src/Helper/LanguageHelper.php").read_text(encoding="utf-8")
-    if "com_decarodcl.082" not in language_helper:
-        fail("LanguageHelper does not load the 0.8.2 language file")
+    if "com_decarodcl.090" not in language_helper:
+        fail("LanguageHelper does not load the 0.9.0 language file")
 
     package = ET.parse(ROOT / "package/pkg_decarodcl.xml").getroot()
     shipped = {node.text.strip() for node in package.findall("./files/file") if node.text}

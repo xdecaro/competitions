@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.9.0 - 2026-09-07
+
+- Added a shared administrator design system for all Competitions views, aligned with the established xdecaro Courses visual language.
+- Added one reusable Joomla page-header layout with blue uppercase eyebrow, large title and concise muted description.
+- Added `PageHeaderHelper` and centralized header rendering in `DisplayController`, so Dashboard, all list views and all create/edit forms stay visually synchronized without duplicating header markup.
+- Redesigned **Information** into product-style cards for Versions, System, Frontend modules, Update channel and Diagnostics while preserving all existing version-integrity and Joomla update checks.
+- Added scoped light/dark design tokens, responsive header/card behaviour and consistent spacing without changing existing CRUD, toolbar, filters, tables or server-side validation.
+- Added Italian and English 0.9.0 administrator language strings for every page description.
+- Preserved the 0.8.3 update-site repair and all existing `#__dcl_*` sports data; no database migration or destructive change is introduced.
+- Bumped component, package, plugin, modules, Web Asset registry and update feed to 0.9.0.
+
 ## 0.8.3 - 2026-09-07
 
 - Fixed the Competitions package postflight update-site repair so Joomla can reliably discover future releases.

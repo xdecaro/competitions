@@ -17,7 +17,7 @@ The repository keeps the historical/internal `dcl` technical identifiers for upg
 
 ## Current version
 
-**0.8.3**
+**0.9.0**
 
 ## Architecture
 
@@ -34,6 +34,14 @@ Competitions separates authentication, sport data and presentation:
 - Match timeline events use `match_id` as the primary relation. The legacy `article_id` relation remains available for backward compatibility.
 - `com_decarodcl` is the central administrator component.
 - Frontend modules can be placed directly in YOOtheme layouts without moving authoritative sports data into Joomla articles.
+
+## Administrator design system
+
+Version 0.9.0 introduces a shared administrator page header and visual language for every Competitions view. Dashboard, lists, edit forms and Information now use the same blue uppercase eyebrow, large page title, muted description, typography, spacing, rounded surfaces and responsive/dark-mode tokens inspired by the established xdecaro Courses interface.
+
+The header is rendered centrally through `PageHeaderHelper` and a reusable Joomla layout rather than duplicated in each template. This keeps future visual changes synchronized across the whole component and preserves existing toolbar, form, filter, table and CRUD behaviour.
+
+The Information page also follows the same product-style card system while retaining the package/component/plugin/module version-integrity diagnostics and native Joomla update controls introduced in 0.8.x.
 
 ## Zones
 
@@ -58,7 +66,7 @@ Version 0.7.1 added an **Information** administrator view with the installed pac
 
 Version 0.8.1 fixes Joomla database parameter binding in the Information view by binding local variables instead of object properties/constants, as required by Joomla's by-reference query API.
 
-Version 0.8.2 redesigns Information as a compact responsive overview and adds an installation-integrity check. The page now compares the installed versions of the package, component, system plugin, Match Timeline module and Countries/Federations module, clearly warning when a partial update leaves the installation out of sync.
+Version 0.8.2 adds an installation-integrity check comparing the package, component, system plugin, Match Timeline module and Countries/Federations module versions.
 
 Version 0.8.3 fixes the package postflight update-site repair itself. Joomla's database `bind()` API requires variables passed by reference; the previous installer script passed constants/literals for update-site values, so the repair could fail silently and Competitions would not appear in Joomla's extension update list. The installer now binds local variables and recreates/enables the package update-site association on installation or update.
 
@@ -91,4 +99,4 @@ Organizations and native Match management:
 
 ## Data preservation
 
-Updates and uninstall routines do not delete `#__dcl_*` data tables automatically. The 0.7.0 migration adds Organizations and native Matches while preserving the previous `article_id` event relation. Version 0.8.0 adds Zones and Country mappings using additive tables and `INSERT IGNORE`, so existing Country records and sports data are not overwritten or deleted. Versions 0.8.1 through 0.8.3 change administrator diagnostics/UI, installer update-site handling and release metadata only; they do not modify sports data or database schema. Destructive data removal must be an explicit administrator action.
+Updates and uninstall routines do not delete `#__dcl_*` data tables automatically. The 0.7.0 migration adds Organizations and native Matches while preserving the previous `article_id` event relation. Version 0.8.0 adds Zones and Country mappings using additive tables and `INSERT IGNORE`, so existing Country records and sports data are not overwritten or deleted. Versions 0.8.1 through 0.9.0 change administrator diagnostics/UI, installer update-site handling and release metadata only; they do not modify sports data or database schema. Destructive data removal must be an explicit administrator action.
