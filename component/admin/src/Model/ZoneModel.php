@@ -6,12 +6,11 @@ defined('_JEXEC') or die;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Form\Form;
 use Joomla\CMS\Language\Text;
-use Joomla\CMS\MVC\Model\AdminModel;
 use Joomla\CMS\Table\Table;
 use Joomla\Database\ParameterType;
 use Xdecaro\Component\Decarodcl\Administrator\Helper\LanguageHelper;
 
-final class ZoneModel extends AdminModel
+final class ZoneModel extends BaseAdminModel
 {
     public function getTable($type = 'Zone', $prefix = 'Administrator', $config = []): Table
     {
