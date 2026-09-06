@@ -1,0 +1,54 @@
+name: DCL Release
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - VERSION
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Read version
+        id: version
+        shell: bash
+        run: echo "version=$(cat VERSION)" >> "$GITHUB_OUTPUT"
+
+      - name: Stop if version already exists
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if gh release view "v${{ steps.version.outputs.version }}" >/dev/null 2>&1; then
+            echo "Release v${{ steps.version.outputs.version }} already exists. Bump VERSION before publishing changed files."
+            exit 1
+          fi
+
+      - name: PHP syntax
+        run: find component modules plugins package -name '*.php' -print0 | xargs -0 -n1 php -l
+
+      - name: XML syntax
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import xml.etree.ElementTree as ET
+          for p in Path('.').rglob('*.xml'):
+              if '.git' in p.parts:
+                  continue
+              ET.parse(p)
+          PY
+
+      - name: Build
+        run: python3 tools/build.py
+
+      - name: Create release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          gh release create "v${VERSION}"             dist/*.zip dist/SHA256SUMS.txt             --title "DCL ${VERSION}"             --notes "DCL ${VERSION}"

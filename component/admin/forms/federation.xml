@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+  <fieldset name="details" label="COM_DECARODCL_FEDERATION_DETAILS">
+    <field name="id" type="hidden" />
+    <field
+      name="country_id"
+      type="sql"
+      label="COM_DECARODCL_FIELD_COUNTRY"
+      required="true"
+      query="SELECT id AS value, CONCAT(name, ' (', code, ')') AS text FROM #__dcl_countries WHERE state &lt;&gt; -2 ORDER BY name ASC"
+      key_field="value"
+      value_field="text"
+    />
+    <field name="name" type="text" label="COM_DECARODCL_FIELD_NAME" required="true" maxlength="190" />
+    <field name="short_name" type="text" label="COM_DECARODCL_FIELD_SHORT_NAME" maxlength="100" />
+    <field name="logo" type="media" label="COM_DECARODCL_FIELD_LOGO" types="images" />
+    <field name="website" type="url" label="COM_DECARODCL_FIELD_WEBSITE" maxlength="512" filter="url" />
+    <field name="email" type="email" label="COM_DECARODCL_FIELD_EMAIL" maxlength="190" filter="email" />
+    <field name="state" type="list" label="JSTATUS" default="1">
+      <option value="1">JPUBLISHED</option>
+      <option value="0">JUNPUBLISHED</option>
+    </field>
+    <field name="ordering" type="number" label="JFIELD_ORDERING_LABEL" default="0" min="0" />
+  </fieldset>
+</form>

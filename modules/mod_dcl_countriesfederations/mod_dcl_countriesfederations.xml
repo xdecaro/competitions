@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="module" client="site" method="upgrade">
+    <name>MOD_DCL_COUNTRIESFEDERATIONS</name>
+    <author>xdecaro</author>
+    <creationDate>2026-09-06</creationDate>
+    <copyright>(C) 2026 xdecaro</copyright>
+    <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+    <version>0.3.0</version>
+    <description>MOD_DCL_COUNTRIESFEDERATIONS_XML_DESCRIPTION</description>
+    <namespace path="src">Xdecaro\Module\DclCountriesFederations</namespace>
+
+    <files>
+        <folder module="mod_dcl_countriesfederations">services</folder>
+        <folder>src</folder>
+        <folder>tmpl</folder>
+    </files>
+
+    <media destination="mod_dcl_countriesfederations" folder="media">
+        <folder>css</folder>
+        <folder>js</folder>
+    </media>
+
+    <languages folder="language">
+        <language tag="en-GB">en-GB/mod_dcl_countriesfederations.ini</language>
+        <language tag="en-GB">en-GB/mod_dcl_countriesfederations.sys.ini</language>
+        <language tag="it-IT">it-IT/mod_dcl_countriesfederations.ini</language>
+        <language tag="it-IT">it-IT/mod_dcl_countriesfederations.sys.ini</language>
+    </languages>
+
+    <config>
+        <fields name="params">
+            <fieldset name="basic">
+                <field
+                    name="show_inactive"
+                    type="radio"
+                    label="MOD_DCL_COUNTRIESFEDERATIONS_FIELD_SHOW_INACTIVE_LABEL"
+                    default="0"
+                    layout="joomla.form.field.radio.switcher"
+                    filter="integer"
+                >
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
+                <field
+                    name="show_empty_countries"
+                    type="radio"
+                    label="MOD_DCL_COUNTRIESFEDERATIONS_FIELD_SHOW_EMPTY_LABEL"
+                    default="1"
+                    layout="joomla.form.field.radio.switcher"
+                    filter="integer"
+                >
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
+                <field
+                    name="show_search"
+                    type="radio"
+                    label="MOD_DCL_COUNTRIESFEDERATIONS_FIELD_SHOW_SEARCH_LABEL"
+                    default="1"
+                    layout="joomla.form.field.radio.switcher"
+                    filter="integer"
+                >
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
+            </fieldset>
+        </fields>
+    </config>
+</extension>

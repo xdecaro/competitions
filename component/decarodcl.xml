@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="component" method="upgrade">
+  <name>COM_DECARODCL</name>
+  <author>Luca De Caro</author>
+  <creationDate>2026-09</creationDate>
+  <copyright>Copyright (C) 2026 Luca De Caro. All rights reserved.</copyright>
+  <license>GNU General Public License version 2 or later</license>
+  <authorUrl>https://github.com/xdecaro/dcl</authorUrl>
+  <version>0.3.0</version>
+  <description>COM_DECARODCL_XML_DESCRIPTION</description>
+  <targetplatform name="joomla" version="6.*" />
+  <namespace path="src">Xdecaro\Component\Decarodcl</namespace>
+  <scriptfile>script.php</scriptfile>
+
+  <files folder="site">
+    <folder>src</folder>
+    <folder>tmpl</folder>
+  </files>
+
+  <administration>
+    <menu>COM_DECARODCL</menu>
+    <submenu>
+      <menu view="dashboard">COM_DECARODCL_DASHBOARD</menu>
+      <menu view="countries">COM_DECARODCL_COUNTRIES</menu>
+      <menu view="federations">COM_DECARODCL_FEDERATIONS</menu>
+    </submenu>
+    <files folder="admin">
+      <filename>access.xml</filename>
+      <filename>config.xml</filename>
+      <folder>forms</folder>
+      <folder>services</folder>
+      <folder>sql</folder>
+      <folder>src</folder>
+      <folder>tmpl</folder>
+    </files>
+    <languages folder="admin/language">
+      <language tag="en-GB">en-GB/com_decarodcl.ini</language>
+      <language tag="en-GB">en-GB/com_decarodcl.sys.ini</language>
+      <language tag="it-IT">it-IT/com_decarodcl.ini</language>
+      <language tag="it-IT">it-IT/com_decarodcl.sys.ini</language>
+    </languages>
+  </administration>
+
+  <media destination="com_decarodcl" folder="media">
+    <filename>joomla.asset.json</filename>
+    <folder>css</folder>
+  </media>
+
+  <install>
+    <sql>
+      <file driver="mysql" charset="utf8mb4">sql/install.mysql.utf8mb4.sql</file>
+    </sql>
+  </install>
+
+  <uninstall>
+    <sql>
+      <file driver="mysql" charset="utf8mb4">sql/uninstall.mysql.utf8mb4.sql</file>
+    </sql>
+  </uninstall>
+
+  <update>
+    <schemas>
+      <schemapath type="mysql">sql/updates/mysql</schemapath>
+    </schemas>
+  </update>
+</extension>

@@ -1,0 +1,30 @@
+name: DCL CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: PHP syntax
+        run: find component modules plugins package -name '*.php' -print0 | xargs -0 -n1 php -l
+
+      - name: XML syntax
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import xml.etree.ElementTree as ET
+          for p in Path('.').rglob('*.xml'):
+              if '.git' in p.parts:
+                  continue
+              ET.parse(p)
+              print('OK', p)
+          PY
+
+      - name: Build packages
+        run: python3 tools/build.py
