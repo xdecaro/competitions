@@ -1,23 +1,2 @@
 <?xml version="1.0" encoding="utf-8"?>
-<extension type="plugin" group="system" method="upgrade">
-  <name>PLG_SYSTEM_DECARODCL</name>
-  <author>Luca De Caro</author>
-  <creationDate>2026-09</creationDate>
-  <copyright>Copyright (C) 2026 Luca De Caro. All rights reserved.</copyright>
-  <license>GNU General Public License version 2 or later</license>
-  <authorUrl>https://github.com/xdecaro/dcl</authorUrl>
-  <version>0.3.5</version>
-  <description>PLG_SYSTEM_DECARODCL_XML_DESCRIPTION</description>
-  <targetplatform name="joomla" version="6.*" />
-  <namespace path="src">Xdecaro\Plugin\System\Decarodcl</namespace>
-  <files>
-    <folder plugin="decarodcl">services</folder>
-    <folder>src</folder>
-  </files>
-  <languages folder="language">
-    <language tag="en-GB">en-GB/plg_system_decarodcl.ini</language>
-    <language tag="en-GB">en-GB/plg_system_decarodcl.sys.ini</language>
-    <language tag="it-IT">it-IT/plg_system_decarodcl.ini</language>
-    <language tag="it-IT">it-IT/plg_system_decarodcl.sys.ini</language>
-  </languages>
-</extension>
+<extension type="plugin" group="system" method="upgrade"><name>PLG_SYSTEM_DECARODCL</name><author>Luca De Caro</author><creationDate>2026-09</creationDate><copyright>Copyright (C) 2026 Luca De Caro. All rights reserved.</copyright><license>GNU General Public License version 2 or later</license><authorUrl>https://github.com/xdecaro/dcl</authorUrl><version>0.4.0</version><description>PLG_SYSTEM_DECARODCL_XML_DESCRIPTION</description><targetplatform name="joomla" version="6.*" /><namespace path="src">Xdecaro\Plugin\System\Decarodcl</namespace><files><folder plugin="decarodcl">services</folder><folder>src</folder></files><languages folder="language"><language tag="en-GB">en-GB/plg_system_decarodcl.ini</language><language tag="en-GB">en-GB/plg_system_decarodcl.sys.ini</language><language tag="it-IT">it-IT/plg_system_decarodcl.ini</language><language tag="it-IT">it-IT/plg_system_decarodcl.sys.ini</language></languages></extension>

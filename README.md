@@ -17,7 +17,7 @@ The repository keeps the historical/internal `dcl` technical identifiers for upg
 
 ## Current version
 
-**0.3.5**
+**0.4.0**
 
 ## Architecture
 
@@ -30,15 +30,19 @@ Competitions separates authentication, sport data and presentation:
 - `com_decarodcl` is the central administrator component.
 - Frontend modules can be placed directly in YOOtheme layouts.
 
-## 0.3.5
+## 0.4.0
 
-Administrator stylesheet resolution fix confirmed with browser-console diagnostics:
+Tournament and season management:
 
-- moved a canonical copy of `admin.css` to the root of the component media destination, matching the working Joomla asset layout used by the other xdecaro components;
-- changed the Web Asset URI to `com_decarodcl/admin.css`;
-- added `admin.css` explicitly to the component media manifest while retaining the previous `css/` directory for upgrade compatibility;
-- changed `UiHelper` to register a dedicated runtime asset instead of depending on automatic extension-registry discovery;
-- keeps all existing `#__dcl_*` data and technical identifiers unchanged.
+- added complete Joomla administrator CRUD for Tournaments;
+- added complete Joomla administrator CRUD for Seasons;
+- Seasons are linked to a Tournament and can use the existing Countries registry as host country;
+- added server-side validation for tournament codes, disciplines, categories, dates and referenced records;
+- added search, filters, sorting, pagination, publish/unpublish and trash actions;
+- enabled Tournaments and Seasons in the Competitions administrator submenu and Dashboard;
+- Dashboard counts now exclude trashed records;
+- improved administrator responsiveness with stackable list cards on small screens;
+- preserved all existing `#__dcl_*` tables and data without destructive migrations.
 
 ## Requirements
 

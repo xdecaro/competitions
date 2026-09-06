@@ -14,12 +14,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - name: Read version
         id: version
         shell: bash
         run: echo "version=$(cat VERSION)" >> "$GITHUB_OUTPUT"
-
       - name: Stop if version already exists
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -28,27 +26,26 @@ jobs:
             echo "Release v${{ steps.version.outputs.version }} already exists. Bump VERSION before publishing changed files."
             exit 1
           fi
-
       - name: PHP syntax
         run: find component modules plugins package -name '*.php' -print0 | xargs -0 -n1 php -l
-
       - name: XML syntax
         run: |
           python3 - <<'PY'
           from pathlib import Path
           import xml.etree.ElementTree as ET
           for p in Path('.').rglob('*.xml'):
-              if '.git' in p.parts:
-                  continue
+              if '.git' in p.parts: continue
               ET.parse(p)
           PY
-
+      - name: Release metadata consistency
+        run: python3 tools/validate_release.py
       - name: Build
         run: python3 tools/build.py
-
+      - name: Package contents
+        run: python3 tools/validate_release.py --dist
       - name: Create release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           VERSION="${{ steps.version.outputs.version }}"
-          gh release create "v${VERSION}"             dist/*.zip dist/SHA256SUMS.txt             --title "Competitions ${VERSION}"             --notes "Competitions ${VERSION}"
+          gh release create "v${VERSION}" dist/*.zip dist/SHA256SUMS.txt --title "Competitions ${VERSION}" --notes "Competitions ${VERSION}"

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+  <fieldset name="details" label="COM_DECARODCL_TOURNAMENT_DETAILS">
+    <field name="id" type="hidden" />
+    <field name="name" type="text" label="COM_DECARODCL_FIELD_NAME" required="true" maxlength="190" />
+    <field name="code" type="text" label="COM_DECARODCL_FIELD_CODE" description="COM_DECARODCL_TOURNAMENT_CODE_DESC" required="true" maxlength="50" filter="cmd" />
+    <field name="discipline" type="text" label="COM_DECARODCL_FIELD_DISCIPLINE" description="COM_DECARODCL_FIELD_DISCIPLINE_DESC" required="true" maxlength="50" />
+    <field name="gender" type="list" label="COM_DECARODCL_FIELD_GENDER" default="open">
+      <option value="open">COM_DECARODCL_GENDER_OPEN</option>
+      <option value="men">COM_DECARODCL_GENDER_MEN</option>
+      <option value="women">COM_DECARODCL_GENDER_WOMEN</option>
+      <option value="mixed">COM_DECARODCL_GENDER_MIXED</option>
+    </field>
+    <field name="state" type="list" label="JSTATUS" default="1">
+      <option value="1">JPUBLISHED</option>
+      <option value="0">JUNPUBLISHED</option>
+    </field>
+    <field name="ordering" type="number" label="JFIELD_ORDERING_LABEL" default="0" min="0" />
+  </fieldset>
+</form>

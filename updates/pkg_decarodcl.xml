@@ -1,15 +1,2 @@
 <?xml version="1.0" encoding="utf-8"?>
-<updates>
-  <update>
-    <name>Competitions</name>
-    <description>Competitions package for Joomla 6.</description>
-    <element>pkg_decarodcl</element>
-    <type>package</type>
-    <version>0.3.5</version>
-    <downloads>
-      <downloadurl type="full" format="zip">https://github.com/xdecaro/dcl/releases/download/v0.3.5/pkg_decarodcl_0.3.5.zip</downloadurl>
-    </downloads>
-    <targetplatform name="joomla" version="6.*" />
-    <php_minimum>8.3.0</php_minimum>
-  </update>
-</updates>
+<updates><update><name>Competitions</name><description>Competitions package for Joomla 6.</description><element>pkg_decarodcl</element><type>package</type><version>0.4.0</version><downloads><downloadurl type="full" format="zip">https://github.com/xdecaro/dcl/releases/download/v0.4.0/pkg_decarodcl_0.4.0.zip</downloadurl></downloads><targetplatform name="joomla" version="6.*" /><php_minimum>8.3.0</php_minimum></update></updates>
