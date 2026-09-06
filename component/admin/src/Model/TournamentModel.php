@@ -4,11 +4,11 @@ namespace Xdecaro\Component\Decarodcl\Administrator\Model;
 defined('_JEXEC') or die;
 
 use Joomla\CMS\Factory;
-use Joomla\CMS\MVC\Model\AdminModel;
 use Joomla\CMS\Table\Table;
 use Xdecaro\Component\Decarodcl\Administrator\Helper\OrganizationAssignmentHelper;
+use Xdecaro\Component\Decarodcl\Administrator\Helper\TournamentScopeHelper;
 
-final class TournamentModel extends AdminModel
+final class TournamentModel extends BaseAdminModel
 {
     private const ORGANIZATION_FIELDS = ['organizer_ids'=>'organizer','governing_body_ids'=>'governing_body','co_organizer_ids'=>'co_organizer','partner_ids'=>'partner'];
 
@@ -18,34 +18,104 @@ final class TournamentModel extends AdminModel
     protected function loadFormData()
     {
         $data = Factory::getApplication()->getUserState('com_decarodcl.edit.tournament.data', []);
+
         if (!$data) {
             $data = $this->getItem();
+
             if (!empty($data->id)) {
-                $assignments = OrganizationAssignmentHelper::load($this->getDatabase(), '#__dcl_tournament_organizations', 'tournament_id', (int) $data->id);
-                foreach (self::ORGANIZATION_FIELDS as $field => $role) $data->{$field} = $assignments[$role] ?? [];
+                $db = $this->getDatabase();
+                $assignments = OrganizationAssignmentHelper::load($db, '#__dcl_tournament_organizations', 'tournament_id', (int) $data->id);
+
+                foreach (self::ORGANIZATION_FIELDS as $field => $role) {
+                    $data->{$field} = $assignments[$role] ?? [];
+                }
+
+                $scope = TournamentScopeHelper::load($db, (int) $data->id);
+                $data->country_id = (int) ($scope['country_ids'][0] ?? 0);
+                $data->zone_ids = $scope['zone_ids'];
             }
         }
+
         return $data;
     }
 
     public function save($data): bool
     {
         $roles = [];
-        foreach (self::ORGANIZATION_FIELDS as $field => $role) { $roles[$role] = OrganizationAssignmentHelper::normalizeIds($data[$field] ?? []); unset($data[$field]); }
-        $db = $this->getDatabase(); $started = false;
+
+        foreach (self::ORGANIZATION_FIELDS as $field => $role) {
+            $roles[$role] = OrganizationAssignmentHelper::normalizeIds($data[$field] ?? []);
+            unset($data[$field]);
+        }
+
+        $countryId = (int) ($data['country_id'] ?? 0);
+        $zoneIds = TournamentScopeHelper::normalizeIds($data['zone_ids'] ?? []);
+        unset($data['country_id'], $data['zone_ids']);
+
+        $db = $this->getDatabase();
+        $started = false;
+
         try {
             OrganizationAssignmentHelper::validate($db, $roles);
-            $db->transactionStart(); $started = true;
-            if (!parent::save($data)) { $db->transactionRollback(); return false; }
+            $scope = TournamentScopeHelper::validateSelection(
+                $db,
+                (string) ($data['scope_type'] ?? 'international'),
+                (string) ($data['participant_type'] ?? 'club'),
+                $countryId,
+                $zoneIds
+            );
+
+            $data['scope_type'] = $scope['scope_type'];
+            $data['participant_type'] = $scope['participant_type'];
+            $data['local_area'] = $scope['scope_type'] === 'local'
+                ? (trim((string) ($data['local_area'] ?? '')) ?: null)
+                : null;
+
+            $db->transactionStart();
+            $started = true;
+
+            if (!parent::save($data)) {
+                $db->transactionRollback();
+                return false;
+            }
+
             $id = (int) $this->getState($this->getName() . '.id');
-            if ($id <= 0) throw new \RuntimeException('Tournament ID not available after save.');
+
+            if ($id <= 0) {
+                throw new \RuntimeException('Tournament ID not available after save.');
+            }
+
             OrganizationAssignmentHelper::sync($db, '#__dcl_tournament_organizations', 'tournament_id', $id, $roles);
-            $db->transactionCommit(); return true;
+            TournamentScopeHelper::sync(
+                $db,
+                $id,
+                $scope['scope_type'],
+                $scope['country_id'],
+                $scope['zone_ids']
+            );
+            TournamentScopeHelper::assertExistingParticipationsCompatible($db, $id);
+
+            $db->transactionCommit();
+
+            return true;
         } catch (\Throwable $e) {
-            if ($started) { try { $db->transactionRollback(); } catch (\Throwable) {} }
-            $this->setError($e->getMessage()); return false;
+            if ($started) {
+                try {
+                    $db->transactionRollback();
+                } catch (\Throwable) {
+                }
+            }
+
+            $this->setError($e->getMessage());
+
+            return false;
         }
     }
 
-    protected function prepareTable($table): void { if (!$table->id && (int) $table->ordering === 0) $table->ordering = $table->getNextOrder(); }
+    protected function prepareTable($table): void
+    {
+        if (!$table->id && (int) $table->ordering === 0) {
+            $table->ordering = $table->getNextOrder();
+        }
+    }
 }
