@@ -17,7 +17,7 @@ The repository keeps the historical/internal `dcl` technical identifiers for upg
 
 ## Current version
 
-**0.7.0**
+**0.7.1**
 
 ## Architecture
 
@@ -32,6 +32,12 @@ Competitions separates authentication, sport data and presentation:
 - Match timeline events use `match_id` as the primary relation. The legacy `article_id` relation remains available for backward compatibility.
 - `com_decarodcl` is the central administrator component.
 - Frontend modules can be placed directly in YOOtheme layouts without moving authoritative sports data into Joomla articles.
+
+## Administrator information and updates
+
+Version 0.7.1 adds an **Information** administrator view with the installed package version, Joomla/PHP/database information, native Joomla update status, configured update-server URL and shortcuts to Joomla Updates, Update Sites and GitHub Releases.
+
+The package registers `https://raw.githubusercontent.com/xdecaro/dcl/main/updates/pkg_decarodcl.xml` as its Joomla update server. The package installer also repairs the update-site association on install/update if it is missing or disabled. Joomla automatically checks extension update availability when an administrator signs in; installing an available release remains managed through Joomla's native extension updater.
 
 ## 0.7.0
 
@@ -60,4 +66,4 @@ Organizations and native Match management:
 
 ## Data preservation
 
-Updates and uninstall routines do not delete `#__dcl_*` data tables automatically. The 0.7.0 migration adds new structures and preserves the previous `article_id` event relation. Destructive data removal must be an explicit administrator action.
+Updates and uninstall routines do not delete `#__dcl_*` data tables automatically. The 0.7.0 migration adds new structures and preserves the previous `article_id` event relation. Version 0.7.1 adds only administrator information/update integration and does not introduce a destructive database migration. Destructive data removal must be an explicit administrator action.

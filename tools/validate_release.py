@@ -37,21 +37,26 @@ EXPECTED_COMPONENT_FILES = {
     "admin/src/Model/OrganizationsModel.php",
     "admin/src/Model/MatchModel.php",
     "admin/src/Model/MatchesModel.php",
+    "admin/src/Model/InformationModel.php",
     "admin/src/Table/OrganizationTable.php",
     "admin/src/Table/MatchTable.php",
     "admin/src/View/Organization/HtmlView.php",
     "admin/src/View/Organizations/HtmlView.php",
     "admin/src/View/Match/HtmlView.php",
     "admin/src/View/Matches/HtmlView.php",
+    "admin/src/View/Information/HtmlView.php",
     "admin/tmpl/dashboard/default.php",
     "admin/tmpl/organization/edit.php",
     "admin/tmpl/organizations/default.php",
     "admin/tmpl/match/edit.php",
     "admin/tmpl/matches/default.php",
+    "admin/tmpl/information/default.php",
     "admin/sql/install.0.7.mysql.utf8mb4.sql",
     "admin/sql/updates/mysql/0.7.0.sql",
     "admin/language/en-GB/com_decarodcl.070.ini",
+    "admin/language/en-GB/com_decarodcl.071.ini",
     "admin/language/it-IT/com_decarodcl.070.ini",
+    "admin/language/it-IT/com_decarodcl.071.ini",
     "media/admin.css",
     "media/joomla.asset.json",
 }
@@ -64,6 +69,8 @@ EXPECTED_TIMELINE_FILES = {
     "language/en-GB/mod_dcl_matchtimeline.ini",
     "language/it-IT/mod_dcl_matchtimeline.ini",
 }
+
+UPDATE_SITE_URL = "https://raw.githubusercontent.com/xdecaro/dcl/main/updates/pkg_decarodcl.xml"
 
 
 def fail(message: str) -> None:
@@ -111,6 +118,11 @@ def validate_versions() -> None:
         fail(f"update-server URL does not contain {expected_download}")
 
     component_manifest = ET.parse(ROOT / "component/decarodcl.xml").getroot()
+    submenu_views = {node.get("view") for node in component_manifest.findall("./administration/submenu/menu")}
+    for required_view in ("organizations", "matches", "information"):
+        if required_view not in submenu_views:
+            fail(f"component submenu is missing view {required_view}")
+
     install_sql = {
         (node.text or "").strip()
         for node in component_manifest.findall("./install/sql/file")
@@ -138,6 +150,15 @@ def validate_versions() -> None:
     }
     if shipped != expected_shipped:
         fail(f"package nested ZIP list mismatch: {sorted(shipped)}")
+
+    update_servers = [(node.text or "").strip() for node in package.findall("./updateservers/server")]
+    if UPDATE_SITE_URL not in update_servers:
+        fail("package manifest is missing the Competitions update server")
+
+    package_script = (ROOT / "package/script.php").read_text(encoding="utf-8")
+    for required in (UPDATE_SITE_URL, "#__update_sites", "#__update_sites_extensions"):
+        if required not in package_script:
+            fail(f"package update-site repair is missing {required}")
 
 
 def validate_zip_contents(path: Path, expected: set[str], label: str) -> None:
