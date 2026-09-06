@@ -7,6 +7,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\View\HtmlView as BaseHtmlView;
 use Joomla\CMS\Toolbar\ToolbarHelper;
+use Xdecaro\Component\Decarodcl\Administrator\Helper\UiHelper;
 
 final class HtmlView extends BaseHtmlView
 {
@@ -18,6 +19,7 @@ final class HtmlView extends BaseHtmlView
             throw new \RuntimeException(Text::_('JERROR_ALERTNOAUTHOR'), 403);
         }
 
+        UiHelper::loadAssets();
         $this->counts = $this->getModel()->getCounts();
 
         ToolbarHelper::title(Text::_('COM_DECARODCL_DASHBOARD'), 'home');
