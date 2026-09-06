@@ -26,10 +26,15 @@ final class DisplayController extends BaseController
             throw $e;
         }
 
+        // Joomla Input::getInt() returns null when the key is absent unless a
+        // default is supplied. List/dashboard/information views normally have
+        // no id, so normalize it before calling the typed page-header helper.
+        $id = (int) $this->input->getInt('id', 0);
+
         echo PageHeaderHelper::render(
             $this->input->getCmd('view', $this->default_view),
             $this->input->getCmd('layout', 'default'),
-            $this->input->getInt('id')
+            $id
         );
         echo $content;
 

@@ -8,9 +8,10 @@ use Joomla\CMS\Layout\LayoutHelper;
 
 final class PageHeaderHelper
 {
-    public static function render(string $view, string $layout = 'default', int $id = 0): string
+    public static function render(string $view, string $layout = 'default', ?int $id = null): string
     {
         LanguageHelper::load();
+        $id = max(0, (int) $id);
 
         $lists = [
             'dashboard' => ['COM_DECARODCL_PAGE_COMPETITIONS', 'COM_DECARODCL_DASHBOARD', 'COM_DECARODCL_PAGE_DASHBOARD_DESC'],
