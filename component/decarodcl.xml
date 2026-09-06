@@ -6,7 +6,7 @@
   <copyright>Copyright (C) 2026 Luca De Caro. All rights reserved.</copyright>
   <license>GNU General Public License version 2 or later</license>
   <authorUrl>https://github.com/xdecaro/dcl</authorUrl>
-  <version>0.7.0</version>
+  <version>0.7.1</version>
   <description>COM_DECARODCL_XML_DESCRIPTION</description>
   <targetplatform name="joomla" version="6.*" />
   <namespace path="src">Xdecaro\Component\Decarodcl</namespace>
@@ -30,6 +30,7 @@
       <menu view="players">COM_DECARODCL_PLAYERS</menu>
       <menu view="rosters">COM_DECARODCL_ROSTERS</menu>
       <menu view="matches">COM_DECARODCL_MATCHES</menu>
+      <menu view="information">COM_DECARODCL_INFORMATION</menu>
     </submenu>
     <files folder="admin">
       <filename>access.xml</filename>
@@ -43,9 +44,11 @@
     <languages folder="admin/language">
       <language tag="en-GB">en-GB/com_decarodcl.ini</language>
       <language tag="en-GB">en-GB/com_decarodcl.070.ini</language>
+      <language tag="en-GB">en-GB/com_decarodcl.071.ini</language>
       <language tag="en-GB">en-GB/com_decarodcl.sys.ini</language>
       <language tag="it-IT">it-IT/com_decarodcl.ini</language>
       <language tag="it-IT">it-IT/com_decarodcl.070.ini</language>
+      <language tag="it-IT">it-IT/com_decarodcl.071.ini</language>
       <language tag="it-IT">it-IT/com_decarodcl.sys.ini</language>
     </languages>
   </administration>

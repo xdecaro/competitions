@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.7.1 - 2026-09-06
+
+- Added a dedicated **Information** administrator menu/view for fast access to the installed Competitions version and system details.
+- Added Joomla, PHP and database information plus package/component/repository identifiers.
+- Added native Joomla update status, latest cached update version, update-server URL and last-check information.
+- Added shortcuts to Joomla Extension Updates, Update Sites and GitHub Releases while respecting `com_installer` ACL.
+- Added a defensive package postflight repair for the Competitions update-site record and `#__update_sites_extensions` association.
+- Update discovery remains handled by Joomla's native update system; release installation stays controlled by Joomla rather than using an unsafe custom self-updater.
+- Added the Information submenu entry and kept Organizations and Matches in the component manifest so a normal component upgrade rebuilds the current administrator submenu.
+- Preserved all existing `#__dcl_*` sports data; no destructive database migration is introduced.
+- Bumped component, package, plugin, modules, Web Asset registry and update feed to 0.7.1.
+
 ## 0.7.0 - 2026-09-06
 
 - Added `#__dcl_organizations` and complete administrator CRUD for reusable competition organizations.
