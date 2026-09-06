@@ -16,6 +16,7 @@ MANIFESTS = [
     ROOT / "modules/mod_dcl_matchtimeline/mod_dcl_matchtimeline.xml",
     ROOT / "modules/mod_dcl_countriesfederations/mod_dcl_countriesfederations.xml",
 ]
+
 EXPECTED_COMPONENT_FILES = {
     "decarodcl.xml",
     "admin/forms/tournament.xml",
@@ -24,39 +25,44 @@ EXPECTED_COMPONENT_FILES = {
     "admin/forms/participation.xml",
     "admin/forms/player.xml",
     "admin/forms/roster.xml",
-    "admin/src/Controller/TournamentController.php",
-    "admin/src/Controller/SeasonController.php",
-    "admin/src/Controller/TeamController.php",
-    "admin/src/Controller/ParticipationController.php",
-    "admin/src/Controller/PlayerController.php",
-    "admin/src/Controller/RosterController.php",
-    "admin/src/Model/TournamentsModel.php",
-    "admin/src/Model/SeasonsModel.php",
-    "admin/src/Model/TeamsModel.php",
-    "admin/src/Model/ParticipationsModel.php",
-    "admin/src/Model/PlayersModel.php",
-    "admin/src/Model/RostersModel.php",
-    "admin/src/Table/TournamentTable.php",
-    "admin/src/Table/SeasonTable.php",
-    "admin/src/Table/TeamTable.php",
-    "admin/src/Table/ParticipationTable.php",
-    "admin/src/Table/PlayerTable.php",
-    "admin/src/Table/RosterTable.php",
+    "admin/forms/organization.xml",
+    "admin/forms/match.xml",
+    "admin/src/Controller/OrganizationController.php",
+    "admin/src/Controller/OrganizationsController.php",
+    "admin/src/Controller/MatchController.php",
+    "admin/src/Controller/MatchesController.php",
+    "admin/src/Helper/LanguageHelper.php",
+    "admin/src/Helper/OrganizationAssignmentHelper.php",
+    "admin/src/Model/OrganizationModel.php",
+    "admin/src/Model/OrganizationsModel.php",
+    "admin/src/Model/MatchModel.php",
+    "admin/src/Model/MatchesModel.php",
+    "admin/src/Table/OrganizationTable.php",
+    "admin/src/Table/MatchTable.php",
+    "admin/src/View/Organization/HtmlView.php",
+    "admin/src/View/Organizations/HtmlView.php",
+    "admin/src/View/Match/HtmlView.php",
+    "admin/src/View/Matches/HtmlView.php",
     "admin/tmpl/dashboard/default.php",
-    "admin/tmpl/tournaments/default.php",
-    "admin/tmpl/tournament/edit.php",
-    "admin/tmpl/seasons/default.php",
-    "admin/tmpl/season/edit.php",
-    "admin/tmpl/teams/default.php",
-    "admin/tmpl/team/edit.php",
-    "admin/tmpl/participations/default.php",
-    "admin/tmpl/participation/edit.php",
-    "admin/tmpl/players/default.php",
-    "admin/tmpl/player/edit.php",
-    "admin/tmpl/rosters/default.php",
-    "admin/tmpl/roster/edit.php",
+    "admin/tmpl/organization/edit.php",
+    "admin/tmpl/organizations/default.php",
+    "admin/tmpl/match/edit.php",
+    "admin/tmpl/matches/default.php",
+    "admin/sql/install.0.7.mysql.utf8mb4.sql",
+    "admin/sql/updates/mysql/0.7.0.sql",
+    "admin/language/en-GB/com_decarodcl.070.ini",
+    "admin/language/it-IT/com_decarodcl.070.ini",
     "media/admin.css",
     "media/joomla.asset.json",
+}
+
+EXPECTED_TIMELINE_FILES = {
+    "mod_dcl_matchtimeline.xml",
+    "src/Dispatcher/Dispatcher.php",
+    "tmpl/default.php",
+    "media/css/site.css",
+    "language/en-GB/mod_dcl_matchtimeline.ini",
+    "language/it-IT/mod_dcl_matchtimeline.ini",
 }
 
 
@@ -104,6 +110,24 @@ def validate_versions() -> None:
     if expected_download not in download_url:
         fail(f"update-server URL does not contain {expected_download}")
 
+    component_manifest = ET.parse(ROOT / "component/decarodcl.xml").getroot()
+    install_sql = {
+        (node.text or "").strip()
+        for node in component_manifest.findall("./install/sql/file")
+        if node.text
+    }
+    expected_install_sql = {
+        "sql/install.mysql.utf8mb4.sql",
+        "sql/install.0.7.mysql.utf8mb4.sql",
+    }
+    if install_sql != expected_install_sql:
+        fail(f"component install SQL list mismatch: {sorted(install_sql)}")
+
+    migration = (ROOT / "component/admin/sql/updates/mysql/0.7.0.sql").read_text(encoding="utf-8")
+    for required in ("#__dcl_organizations", "#__dcl_tournament_organizations", "#__dcl_season_organizations", "#__dcl_matches", "match_id"):
+        if required not in migration:
+            fail(f"0.7.0 migration is missing {required}")
+
     package = ET.parse(ROOT / "package/pkg_decarodcl.xml").getroot()
     shipped = {node.text.strip() for node in package.findall("./files/file") if node.text}
     expected_shipped = {
@@ -116,24 +140,33 @@ def validate_versions() -> None:
         fail(f"package nested ZIP list mismatch: {sorted(shipped)}")
 
 
+def validate_zip_contents(path: Path, expected: set[str], label: str) -> None:
+    if not path.is_file():
+        fail(f"missing {path.relative_to(ROOT)}")
+
+    with zipfile.ZipFile(path) as archive:
+        names = set(archive.namelist())
+
+    missing = sorted(expected - names)
+    if missing:
+        fail(f"{label} ZIP is missing required files: {', '.join(missing)}")
+
+
 def validate_dist() -> None:
     dist = ROOT / "dist"
     component_zip = dist / f"com_decarodcl_{VERSION}.zip"
+    timeline_zip = dist / f"mod_dcl_matchtimeline_{VERSION}.zip"
     package_zip = dist / f"pkg_decarodcl_{VERSION}.zip"
 
-    if not component_zip.is_file():
-        fail(f"missing {component_zip.relative_to(ROOT)}")
+    validate_zip_contents(component_zip, EXPECTED_COMPONENT_FILES, "component")
+    validate_zip_contents(timeline_zip, EXPECTED_TIMELINE_FILES, "timeline module")
+
     if not package_zip.is_file():
         fail(f"missing {package_zip.relative_to(ROOT)}")
 
-    with zipfile.ZipFile(component_zip) as archive:
-        names = set(archive.namelist())
-    missing = sorted(EXPECTED_COMPONENT_FILES - names)
-    if missing:
-        fail(f"component ZIP is missing required files: {', '.join(missing)}")
-
     with zipfile.ZipFile(package_zip) as archive:
         package_names = set(archive.namelist())
+
     expected_nested = {
         "pkg_decarodcl.xml",
         "script.php",
@@ -151,9 +184,12 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--dist", action="store_true")
     args = parser.parse_args()
+
     validate_versions()
+
     if args.dist:
         validate_dist()
+
     print(f"Competitions {VERSION} release validation OK")
 
 
