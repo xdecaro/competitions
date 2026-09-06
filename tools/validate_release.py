@@ -26,37 +26,51 @@ EXPECTED_COMPONENT_FILES = {
     "admin/forms/player.xml",
     "admin/forms/roster.xml",
     "admin/forms/organization.xml",
+    "admin/forms/zone.xml",
     "admin/forms/match.xml",
     "admin/src/Controller/OrganizationController.php",
     "admin/src/Controller/OrganizationsController.php",
+    "admin/src/Controller/ZoneController.php",
+    "admin/src/Controller/ZonesController.php",
     "admin/src/Controller/MatchController.php",
     "admin/src/Controller/MatchesController.php",
     "admin/src/Helper/LanguageHelper.php",
     "admin/src/Helper/OrganizationAssignmentHelper.php",
     "admin/src/Model/OrganizationModel.php",
     "admin/src/Model/OrganizationsModel.php",
+    "admin/src/Model/ZoneModel.php",
+    "admin/src/Model/ZonesModel.php",
     "admin/src/Model/MatchModel.php",
     "admin/src/Model/MatchesModel.php",
     "admin/src/Model/InformationModel.php",
     "admin/src/Table/OrganizationTable.php",
+    "admin/src/Table/ZoneTable.php",
     "admin/src/Table/MatchTable.php",
     "admin/src/View/Organization/HtmlView.php",
     "admin/src/View/Organizations/HtmlView.php",
+    "admin/src/View/Zone/HtmlView.php",
+    "admin/src/View/Zones/HtmlView.php",
     "admin/src/View/Match/HtmlView.php",
     "admin/src/View/Matches/HtmlView.php",
     "admin/src/View/Information/HtmlView.php",
     "admin/tmpl/dashboard/default.php",
     "admin/tmpl/organization/edit.php",
     "admin/tmpl/organizations/default.php",
+    "admin/tmpl/zone/edit.php",
+    "admin/tmpl/zones/default.php",
     "admin/tmpl/match/edit.php",
     "admin/tmpl/matches/default.php",
     "admin/tmpl/information/default.php",
     "admin/sql/install.0.7.mysql.utf8mb4.sql",
+    "admin/sql/install.0.8.mysql.utf8mb4.sql",
     "admin/sql/updates/mysql/0.7.0.sql",
+    "admin/sql/updates/mysql/0.8.0.sql",
     "admin/language/en-GB/com_decarodcl.070.ini",
     "admin/language/en-GB/com_decarodcl.071.ini",
+    "admin/language/en-GB/com_decarodcl.080.ini",
     "admin/language/it-IT/com_decarodcl.070.ini",
     "admin/language/it-IT/com_decarodcl.071.ini",
+    "admin/language/it-IT/com_decarodcl.080.ini",
     "media/admin.css",
     "media/joomla.asset.json",
 }
@@ -119,7 +133,7 @@ def validate_versions() -> None:
 
     component_manifest = ET.parse(ROOT / "component/decarodcl.xml").getroot()
     submenu_views = {node.get("view") for node in component_manifest.findall("./administration/submenu/menu")}
-    for required_view in ("organizations", "matches", "information"):
+    for required_view in ("organizations", "zones", "matches", "information"):
         if required_view not in submenu_views:
             fail(f"component submenu is missing view {required_view}")
 
@@ -131,14 +145,29 @@ def validate_versions() -> None:
     expected_install_sql = {
         "sql/install.mysql.utf8mb4.sql",
         "sql/install.0.7.mysql.utf8mb4.sql",
+        "sql/install.0.8.mysql.utf8mb4.sql",
     }
     if install_sql != expected_install_sql:
         fail(f"component install SQL list mismatch: {sorted(install_sql)}")
 
-    migration = (ROOT / "component/admin/sql/updates/mysql/0.7.0.sql").read_text(encoding="utf-8")
+    migration_070 = (ROOT / "component/admin/sql/updates/mysql/0.7.0.sql").read_text(encoding="utf-8")
     for required in ("#__dcl_organizations", "#__dcl_tournament_organizations", "#__dcl_season_organizations", "#__dcl_matches", "match_id"):
-        if required not in migration:
+        if required not in migration_070:
             fail(f"0.7.0 migration is missing {required}")
+
+    migration_080 = (ROOT / "component/admin/sql/updates/mysql/0.8.0.sql").read_text(encoding="utf-8")
+    for required in (
+        "#__dcl_zones",
+        "#__dcl_zone_countries",
+        "African zone",
+        "Asian zone",
+        "European zone",
+        "North, Central American and Caribbean zone",
+        "Oceania zone",
+        "South American zone",
+    ):
+        if required not in migration_080:
+            fail(f"0.8.0 migration is missing {required}")
 
     package = ET.parse(ROOT / "package/pkg_decarodcl.xml").getroot()
     shipped = {node.text.strip() for node in package.findall("./files/file") if node.text}

@@ -1,6 +1,6 @@
 # Competitions
 
-**Competitions** is a neutral Joomla 6 management package for tournaments, seasons, organizations, federations, teams, players, participations, rosters, matches, match events, standings, rankings and coefficients.
+**Competitions** is a neutral Joomla 6 management package for tournaments, seasons, organizations, zones, federations, teams, players, participations, rosters, matches, match events, standings, rankings and coefficients.
 
 The repository keeps the historical/internal `dcl` technical identifiers for upgrade compatibility. They are implementation details and are no longer used as the visible product name.
 
@@ -17,15 +17,17 @@ The repository keeps the historical/internal `dcl` technical identifiers for upg
 
 ## Current version
 
-**0.7.1**
+**0.8.0**
 
 ## Architecture
 
 Competitions separates authentication, sport data and presentation:
 
 - Joomla users are used for team-manager authentication and permissions only.
-- Organizations, teams, players, participations, rosters, matches, events, rankings and coefficients use dedicated `#__dcl_*` tables.
+- Organizations, zones, teams, players, participations, rosters, matches, events, rankings and coefficients use dedicated `#__dcl_*` tables.
 - `#__dcl_organizations` stores reusable organizations such as competition organizers, governing bodies, local organizers and partners.
+- `#__dcl_zones` stores reusable sporting zones and may optionally be scoped to an Organization.
+- `#__dcl_zone_countries` links Countries or sporting territories to Zones without forcing one global Zone per Country.
 - Tournament and Season organization roles are stored in dedicated relation tables instead of duplicated text fields.
 - `#__dcl_matches` is the authoritative source for match date, teams, status and scores.
 - Joomla articles are optional editorial links only; `article_id` is not the sports-data source of truth.
@@ -33,9 +35,26 @@ Competitions separates authentication, sport data and presentation:
 - `com_decarodcl` is the central administrator component.
 - Frontend modules can be placed directly in YOOtheme layouts without moving authoritative sports data into Joomla articles.
 
+## Zones
+
+Version 0.8.0 adds a dedicated **Zones** administrator area between Organizations and Countries.
+
+A Zone can be global or assigned to a specific Organization. Countries are linked through a many-to-many relation, so a Country can belong to different sporting Zones when different Organizations use different classifications.
+
+The project-provided initial sporting classification is installed as global Zones:
+
+- African zone: Cameroon, Nigeria, South Africa
+- Asian zone: Australia, China PR, Japan, Korea Republic, Thailand
+- European zone: England, France, Germany, Italy, Netherlands, Norway, Scotland, Spain, Sweden
+- North, Central American and Caribbean zone: Canada, Jamaica, USA
+- Oceania zone: New Zealand
+- South American zone: Argentina, Brazil, Chile
+
+Existing Country records are preserved. Missing Countries from the supplied classification are inserted with stable sporting codes and then linked to the appropriate Zone.
+
 ## Administrator information and updates
 
-Version 0.7.1 adds an **Information** administrator view with the installed package version, Joomla/PHP/database information, native Joomla update status, configured update-server URL and shortcuts to Joomla Updates, Update Sites and GitHub Releases.
+Version 0.7.1 added an **Information** administrator view with the installed package version, Joomla/PHP/database information, native Joomla update status, configured update-server URL and shortcuts to Joomla Updates, Update Sites and GitHub Releases.
 
 The package registers `https://raw.githubusercontent.com/xdecaro/dcl/main/updates/pkg_decarodcl.xml` as its Joomla update server. The package installer also repairs the update-site association on install/update if it is missing or disabled. Joomla automatically checks extension update availability when an administrator signs in; installing an available release remains managed through Joomla's native extension updater.
 
@@ -66,4 +85,4 @@ Organizations and native Match management:
 
 ## Data preservation
 
-Updates and uninstall routines do not delete `#__dcl_*` data tables automatically. The 0.7.0 migration adds new structures and preserves the previous `article_id` event relation. Version 0.7.1 adds only administrator information/update integration and does not introduce a destructive database migration. Destructive data removal must be an explicit administrator action.
+Updates and uninstall routines do not delete `#__dcl_*` data tables automatically. The 0.7.0 migration adds Organizations and native Matches while preserving the previous `article_id` event relation. Version 0.8.0 adds Zones and Country mappings using additive tables and `INSERT IGNORE`, so existing Country records and sports data are not overwritten or deleted. Destructive data removal must be an explicit administrator action.
