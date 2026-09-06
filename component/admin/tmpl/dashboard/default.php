@@ -11,7 +11,8 @@ $cards = [
     ['key' => 'seasons', 'label' => 'COM_DECARODCL_SEASONS', 'link' => 'index.php?option=com_decarodcl&view=seasons'],
     ['key' => 'teams', 'label' => 'COM_DECARODCL_TEAMS', 'link' => 'index.php?option=com_decarodcl&view=teams'],
     ['key' => 'participations', 'label' => 'COM_DECARODCL_PARTICIPATIONS', 'link' => 'index.php?option=com_decarodcl&view=participations'],
-    ['key' => 'players', 'label' => 'COM_DECARODCL_PLAYERS', 'link' => null],
+    ['key' => 'players', 'label' => 'COM_DECARODCL_PLAYERS', 'link' => 'index.php?option=com_decarodcl&view=players'],
+    ['key' => 'rosters', 'label' => 'COM_DECARODCL_ROSTERS', 'link' => 'index.php?option=com_decarodcl&view=rosters'],
     ['key' => 'events', 'label' => 'COM_DECARODCL_MATCH_EVENTS', 'link' => null],
 ];
 ?>
