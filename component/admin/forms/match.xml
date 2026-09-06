@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+  <fieldset name="details" label="COM_DECARODCL_MATCH_DETAILS">
+    <field name="id" type="hidden" />
+    <field
+      name="season_id"
+      type="sql"
+      label="COM_DECARODCL_FIELD_SEASON"
+      required="true"
+      filter="uint"
+      query="SELECT s.id AS value, CONCAT(t.name, ' — ', s.name, IF(s.season_year IS NULL, '', CONCAT(' (', s.season_year, ')'))) AS text FROM #__dcl_seasons AS s INNER JOIN #__dcl_tournaments AS t ON t.id = s.tournament_id WHERE s.state &lt;&gt; -2 AND t.state &lt;&gt; -2 ORDER BY s.season_year DESC, t.name ASC, s.name ASC"
+      key_field="value"
+      value_field="text"
+    />
+    <field
+      name="home_team_id"
+      type="sql"
+      label="COM_DECARODCL_FIELD_HOME_TEAM"
+      description="COM_DECARODCL_MATCH_TEAMS_DESC"
+      required="true"
+      filter="uint"
+      query="SELECT tm.id AS value, CONCAT(tm.name, IF(tm.short_name IS NULL OR tm.short_name = '', '', CONCAT(' (', tm.short_name, ')'))) AS text FROM #__dcl_teams AS tm WHERE tm.state &lt;&gt; -2 AND tm.approval_status = 'approved' ORDER BY tm.name ASC"
+      key_field="value"
+      value_field="text"
+    />
+    <field
+      name="away_team_id"
+      type="sql"
+      label="COM_DECARODCL_FIELD_AWAY_TEAM"
+      description="COM_DECARODCL_MATCH_TEAMS_DESC"
+      required="true"
+      filter="uint"
+      query="SELECT tm.id AS value, CONCAT(tm.name, IF(tm.short_name IS NULL OR tm.short_name = '', '', CONCAT(' (', tm.short_name, ')'))) AS text FROM #__dcl_teams AS tm WHERE tm.state &lt;&gt; -2 AND tm.approval_status = 'approved' ORDER BY tm.name ASC"
+      key_field="value"
+      value_field="text"
+    />
+    <field
+      name="venue_id"
+      type="sql"
+      label="COM_DECARODCL_FIELD_VENUE"
+      filter="uint"
+      header="JNONE"
+      query="SELECT id AS value, CONCAT(name, IF(city IS NULL OR city = '', '', CONCAT(' — ', city))) AS text FROM #__dcl_venues WHERE state &lt;&gt; -2 ORDER BY name ASC"
+      key_field="value"
+      value_field="text"
+    />
+    <field name="match_date" type="calendar" label="COM_DECARODCL_FIELD_MATCH_DATE" format="%Y-%m-%d" showtime="false" todaybutton="true" filter="raw" />
+    <field name="kickoff_time" type="text" label="COM_DECARODCL_FIELD_KICKOFF_TIME" hint="HH:MM" maxlength="8" filter="raw" />
+    <field name="stage" type="text" label="COM_DECARODCL_FIELD_STAGE" maxlength="100" />
+    <field name="group_name" type="text" label="COM_DECARODCL_FIELD_GROUP" maxlength="100" />
+    <field name="round_name" type="text" label="COM_DECARODCL_FIELD_ROUND" maxlength="100" />
+    <field name="matchday" type="number" label="COM_DECARODCL_FIELD_MATCHDAY" min="0" max="65535" step="1" filter="raw" />
+    <field name="status" type="list" label="COM_DECARODCL_FIELD_MATCH_STATUS" default="scheduled">
+      <option value="scheduled">COM_DECARODCL_MATCH_SCHEDULED</option>
+      <option value="live">COM_DECARODCL_MATCH_LIVE</option>
+      <option value="finished">COM_DECARODCL_MATCH_FINISHED</option>
+      <option value="postponed">COM_DECARODCL_MATCH_POSTPONED</option>
+      <option value="cancelled">COM_DECARODCL_MATCH_CANCELLED</option>
+    </field>
+  </fieldset>
+
+  <fieldset name="score" label="COM_DECARODCL_MATCH_SCORE_DETAILS">
+    <field name="home_score" type="number" label="COM_DECARODCL_FIELD_HOME_SCORE" min="0" max="65535" step="1" filter="raw" />
+    <field name="away_score" type="number" label="COM_DECARODCL_FIELD_AWAY_SCORE" min="0" max="65535" step="1" filter="raw" />
+    <field name="home_score_extra" type="number" label="COM_DECARODCL_FIELD_HOME_SCORE_EXTRA" min="0" max="65535" step="1" filter="raw" />
+    <field name="away_score_extra" type="number" label="COM_DECARODCL_FIELD_AWAY_SCORE_EXTRA" min="0" max="65535" step="1" filter="raw" />
+    <field name="home_penalties" type="number" label="COM_DECARODCL_FIELD_HOME_PENALTIES" min="0" max="65535" step="1" filter="raw" />
+    <field name="away_penalties" type="number" label="COM_DECARODCL_FIELD_AWAY_PENALTIES" min="0" max="65535" step="1" filter="raw" />
+  </fieldset>
+
+  <fieldset name="additional" label="COM_DECARODCL_MATCH_ADDITIONAL_DETAILS">
+    <field name="attendance" type="number" label="COM_DECARODCL_FIELD_ATTENDANCE" min="0" step="1" filter="raw" />
+    <field name="article_id" type="number" label="COM_DECARODCL_FIELD_ARTICLE_ID" description="COM_DECARODCL_FIELD_ARTICLE_ID_DESC" min="0" step="1" default="0" filter="uint" />
+    <field name="notes" type="textarea" label="COM_DECARODCL_FIELD_NOTES" rows="5" filter="safehtml" />
+    <field name="state" type="list" label="JSTATUS" default="1">
+      <option value="1">JPUBLISHED</option>
+      <option value="0">JUNPUBLISHED</option>
+    </field>
+    <field name="ordering" type="number" label="JFIELD_ORDERING_LABEL" default="0" min="0" />
+  </fieldset>
+</form>

@@ -9,12 +9,14 @@ final class UiHelper
 {
     public static function loadAssets(): void
     {
+        LanguageHelper::load();
+
         $document = Factory::getApplication()->getDocument();
         $wa = $document->getWebAssetManager();
         $assetName = 'com_decarodcl.admin.runtime';
 
         if (!$wa->assetExists('style', $assetName)) {
-            $wa->registerStyle($assetName, 'com_decarodcl/admin.css', ['version' => '0.6.0']);
+            $wa->registerStyle($assetName, 'com_decarodcl/admin.css', ['version' => '0.7.0']);
         }
 
         $wa->useStyle($assetName);

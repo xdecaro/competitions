@@ -5,6 +5,7 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Router\Route;
 
 $cards = [
+    ['key' => 'organizations', 'label' => 'COM_DECARODCL_ORGANIZATIONS', 'link' => 'index.php?option=com_decarodcl&view=organizations'],
     ['key' => 'countries', 'label' => 'COM_DECARODCL_COUNTRIES', 'link' => 'index.php?option=com_decarodcl&view=countries'],
     ['key' => 'federations', 'label' => 'COM_DECARODCL_FEDERATIONS', 'link' => 'index.php?option=com_decarodcl&view=federations'],
     ['key' => 'tournaments', 'label' => 'COM_DECARODCL_TOURNAMENTS', 'link' => 'index.php?option=com_decarodcl&view=tournaments'],
@@ -13,6 +14,7 @@ $cards = [
     ['key' => 'participations', 'label' => 'COM_DECARODCL_PARTICIPATIONS', 'link' => 'index.php?option=com_decarodcl&view=participations'],
     ['key' => 'players', 'label' => 'COM_DECARODCL_PLAYERS', 'link' => 'index.php?option=com_decarodcl&view=players'],
     ['key' => 'rosters', 'label' => 'COM_DECARODCL_ROSTERS', 'link' => 'index.php?option=com_decarodcl&view=rosters'],
+    ['key' => 'matches', 'label' => 'COM_DECARODCL_MATCHES', 'link' => 'index.php?option=com_decarodcl&view=matches'],
     ['key' => 'events', 'label' => 'COM_DECARODCL_MATCH_EVENTS', 'link' => null],
 ];
 ?>
@@ -31,6 +33,7 @@ $cards = [
                 . Text::_($card['link'] ? 'COM_DECARODCL_MANAGE' : 'COM_DECARODCL_COMING_SOON')
                 . '</span>';
             ?>
+
             <?php if ($card['link']) : ?>
                 <a class="dcl-dashboard-card" href="<?= Route::_($card['link']); ?>"><?= $content; ?></a>
             <?php else : ?>
@@ -39,5 +42,5 @@ $cards = [
         <?php endforeach; ?>
     </div>
 
-    <div class="alert alert-info mt-4"><?= Text::_('COM_DECARODCL_DASHBOARD_PHASE_NOTE'); ?></div>
+    <div class="alert alert-info mt-4"><?= Text::_('COM_DECARODCL_DASHBOARD_PHASE_NOTE_070'); ?></div>
 </div>

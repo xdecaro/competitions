@@ -5,16 +5,14 @@
     <field name="name" type="text" label="COM_DECARODCL_FIELD_NAME" required="true" maxlength="190" />
     <field name="code" type="text" label="COM_DECARODCL_FIELD_CODE" description="COM_DECARODCL_TOURNAMENT_CODE_DESC" required="true" maxlength="50" filter="cmd" />
     <field name="discipline" type="text" label="COM_DECARODCL_FIELD_DISCIPLINE" description="COM_DECARODCL_FIELD_DISCIPLINE_DESC" required="true" maxlength="50" />
-    <field name="gender" type="list" label="COM_DECARODCL_FIELD_GENDER" default="open">
-      <option value="open">COM_DECARODCL_GENDER_OPEN</option>
-      <option value="men">COM_DECARODCL_GENDER_MEN</option>
-      <option value="women">COM_DECARODCL_GENDER_WOMEN</option>
-      <option value="mixed">COM_DECARODCL_GENDER_MIXED</option>
-    </field>
-    <field name="state" type="list" label="JSTATUS" default="1">
-      <option value="1">JPUBLISHED</option>
-      <option value="0">JUNPUBLISHED</option>
-    </field>
+    <field name="gender" type="list" label="COM_DECARODCL_FIELD_GENDER" default="open"><option value="open">COM_DECARODCL_GENDER_OPEN</option><option value="men">COM_DECARODCL_GENDER_MEN</option><option value="women">COM_DECARODCL_GENDER_WOMEN</option><option value="mixed">COM_DECARODCL_GENDER_MIXED</option></field>
+    <field name="state" type="list" label="JSTATUS" default="1"><option value="1">JPUBLISHED</option><option value="0">JUNPUBLISHED</option></field>
     <field name="ordering" type="number" label="JFIELD_ORDERING_LABEL" default="0" min="0" />
+  </fieldset>
+  <fieldset name="organizations" label="COM_DECARODCL_ORGANIZATION_ASSIGNMENTS" description="COM_DECARODCL_ORGANIZATION_ASSIGNMENTS_DESC">
+    <field name="organizer_ids" type="sql" label="COM_DECARODCL_FIELD_ORGANIZER" multiple="true" size="6" filter="array" query="SELECT id AS value, CONCAT(name, IF(short_name IS NULL OR short_name = '', '', CONCAT(' (', short_name, ')'))) AS text FROM #__dcl_organizations WHERE state &lt;&gt; -2 ORDER BY ordering ASC, name ASC" key_field="value" value_field="text" />
+    <field name="governing_body_ids" type="sql" label="COM_DECARODCL_FIELD_GOVERNING_BODY" multiple="true" size="6" filter="array" query="SELECT id AS value, CONCAT(name, IF(short_name IS NULL OR short_name = '', '', CONCAT(' (', short_name, ')'))) AS text FROM #__dcl_organizations WHERE state &lt;&gt; -2 ORDER BY ordering ASC, name ASC" key_field="value" value_field="text" />
+    <field name="co_organizer_ids" type="sql" label="COM_DECARODCL_FIELD_CO_ORGANIZER" multiple="true" size="6" filter="array" query="SELECT id AS value, CONCAT(name, IF(short_name IS NULL OR short_name = '', '', CONCAT(' (', short_name, ')'))) AS text FROM #__dcl_organizations WHERE state &lt;&gt; -2 ORDER BY ordering ASC, name ASC" key_field="value" value_field="text" />
+    <field name="partner_ids" type="sql" label="COM_DECARODCL_FIELD_PARTNER" multiple="true" size="6" filter="array" query="SELECT id AS value, CONCAT(name, IF(short_name IS NULL OR short_name = '', '', CONCAT(' (', short_name, ')'))) AS text FROM #__dcl_organizations WHERE state &lt;&gt; -2 ORDER BY ordering ASC, name ASC" key_field="value" value_field="text" />
   </fieldset>
 </form>

@@ -10,6 +10,7 @@ final class DashboardModel extends BaseDatabaseModel
     public function getCounts(): array
     {
         $tables = [
+            'organizations' => '#__dcl_organizations',
             'countries' => '#__dcl_countries',
             'federations' => '#__dcl_federations',
             'tournaments' => '#__dcl_tournaments',
@@ -18,6 +19,7 @@ final class DashboardModel extends BaseDatabaseModel
             'participations' => '#__dcl_participations',
             'players' => '#__dcl_players',
             'rosters' => '#__dcl_rosters',
+            'matches' => '#__dcl_matches',
             'events' => '#__dcl_match_events',
         ];
 
@@ -29,6 +31,7 @@ final class DashboardModel extends BaseDatabaseModel
                 ->select('COUNT(*)')
                 ->from($db->quoteName($table))
                 ->where($db->quoteName('state') . ' <> -2');
+
             $counts[$key] = (int) $db->setQuery($query)->loadResult();
         }
 

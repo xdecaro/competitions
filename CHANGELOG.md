@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.7.0 - 2026-09-06
+
+- Added `#__dcl_organizations` and complete administrator CRUD for reusable competition organizations.
+- Added Tournament → Organization role relations for organizer, governing body, co-organizer and partner.
+- Added Season → Organization role relations, including local organizer.
+- Added native `#__dcl_matches` as the authoritative sports-data source for Matches.
+- Added complete Match administrator CRUD with Season, Home/Away Team, optional Venue, date/time, stage, group, round, matchday, status, scores, attendance and notes.
+- Match creation validates that both Teams have an approved Participation in the selected Season.
+- Added server-side score-pair validation, numeric bounds and winner derivation for finished Matches.
+- Kept Joomla `article_id` as an optional editorial compatibility link and reject reuse of the same article by multiple Matches.
+- Added `match_id` to `#__dcl_match_events` while preserving legacy `article_id` values and migrating events where an article-linked Match exists.
+- Updated Match Timeline to prefer `match_id` while retaining article fallback and accessibility labels.
+- Added fresh-install and update SQL for Organizations, organization relations, Matches and event migration; no existing sports data is deleted.
+- Added Organizations and Matches to the administrator submenu and Dashboard.
+- Preserved the Joomla 6 administrator asset-loading workaround verified in 0.3.5.
+- Bumped component, package, plugin, modules, Web Asset registry and update feed to 0.7.0.
+
 ## 0.6.0 - 2026-09-06
 
 - Added complete administrator CRUD for Players using the existing `#__dcl_players` table.
@@ -19,43 +36,21 @@
 
 ## 0.5.0 - 2026-09-06
 
-- Added complete administrator CRUD for Teams using the existing `#__dcl_teams` table.
-- Added Federation and Country context to Team lists without duplicating country data.
-- Added Joomla responsible-user assignment while keeping sports data separate from Joomla user profiles; changing that ownership link is protected by `core.edit.state`.
-- Added server-side validation for Team name, Federation, manager account, alias, email, URL and approval state.
-- Synchronizes the legacy three-character `country_code` field from Federation → Country when a compatible ISO/code value exists, avoiding truncation of longer neutral country codes.
-- Added Team approval workflow: pending, approved and rejected.
-- Approval changes require `core.edit.state` server-side; approval and publication state fields are also protected against direct-form tampering when that permission is missing.
-- Added complete administrator CRUD for Participations using the existing `#__dcl_participations` table.
-- Added Team → Season participation workflow: draft, submitted, approved and rejected.
-- Added automatic submitted/reviewed timestamps and reviewer tracking.
-- Prevented approval of a Participation until its Team is approved.
-- Prevented duplicate Team + Season participations.
-- Added search, filters, sorting, pagination, publish/unpublish, trash and responsive mobile layouts.
-- Added Teams and Participations to the Competitions submenu and Dashboard.
-- Preserved the Joomla 6 administrator asset-loading workaround verified in 0.3.5.
-- No destructive database migration; all existing `#__dcl_*` data is preserved.
-- Bumped component, package, plugin, modules, Web Asset registry and update feed to 0.5.0.
+- Added complete administrator CRUD for Teams and Participations.
+- Teams are linked to Federations and derive Country context from Federation → Country.
+- Added responsible Joomla user assignment while keeping authentication separate from sports data.
+- Added Team approval and Participation review workflows with server-side ACL protection.
+- Prevented approval of a Participation until its Team is approved and prevented duplicate Team + Season participation records.
+- Added search, filters, sorting, pagination, state actions and responsive layouts.
 
 ## 0.4.0 - 2026-09-06
 
-- Added complete administrator CRUD for Tournaments using the existing `#__dcl_tournaments` table.
-- Added complete administrator CRUD for Seasons using the existing `#__dcl_seasons` table.
-- Added Tournament → Seasons relationship views and season counts.
-- Added host-country selection from the existing Countries registry without introducing duplicate country records.
-- Added search, filters, sorting, pagination, state actions and responsive list layouts.
-- Added server-side validation for names, unique tournament codes, disciplines, categories, tournament references, season years, host countries and date ranges.
-- Added Tournaments and Seasons to the Competitions submenu and Dashboard.
-- Dashboard counters now exclude trashed records.
-- Improved responsive administrator CSS while preserving light/dark compatibility and the proven Joomla 6 asset-loading workaround.
-- No destructive database migration; all existing `#__dcl_*` data is preserved.
-- Bumped component, package, plugin, modules, Web Asset registry and update feed to 0.4.0.
+- Added complete administrator CRUD for Tournaments and Seasons.
+- Added Tournament → Seasons relations, host-country selection, search, filters, sorting and responsive layouts.
+- Added server-side validation for tournament codes, disciplines, categories, season years, host countries and date ranges.
 
 ## 0.3.5 - 2026-09-06
 
-- Confirmed with browser-console diagnostics that the stylesheet file existed and returned HTTP 200, while Joomla did not add any `com_decarodcl` stylesheet to the page.
-- Added a canonical root media stylesheet at `media/com_decarodcl/admin.css`.
-- Changed the Web Asset URI from `com_decarodcl/css/admin.css` to `com_decarodcl/admin.css`, matching the proven asset layout used by the other xdecaro components.
-- Added `admin.css` explicitly to the component media manifest and retained the legacy `css/` directory for upgrade compatibility.
-- Reworked `UiHelper` to register and use a dedicated runtime style asset instead of relying on automatic extension-registry discovery.
+- Confirmed through browser-console diagnostics that the administrator stylesheet existed but Joomla did not inject it.
+- Added canonical `media/com_decarodcl/admin.css` and a runtime Web Asset registration fallback.
 - Preserved all technical identifiers and existing `#__dcl_*` data.
