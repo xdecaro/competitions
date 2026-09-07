@@ -23,7 +23,7 @@
   <config>
     <fields name="params">
       <fieldset name="basic">
-        <field name="show_inactive" type="radio" label="MOD_DCL_COUNTRIESFEDERATIONS_FIELD_SHOW_INACTIVE_LABEL" default="1" layout="joomla.form.field.radio.switcher" filter="integer"><option value="0">JNO</option><option value="1">JYES</option></field>
+        <field name="show_inactive" type="radio" label="MOD_DCL_COUNTRIESFEDERATIONS_FIELD_SHOW_INACTIVE_LABEL" default="0" layout="joomla.form.field.radio.switcher" filter="integer"><option value="0">JNO</option><option value="1">JYES</option></field>
         <field name="show_empty_countries" type="radio" label="MOD_DCL_COUNTRIESFEDERATIONS_FIELD_SHOW_EMPTY_LABEL" default="1" layout="joomla.form.field.radio.switcher" filter="integer"><option value="0">JNO</option><option value="1">JYES</option></field>
         <field name="show_search" type="radio" label="MOD_DCL_COUNTRIESFEDERATIONS_FIELD_SHOW_SEARCH_LABEL" default="1" layout="joomla.form.field.radio.switcher" filter="integer"><option value="0">JNO</option><option value="1">JYES</option></field>
       </fieldset>
