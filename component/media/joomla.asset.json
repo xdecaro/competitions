@@ -1,7 +1,7 @@
 {
   "$schema": "https://developer.joomla.org/schemas/json-schema/web_assets.json",
   "name": "com_decarodcl",
-  "version": "0.10.0",
+  "version": "0.10.1",
   "description": "Competitions administrator assets",
   "license": "GPL-2.0-or-later",
   "assets": [
@@ -9,19 +9,35 @@
       "name": "com_decarodcl.admin",
       "type": "style",
       "uri": "com_decarodcl/admin.css",
-      "version": "0.10.0"
+      "version": "0.10.1"
+    },
+    {
+      "name": "com_decarodcl.filterbar-style",
+      "type": "style",
+      "uri": "com_decarodcl/css/filterbar.css",
+      "version": "0.10.1",
+      "dependencies": ["com_decarodcl.admin"]
+    },
+    {
+      "name": "com_decarodcl.filterbar",
+      "type": "script",
+      "uri": "com_decarodcl/js/filterbar.js",
+      "version": "0.10.1",
+      "attributes": {
+        "defer": true
+      }
     },
     {
       "name": "com_decarodcl.live-sync-style",
       "type": "style",
       "uri": "com_decarodcl/live-sync.css",
-      "version": "0.10.0"
+      "version": "0.10.1"
     },
     {
       "name": "com_decarodcl.live-sync",
       "type": "script",
       "uri": "com_decarodcl/live-sync.js",
-      "version": "0.10.0",
+      "version": "0.10.1",
       "attributes": {
         "defer": true
       }
@@ -30,7 +46,7 @@
       "name": "com_decarodcl.scope",
       "type": "script",
       "uri": "com_decarodcl/scope.js",
-      "version": "0.10.0",
+      "version": "0.10.1",
       "attributes": {
         "defer": true
       }

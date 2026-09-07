@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.10.1 - 2026-09-07
+
+- Redesigned administrator list search as one compact search-first toolbar across Competitions instead of a row of large native fields and buttons.
+- Search now submits automatically after a short debounce; pressing Enter submits immediately and Escape clears the current search.
+- Moved secondary filters behind one accessible **Filters** button while preserving every existing server-side filter and the no-JavaScript form fallback.
+- Added active-filter count and removable filter chips so administrators can see and remove individual constraints without opening the filter panel.
+- **Clear** is shown only when a search or filter is active.
+- Added shared responsive/light-dark styling for search, filter panel, chips, focus states and smartphone layout.
+- Added one centralized `filterbar.js`/`filterbar.css` enhancement instead of duplicating list-specific JavaScript or CSS.
+- Preserved toolbar actions, sorting, pagination, Live Sync, Tournament scope logic, ACL, CSRF protections and all existing sports data.
+- No database migration is introduced.
+- Bumped component, package, plugin, modules, Web Asset registry and Joomla update feed to 0.10.1.
+
 ## 0.10.0 - 2026-09-07
 
 - Added Tournament competition scope: International, Continental / Zone, National and Regional / Local.
