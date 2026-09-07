@@ -41,6 +41,15 @@ jobs:
         run: python3 tools/validate_release.py
       - name: Build
         run: python3 tools/build.py
+      - name: Synchronize Joomla update checksum
+        run: python3 tools/update_feed_checksum.py
+      - name: Verify Joomla update checksum
+        shell: bash
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          PACKAGE="dist/pkg_decarodcl_${VERSION}.zip"
+          SHA256="$(sha256sum "$PACKAGE" | awk '{print $1}')"
+          grep -q "<sha256>${SHA256}</sha256>" updates/pkg_decarodcl.xml
       - name: Package contents
         run: python3 tools/validate_release.py --dist
       - name: Create release
@@ -49,3 +58,17 @@ jobs:
         run: |
           VERSION="${{ steps.version.outputs.version }}"
           gh release create "v${VERSION}" dist/*.zip dist/SHA256SUMS.txt --title "Competitions ${VERSION}" --notes "Competitions ${VERSION}"
+      - name: Publish update-feed checksum
+        shell: bash
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add updates/pkg_decarodcl.xml
+          if git diff --cached --quiet; then
+            echo "Update feed checksum already current."
+            exit 0
+          fi
+          git commit -m "Publish SHA-256 for Competitions ${VERSION}"
+          git pull --rebase origin main
+          git push origin HEAD:main
