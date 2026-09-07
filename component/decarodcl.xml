@@ -6,7 +6,7 @@
   <copyright>Copyright (C) 2026 Luca De Caro. All rights reserved.</copyright>
   <license>GNU General Public License version 2 or later</license>
   <authorUrl>https://github.com/xdecaro/dcl</authorUrl>
-  <version>0.10.2</version>
+  <version>0.10.3</version>
   <description>COM_DECARODCL_XML_DESCRIPTION</description>
   <targetplatform name="joomla" version="6.*" />
   <namespace path="src">Xdecaro\Component\Decarodcl</namespace>
@@ -66,9 +66,6 @@
   <media destination="com_decarodcl" folder="media">
     <filename>joomla.asset.json</filename>
     <filename>admin.css</filename>
-    <filename>live-sync.css</filename>
-    <filename>live-sync.js</filename>
-    <filename>scope.js</filename>
     <folder>css</folder>
     <folder>js</folder>
   </media>
