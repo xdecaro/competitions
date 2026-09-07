@@ -17,7 +17,7 @@ The repository keeps the historical/internal `dcl` technical identifiers for upg
 
 ## Current version
 
-**0.10.2**
+**0.10.3**
 
 ## Architecture
 
@@ -75,6 +75,8 @@ Version 0.9.0 introduced a shared administrator page header and visual language 
 Version 0.10.1 extended the shared design system to list search and filters with one centralized filterbar enhancement, a collapsible secondary filter area, active-filter count and removable filter chips.
 
 Version 0.10.2 refines that interaction after administrator feedback: search is explicit rather than automatic. Each list now prioritizes one wide search field followed by **Search** and **Clear**, while **Filters** stays on its own row below. Pressing Enter is equivalent to Search; typing no longer reloads the list in the background. Secondary filters still apply immediately, retain the active-filter counter/chips, and remain responsive in light and dark mode.
+
+Version 0.10.3 fixes the Joomla Web Asset paths used by the shared filterbar, Live Sync and scope scripts. Joomla resolves style/script URIs against the component `media/css` and `media/js` folders, so asset URIs must not repeat `/css/` or `/js/`. The runtime registrations and `joomla.asset.json` now follow the same convention already used by Courses. The standard folder copies are authoritative; root copies remain declared only as legacy compatibility fallbacks for upgrades from earlier Competitions builds.
 
 The header is rendered centrally through `PageHeaderHelper` and a reusable Joomla layout rather than duplicated in each template. This keeps future visual changes synchronized across the whole component and preserves existing toolbar, form, filter, table and CRUD behaviour.
 
@@ -138,4 +140,4 @@ Organizations and native Match management:
 
 ## Data preservation
 
-Updates and uninstall routines do not delete `#__dcl_*` data tables automatically. The 0.7.0 migration adds Organizations and native Matches while preserving the previous `article_id` event relation. Version 0.8.0 adds Zones and Country mappings using additive tables and `INSERT IGNORE`, so existing Country records and sports data are not overwritten or deleted. Version 0.10.0 adds Tournament scope fields, Team type, scope relation tables and synchronization support tables through additive migrations; existing Teams and Tournaments default to the backward-compatible `club` / `international` configuration. Versions 0.10.1 and 0.10.2 change administrator search/filter UI and release metadata only; they introduce no database migration and delete no sports data. Destructive data removal must be an explicit administrator action.
+Updates and uninstall routines do not delete `#__dcl_*` data tables automatically. The 0.7.0 migration adds Organizations and native Matches while preserving the previous `article_id` event relation. Version 0.8.0 adds Zones and Country mappings using additive tables and `INSERT IGNORE`, so existing Country records and sports data are not overwritten or deleted. Version 0.10.0 adds Tournament scope fields, Team type, scope relation tables and synchronization support tables through additive migrations; existing Teams and Tournaments default to the backward-compatible `club` / `international` configuration. Versions 0.10.1, 0.10.2 and 0.10.3 change administrator UI/assets and release metadata only; they introduce no database migration and delete no sports data. Destructive data removal must be an explicit administrator action.

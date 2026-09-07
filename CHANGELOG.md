@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.10.3 - 2026-09-07
+
+- Fixed the Joomla Web Asset path mismatch that kept the 0.10.1/0.10.2 enhanced filterbar from loading even though the CSS/JS files were present in the package.
+- Corrected filterbar runtime/Web Asset URIs from `com_decarodcl/css/filterbar.css` and `com_decarodcl/js/filterbar.js` to Joomla's component-media convention: `com_decarodcl/filterbar.css` and `com_decarodcl/filterbar.js`.
+- Added authoritative `media/css/live-sync.css`, `media/js/live-sync.js` and `media/js/scope.js` copies so Live Sync and Tournament-scope JavaScript resolve through the same Joomla convention.
+- Kept the earlier root Live Sync/scope files declared only as upgrade-compatibility fallbacks; runtime loading now uses the standard CSS/JS folders.
+- Preserved the requested 0.10.2 layout: wide search field with explicit **Search** and **Clear**, plus **Filters** on a separate row below.
+- No database migration or sports-data change is introduced.
+- Bumped component, package, plugin, modules, Web Asset registry and Joomla update feed to 0.10.3.
+
 ## 0.10.2 - 2026-09-07
 
 - Refined the shared administrator search/filter toolbar from the 0.10.1 feedback cycle.
