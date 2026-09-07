@@ -79,6 +79,8 @@
   poll();
 
   function createClientId() {
+    // Keep this ID page-instance specific. sessionStorage may be cloned into a
+    // newly opened tab, which could make two editors look like the same client.
     return window.crypto?.randomUUID?.() || `dcl-${Date.now()}-${Math.random().toString(36).slice(2)}`;
   }
 
