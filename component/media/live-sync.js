@@ -31,9 +31,10 @@
   const root = document.querySelector('.dcl-admin');
   const form = document.querySelector('form.form-validate.dcl-admin');
   const idField = document.querySelector('[name="jform[id]"]');
+  const modifiedField = document.querySelector('[name="jform[modified]"]');
   const entityId = Math.max(0, Number(params.get('id') || idField?.value || 0));
   const isEditing = Boolean(form && entity && entityId > 0);
-  const clientId = getClientId();
+  const clientId = createClientId();
   let cursor = 0;
   let bootstrapped = false;
   let dirty = false;
@@ -77,16 +78,10 @@
 
   poll();
 
-  function getClientId() {
-    const key = 'com_decarodcl.liveSync.clientId';
-    let value = window.sessionStorage.getItem(key);
-
-    if (!value) {
-      value = window.crypto?.randomUUID?.() || `dcl-${Date.now()}-${Math.random().toString(36).slice(2)}`;
-      window.sessionStorage.setItem(key, value);
-    }
-
-    return value;
+  function createClientId() {
+    // Keep this ID page-instance specific. sessionStorage may be cloned into a
+    // newly opened tab, which could make two editors look like the same client.
+    return window.crypto?.randomUUID?.() || `dcl-${Date.now()}-${Math.random().toString(36).slice(2)}`;
   }
 
   function injectHidden(targetForm, name, value) {
@@ -159,7 +154,17 @@
         bootstrapped = true;
 
         if (isEditing && payload.current_modified) {
-          injectHidden(form, 'dcl_expected_modified', String(payload.current_modified));
+          const renderedModified = String(modifiedField?.value || '');
+          const serverModified = String(payload.current_modified);
+
+          if (renderedModified && renderedModified !== serverModified) {
+            if (dirty) {
+              conflict = true;
+              showConflict();
+            } else {
+              scheduleReload();
+            }
+          }
         }
       } else {
         const changes = Array.isArray(payload.changes) ? payload.changes : [];
