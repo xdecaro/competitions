@@ -3,6 +3,7 @@ namespace Xdecaro\Component\Decarodcl\Administrator\Model;
 
 defined('_JEXEC') or die;
 
+use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\Model\AdminModel;
 use Xdecaro\Component\Decarodcl\Administrator\Helper\LanguageHelper;
@@ -59,7 +60,17 @@ abstract class BaseAdminModel extends AdminModel
 
         $entity = LiveSyncHelper::entityFromModelName($this->getName());
 
-        if ($entity !== '') {
+        if ($entity !== '' && $ids) {
+            // JTable publish/state operations do not consistently advance the
+            // modified timestamp. Advance it explicitly so an already-open form
+            // cannot race a state change and overwrite it before the next poll.
+            LiveSyncHelper::touchModified(
+                $this->getDatabase(),
+                $entity,
+                $ids,
+                (int) Factory::getApplication()->getIdentity()->id
+            );
+
             foreach ($ids as $id) {
                 LiveSyncHelper::record($this->getDatabase(), $entity, $id, 'state');
             }
