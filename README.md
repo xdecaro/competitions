@@ -17,7 +17,7 @@ The repository keeps the historical/internal `dcl` technical identifiers for upg
 
 ## Current version
 
-**0.9.1**
+**0.10.0**
 
 ## Architecture
 
@@ -35,19 +35,52 @@ Competitions separates authentication, sport data and presentation:
 - `com_decarodcl` is the central administrator component.
 - Frontend modules can be placed directly in YOOtheme layouts without moving authoritative sports data into Joomla articles.
 
+## Competition scope and participant types
+
+Version 0.10.0 separates the geographic scope of a Tournament from the kind of Teams that are allowed to participate.
+
+Tournament scope supports:
+
+- **International** — no geographic restriction;
+- **Continental / Zone** — one or more configured sporting Zones;
+- **National** — exactly one Country or sporting territory;
+- **Regional / Local** — exactly one Country plus an optional local-area description.
+
+Tournament participant type supports **Clubs / Teams** or **National teams**. Teams also have an explicit `team_type` (`club` or `national`) so a World Championship for national teams and an international club competition such as DCL can use the same Team, Participation, Roster and Match architecture without treating a national selection as a normal club.
+
+Tournament → Country and Tournament → Zone relations are stored in `#__dcl_tournament_countries` and `#__dcl_tournament_zones`. Participation eligibility is enforced server-side through Season → Tournament → scope, participant type and Federation → Country. The Participation form also filters eligible Teams dynamically, but JavaScript is only a UX aid: server validation remains authoritative.
+
+Existing data is protected when scope-related master data changes. A Tournament scope change, Team type/Federation change, Federation Country change or Zone membership change is rejected when it would make an existing Participation incompatible. Existing Season host Countries are checked as well, so scope changes cannot silently leave a Season outside its Tournament geography.
+
+## Live synchronization
+
+Version 0.10.0 adds shared administrator synchronization for Organizations, Zones, Countries, Federations, Tournaments, Seasons, Teams, Participations, Players, Rosters and Matches.
+
+The implementation intentionally does not require WebSockets or a special daemon. It combines:
+
+- `BroadcastChannel` for fast communication between open browser tabs;
+- lightweight incremental polling for other browsers and other computers;
+- `#__dcl_changes` as a short-lived change cursor/log;
+- `#__dcl_edit_sessions` for advisory edit presence;
+- optimistic locking based on the record `modified` value rendered with the edit form.
+
+Lists and Dashboard reload when relevant remote changes are detected while keeping the current URL, filters, sorting and pagination. A clean edit form can reload automatically when its record changes. If the local form already contains unsaved edits, Competitions shows a conflict warning instead of replacing the form. The same `modified` baseline is checked again server-side on save, preventing a stale browser from overwriting a newer record even if it saves before the next poll. State/publish actions explicitly advance the version timestamp for the same reason.
+
+All synchronization endpoints require Joomla CSRF validation and `core.manage`. Edit presence is advisory only; a temporary synchronization failure never blocks normal CRUD operations.
+
 ## Administrator design system
 
-Version 0.9.0 introduces a shared administrator page header and visual language for every Competitions view. Dashboard, lists, edit forms and Information use the same blue uppercase eyebrow, large page title, muted description, typography, spacing, rounded surfaces and responsive/dark-mode tokens inspired by the established xdecaro Courses interface.
+Version 0.9.0 introduced a shared administrator page header and visual language for every Competitions view. Dashboard, lists, edit forms and Information use the same blue uppercase eyebrow, large page title, muted description, typography, spacing, rounded surfaces and responsive/dark-mode tokens inspired by the established xdecaro Courses interface.
 
 The header is rendered centrally through `PageHeaderHelper` and a reusable Joomla layout rather than duplicated in each template. This keeps future visual changes synchronized across the whole component and preserves existing toolbar, form, filter, table and CRUD behaviour.
 
-Version 0.9.1 hardens that shared header integration by normalizing the optional record ID before rendering. Joomla input returns `null` when an `id` query parameter is absent unless a default is supplied, which affected list, Dashboard and Information views. The controller now supplies `0` explicitly and the helper also accepts/normalizes a nullable ID defensively.
+Version 0.9.1 hardened that shared header integration by normalizing the optional record ID before rendering. Joomla input returns `null` when an `id` query parameter is absent unless a default is supplied, which affected list, Dashboard and Information views. The controller supplies `0` explicitly and the helper also accepts/normalizes a nullable ID defensively.
 
 The Information page follows the same product-style card system while retaining the package/component/plugin/module version-integrity diagnostics and native Joomla update controls introduced in 0.8.x.
 
 ## Zones
 
-Version 0.8.0 adds a dedicated **Zones** administrator area between Organizations and Countries.
+Version 0.8.0 added a dedicated **Zones** administrator area between Organizations and Countries.
 
 A Zone can be global or assigned to a specific Organization. Countries are linked through a many-to-many relation, so a Country can belong to different sporting Zones when different Organizations use different classifications.
 
@@ -66,11 +99,11 @@ Existing Country records are preserved. Missing Countries from the supplied clas
 
 Version 0.7.1 added an **Information** administrator view with the installed package version, Joomla/PHP/database information, native Joomla update status, configured update-server URL and shortcuts to Joomla Updates, Update Sites and GitHub Releases.
 
-Version 0.8.1 fixes Joomla database parameter binding in the Information view by binding local variables instead of object properties/constants, as required by Joomla's by-reference query API.
+Version 0.8.1 fixed Joomla database parameter binding in the Information view by binding local variables instead of object properties/constants, as required by Joomla's by-reference query API.
 
-Version 0.8.2 adds an installation-integrity check comparing the package, component, system plugin, Match Timeline module and Countries/Federations module versions.
+Version 0.8.2 added an installation-integrity check comparing the package, component, system plugin, Match Timeline module and Countries/Federations module versions.
 
-Version 0.8.3 fixes the package postflight update-site repair itself. Joomla's database `bind()` API requires variables passed by reference; the previous installer script passed constants/literals for update-site values, so the repair could fail silently and Competitions would not appear in Joomla's extension update list. The installer now binds local variables and recreates/enables the package update-site association on installation or update.
+Version 0.8.3 fixed the package postflight update-site repair itself. Joomla's database `bind()` API requires variables passed by reference; the previous installer script passed constants/literals for update-site values, so the repair could fail silently and Competitions would not appear in Joomla's extension update list. The installer now binds local variables and recreates/enables the package update-site association on installation or update.
 
 The package registers `https://raw.githubusercontent.com/xdecaro/dcl/main/updates/pkg_decarodcl.xml` as its Joomla update server. The update feed identifies the distributable as the `pkg_decarodcl` site-client package and uses a Joomla 6 version regular expression compatible with Joomla's update finder. The package installer also repairs the update-site association on install/update if it is missing or disabled. Installing an available release remains managed through Joomla's native extension updater.
 
@@ -101,4 +134,4 @@ Organizations and native Match management:
 
 ## Data preservation
 
-Updates and uninstall routines do not delete `#__dcl_*` data tables automatically. The 0.7.0 migration adds Organizations and native Matches while preserving the previous `article_id` event relation. Version 0.8.0 adds Zones and Country mappings using additive tables and `INSERT IGNORE`, so existing Country records and sports data are not overwritten or deleted. Versions 0.8.1 through 0.9.1 change administrator diagnostics/UI, installer/update-site handling and release metadata only; they do not modify sports data or database schema. Destructive data removal must be an explicit administrator action.
+Updates and uninstall routines do not delete `#__dcl_*` data tables automatically. The 0.7.0 migration adds Organizations and native Matches while preserving the previous `article_id` event relation. Version 0.8.0 adds Zones and Country mappings using additive tables and `INSERT IGNORE`, so existing Country records and sports data are not overwritten or deleted. Version 0.10.0 adds Tournament scope fields, Team type, scope relation tables and synchronization support tables through additive migrations; existing Teams and Tournaments default to the backward-compatible `club` / `international` configuration. No existing sports records are deleted. Destructive data removal must be an explicit administrator action.
