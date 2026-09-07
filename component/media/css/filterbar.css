@@ -262,6 +262,8 @@
   box-shadow: 0 3px 14px rgba(0, 0, 0, .16);
 }
 
+[data-bs-theme="dark"] .dcl-filterbar--enhanced .dcl-filterbar__submit,
+[data-bs-theme="dark"] .dcl-filterbar--enhanced .dcl-filterbar__submit:hover,
 [data-bs-theme="dark"] .dcl-filterbar--enhanced .dcl-filterbar__count {
   color: #101828;
 }
