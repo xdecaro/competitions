@@ -66,6 +66,9 @@
   <media destination="com_decarodcl" folder="media">
     <filename>joomla.asset.json</filename>
     <filename>admin.css</filename>
+    <filename>live-sync.css</filename>
+    <filename>live-sync.js</filename>
+    <filename>scope.js</filename>
     <folder>css</folder>
     <folder>js</folder>
   </media>
