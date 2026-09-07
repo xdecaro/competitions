@@ -86,9 +86,7 @@ final class LiveSyncHelper
         $table = self::ENTITY_TABLES[$entity];
         $legacyLock = self::LEGACY_LOCK;
         $query = $db->getQuery(true)
-            ->select(
-                'COALESCE(' . $db->quoteName('modified') . ', ' . $db->quote($legacyLock) . ')'
-            )
+            ->select('COALESCE(' . $db->quoteName('modified') . ', ' . $db->quote($legacyLock) . ')')
             ->from($db->quoteName($table))
             ->where($db->quoteName('id') . ' = :entityId')
             ->bind(':entityId', $entityId, ParameterType::INTEGER);
@@ -96,6 +94,35 @@ final class LiveSyncHelper
         $value = $db->setQuery($query, 0, 1)->loadResult();
 
         return $value === null ? null : (string) $value;
+    }
+
+    public static function touchModified(DatabaseInterface $db, string $entity, array $entityIds, int $userId): void
+    {
+        $entity = self::normalizeEntity($entity);
+        $entityIds = array_values(array_unique(array_filter(array_map('intval', $entityIds))));
+
+        if ($entity === '' || !$entityIds) {
+            return;
+        }
+
+        $table = self::ENTITY_TABLES[$entity];
+        $modified = Factory::getDate()->toSql();
+        $placeholders = [];
+        $query = $db->getQuery(true)
+            ->update($db->quoteName($table))
+            ->set($db->quoteName('modified') . ' = :modified')
+            ->set($db->quoteName('modified_by') . ' = :modifiedBy')
+            ->bind(':modified', $modified)
+            ->bind(':modifiedBy', $userId, ParameterType::INTEGER);
+
+        foreach ($entityIds as $index => $entityId) {
+            $placeholder = ':entityId' . $index;
+            $placeholders[] = $placeholder;
+            $query->bind($placeholder, $entityIds[$index], ParameterType::INTEGER);
+        }
+
+        $query->where($db->quoteName('id') . ' IN (' . implode(',', $placeholders) . ')');
+        $db->setQuery($query)->execute();
     }
 
     public static function record(DatabaseInterface $db, string $entity, int $entityId, string $action): void
