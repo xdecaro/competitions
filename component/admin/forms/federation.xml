@@ -2,6 +2,7 @@
 <form>
   <fieldset name="details" label="COM_DECARODCL_FEDERATION_DETAILS">
     <field name="id" type="hidden" />
+    <field name="modified" type="hidden" />
     <field
       name="country_id"
       type="sql"
