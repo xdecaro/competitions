@@ -13,7 +13,7 @@
     <tags>
       <tag>stable</tag>
     </tags>
-    <sha256>73c67f4a657c493d7fe760fa3a2c64a88d0e6b12980006e796a3dd9b9b8cc52a</sha256>
+    <sha256>788590bc3ba79137e14968a0f3edde72f48707cab02281afca99f59c260b99b5</sha256>
     <maintainer>Luca De Caro</maintainer>
     <maintainerurl>https://github.com/xdecaro/dcl</maintainerurl>
     <targetplatform name="joomla" version="6\.[0-9]+" />
