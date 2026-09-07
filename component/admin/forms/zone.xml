@@ -2,6 +2,7 @@
 <form>
   <fieldset name="details" label="COM_DECARODCL_ZONE_DETAILS">
     <field name="id" type="hidden" />
+    <field name="modified" type="hidden" />
     <field name="name" type="text" label="COM_DECARODCL_FIELD_NAME" required="true" maxlength="190" />
     <field name="code" type="text" label="COM_DECARODCL_FIELD_CODE" description="COM_DECARODCL_ZONE_CODE_DESC" required="true" maxlength="50" filter="cmd" />
     <field name="organization_id" type="sql" label="COM_DECARODCL_FIELD_ORGANIZATION" description="COM_DECARODCL_ZONE_ORGANIZATION_DESC" query="SELECT id AS value, CONCAT(name, IF(short_name IS NULL OR short_name = '', '', CONCAT(' (', short_name, ')'))) AS text FROM #__dcl_organizations WHERE state &lt;&gt; -2 ORDER BY ordering ASC, name ASC" key_field="value" value_field="text" header="JNONE" filter="uint" />
