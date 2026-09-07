@@ -2,6 +2,7 @@
 <form>
   <fieldset name="details" label="COM_DECARODCL_PARTICIPATION_DETAILS">
     <field name="id" type="hidden" />
+    <field name="modified" type="hidden" />
     <field
       name="season_id"
       type="sql"
