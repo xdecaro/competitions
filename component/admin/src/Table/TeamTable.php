@@ -65,7 +65,11 @@ final class TeamTable extends Table
         $db = $this->getDbo();
 
         $query = $db->getQuery(true)
-            ->select([$db->quoteName('c.code'), $db->quoteName('c.iso3')])
+            ->select([
+                $db->quoteName('c.id', 'country_id'),
+                $db->quoteName('c.code'),
+                $db->quoteName('c.iso3'),
+            ])
             ->from($db->quoteName('#__dcl_federations', 'f'))
             ->innerJoin(
                 $db->quoteName('#__dcl_countries', 'c')
@@ -85,6 +89,34 @@ final class TeamTable extends Table
 
         $legacyCountryCode = strtoupper(trim((string) ($country->iso3 ?: $country->code)));
         $this->country_code = strlen($legacyCountryCode) <= 3 ? $legacyCountryCode : null;
+
+        if ($this->id) {
+            $query = $db->getQuery(true)
+                ->select('DISTINCT ' . $db->quoteName('s.tournament_id'))
+                ->from($db->quoteName('#__dcl_participations', 'p'))
+                ->innerJoin(
+                    $db->quoteName('#__dcl_seasons', 's')
+                    . ' ON ' . $db->quoteName('s.id') . ' = ' . $db->quoteName('p.season_id')
+                )
+                ->where($db->quoteName('p.team_id') . ' = :teamId')
+                ->where($db->quoteName('p.state') . ' <> -2')
+                ->where($db->quoteName('s.state') . ' <> -2')
+                ->bind(':teamId', $this->id, ParameterType::INTEGER);
+
+            foreach (array_map('intval', $db->setQuery($query)->loadColumn() ?: []) as $tournamentId) {
+                try {
+                    TournamentScopeHelper::assertTeamAttributesEligible(
+                        $db,
+                        $tournamentId,
+                        $this->team_type,
+                        (int) $country->country_id
+                    );
+                } catch (\RuntimeException $e) {
+                    $this->setError($e->getMessage());
+                    return false;
+                }
+            }
+        }
 
         if ($this->owner_user_id > 0) {
             $query = $db->getQuery(true)
