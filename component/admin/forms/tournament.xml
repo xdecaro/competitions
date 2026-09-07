@@ -2,6 +2,7 @@
 <form>
   <fieldset name="details" label="COM_DECARODCL_TOURNAMENT_DETAILS">
     <field name="id" type="hidden" />
+    <field name="modified" type="hidden" />
     <field name="name" type="text" label="COM_DECARODCL_FIELD_NAME" required="true" maxlength="190" />
     <field name="code" type="text" label="COM_DECARODCL_FIELD_CODE" description="COM_DECARODCL_TOURNAMENT_CODE_DESC" required="true" maxlength="50" filter="cmd" />
     <field name="discipline" type="text" label="COM_DECARODCL_FIELD_DISCIPLINE" description="COM_DECARODCL_FIELD_DISCIPLINE_DESC" required="true" maxlength="50" />
