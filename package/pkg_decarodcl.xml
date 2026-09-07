@@ -2,7 +2,7 @@
 <extension type="package" method="upgrade">
   <name>PKG_DECARODCL</name>
   <packagename>decarodcl</packagename>
-  <version>0.10.3</version>
+  <version>0.10.4</version>
   <creationDate>2026-09</creationDate>
   <author>Luca De Caro</author>
   <authorUrl>https://github.com/xdecaro/dcl</authorUrl>
@@ -13,10 +13,10 @@
   <scriptfile>script.php</scriptfile>
 
   <files>
-    <file type="component" id="com_decarodcl">com_decarodcl_0.10.3.zip</file>
-    <file type="plugin" id="decarodcl" group="system">plg_system_decarodcl_0.10.3.zip</file>
-    <file type="module" id="mod_dcl_matchtimeline" client="site">mod_dcl_matchtimeline_0.10.3.zip</file>
-    <file type="module" id="mod_dcl_countriesfederations" client="site">mod_dcl_countriesfederations_0.10.3.zip</file>
+    <file type="component" id="com_decarodcl">com_decarodcl_0.10.4.zip</file>
+    <file type="plugin" id="decarodcl" group="system">plg_system_decarodcl_0.10.4.zip</file>
+    <file type="module" id="mod_dcl_matchtimeline" client="site">mod_dcl_matchtimeline_0.10.4.zip</file>
+    <file type="module" id="mod_dcl_countriesfederations" client="site">mod_dcl_countriesfederations_0.10.4.zip</file>
   </files>
 
   <languages folder="language">
