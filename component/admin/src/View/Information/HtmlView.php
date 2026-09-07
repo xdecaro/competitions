@@ -23,6 +23,21 @@ final class HtmlView extends BaseHtmlView
         }
 
         UiHelper::loadAssets();
+
+        $document = Factory::getApplication()->getDocument();
+        $wa = $document->getWebAssetManager();
+        $wa->getRegistry()->addExtensionRegistryFile('com_decarodcl');
+        $wa->useStyle('com_decarodcl.information');
+        $wa->useScript('com_decarodcl.information');
+
+        foreach ([
+            'COM_DECARODCL_INFO_COPIED',
+            'COM_DECARODCL_INFO_COPY_FAILED',
+            'COM_DECARODCL_INFO_DOWNLOADED',
+        ] as $key) {
+            Text::script($key);
+        }
+
         $this->info = $this->get('Info');
         $this->canManageInstaller = $user->authorise('core.manage', 'com_installer');
 

@@ -26,7 +26,7 @@ final class PageHeaderHelper
             'players' => ['COM_DECARODCL_PLAYERS', 'COM_DECARODCL_PLAYERS', 'COM_DECARODCL_PAGE_PLAYERS_DESC'],
             'rosters' => ['COM_DECARODCL_ROSTERS', 'COM_DECARODCL_ROSTERS', 'COM_DECARODCL_PAGE_ROSTERS_DESC'],
             'matches' => ['COM_DECARODCL_MATCHES', 'COM_DECARODCL_MATCHES', 'COM_DECARODCL_PAGE_MATCHES_DESC'],
-            'information' => ['COM_DECARODCL_INFORMATION', 'COM_DECARODCL_INFORMATION', 'COM_DECARODCL_PAGE_INFORMATION_DESC'],
+            'information' => ['COM_DECARODCL', 'COM_DECARODCL_INFORMATION', 'COM_DECARODCL_PAGE_INFORMATION_DESC'],
         ];
 
         $forms = [
@@ -59,6 +59,10 @@ final class PageHeaderHelper
             ];
         } else {
             return '';
+        }
+
+        if ($view === 'information') {
+            $data['class'] = 'dcl-page-header--information';
         }
 
         return LayoutHelper::render('page.header', $data, JPATH_COMPONENT_ADMINISTRATOR . '/layouts');

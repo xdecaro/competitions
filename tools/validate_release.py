@@ -127,6 +127,8 @@ EXPECTED_COMPONENT_FILES = {
     "media/live-sync.js",
     "media/scope.js",
     "media/joomla.asset.json",
+    "media/css/information.css",
+    "media/js/information.js",
 }
 
 EXPECTED_TIMELINE_FILES = {
@@ -165,21 +167,21 @@ def validate_versions() -> None:
     if str(asset.get("version", "")).strip() != VERSION:
         fail("component/media/joomla.asset.json top-level version does not match VERSION")
 
-    assets = {str(item.get("name", "")): item for item in asset.get("assets", [])}
-    required_assets = {
-        "com_decarodcl.admin": "style",
-        "com_decarodcl.live-sync-style": "style",
-        "com_decarodcl.live-sync": "script",
-        "com_decarodcl.scope": "script",
-    }
-    for name, asset_type in required_assets.items():
-        item = assets.get(name)
+    assets = asset.get("assets", [])
+    required_assets = [
+        ("com_decarodcl.admin", "style"),
+        ("com_decarodcl.live-sync-style", "style"),
+        ("com_decarodcl.live-sync", "script"),
+        ("com_decarodcl.scope", "script"),
+        ("com_decarodcl.information", "style"),
+        ("com_decarodcl.information", "script"),
+    ]
+    for name, asset_type in required_assets:
+        item = next((row for row in assets if row.get("name") == name and row.get("type") == asset_type), None)
         if item is None:
-            fail(f"Web Asset registry is missing {name}")
-        if item.get("type") != asset_type:
-            fail(f"Web Asset {name} has the wrong type")
+            fail(f"Web Asset registry is missing {name} ({asset_type})")
         if str(item.get("version", "")).strip() != VERSION:
-            fail(f"Web Asset {name} version does not match VERSION")
+            fail(f"Web Asset {name} ({asset_type}) version does not match VERSION")
 
     updates = ET.parse(ROOT / "updates/pkg_decarodcl.xml").getroot()
     update = updates.find("update")
@@ -369,7 +371,7 @@ def validate_versions() -> None:
             fail(f"InformationModel integrity diagnostics are missing {required}")
 
     information_template = (ROOT / "component/admin/tmpl/information/default.php").read_text(encoding="utf-8")
-    for required in ("dcl-information-grid", "dcl-card", "dcl-information-row", "dcl-badge"):
+    for required in ("dcl-information-grid", "dcl-card", "dcl-information-row", "dcl-badge", "dcl-information-integration", "dcl-information-checks", "dcl-information-details", "data-dcl-info-copy"):
         if required not in information_template:
             fail(f"Information template is missing design-system class {required}")
 

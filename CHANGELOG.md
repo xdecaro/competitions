@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.10.6 - 2026-09-08
+
+- Rebuilt the administrator **Informazioni** page to the approved xdecaro standard used by Courses and Forms.
+- Changed the page eyebrow to **COMPETITIONS** while keeping **Informazioni** as the main title.
+- Added the compact product status summary and standardized Product, Environment, Included extensions and Updates cards.
+- Reclassified Timeline and Countries/Federations as bundled extensions instead of presenting them as external integrations.
+- Added the full-width **Componenti collegati** section with safe detection of Forms and Courses, installed versions and available item counts.
+- Added six diagnostic checks, balanced Technical details, Copy diagnostics, Download .txt and GitHub release actions. Diagnostic export excludes passwords, tokens, cookies and credentials.
+- Added dedicated Information CSS/JS loaded only by the Information view, including responsive, keyboard-focus and dark-mode states.
+- Preserved historical `com_decarodcl`, `pkg_decarodcl`, `#__dcl_*` and `xdecaro/dcl` technical identifiers for upgrade compatibility.
+- Preserved competition data, Tournament scope, Live Sync, ACL/CSRF protections and all existing sports functionality. No database migration is introduced.
+- Bumped component, package, plugin, modules, Web Asset registry and Joomla update feed to 0.10.6.
+
 ## 0.10.5 - 2026-09-08
 
 - Kept the primary search row permanently visible instead of replacing it when Filters opens.

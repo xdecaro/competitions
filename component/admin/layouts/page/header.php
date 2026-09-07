@@ -4,8 +4,9 @@ defined('_JEXEC') or die;
 $eyebrow = htmlspecialchars((string) ($displayData['eyebrow'] ?? ''), ENT_QUOTES, 'UTF-8');
 $title = htmlspecialchars((string) ($displayData['title'] ?? ''), ENT_QUOTES, 'UTF-8');
 $description = htmlspecialchars((string) ($displayData['description'] ?? ''), ENT_QUOTES, 'UTF-8');
+$modifier = preg_replace('/[^A-Za-z0-9_-]/', '', (string) ($displayData['class'] ?? ''));
 ?>
-<header class="dcl-page-header">
+<header class="dcl-page-header<?= $modifier !== '' ? ' ' . $modifier : ''; ?>">
     <span class="dcl-page-header__eyebrow"><?= $eyebrow; ?></span>
     <h1 class="dcl-page-header__title"><?= $title; ?></h1>
     <?php if ($description !== '') : ?>
