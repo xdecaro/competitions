@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.10.5 - 2026-09-08
+
+- Kept the primary search row permanently visible instead of replacing it when Filters opens.
+- Changed Filters into an animated drawer that expands underneath the search row within the same toolbar card.
+- Removed the nested-card appearance: the drawer uses a subtle divider and shared surface instead of a second bordered panel.
+- Added extra horizontal inset to the filter row so the first select is not flush against the left edge.
+- Kept all filters on one row on desktop with **Close filters** at the end; tablet falls back to two columns and smartphone to one column.
+- Preserved the active-filter count, immediate select submission, current search value and open drawer state across list reloads.
+- Added a short vertical/opacity transition and respected `prefers-reduced-motion` for accessibility.
+- Preserved list models, sorting, pagination, Live Sync, Tournament scope logic, ACL/CSRF protections and all existing sports data.
+- No database migration is introduced.
+- Bumped component, package, plugin, modules, Web Asset registry and Joomla update feed to 0.10.5.
+
 ## 0.10.4 - 2026-09-07
 
 - Reworked the shared administrator filterbar into two mutually exclusive modes instead of showing search and a second filter panel at the same time.
@@ -64,7 +77,7 @@
 - Added `#__dcl_changes` for incremental change cursors and `#__dcl_edit_sessions` for advisory edit presence.
 - Added BroadcastChannel synchronization for browser tabs plus lightweight polling for other browsers/computers; no WebSocket service is required.
 - Added race-safe optimistic locking based on the `modified` timestamp rendered with every edit form, including a sentinel for legacy rows with a NULL timestamp.
-- Added server-side conflict rejection so a stale edit cannot overwrite newer data even before the next browser poll.
+- Added server-side conflict rejection so a stale edit cannot overwrite newer data even before the next poll.
 - State/publish actions now advance the record version timestamp and emit Live Sync change events.
 - Added responsive/light-dark Live Sync notices and a reload action for edit conflicts.
 - Added additive 0.10.0 fresh-install/update SQL. Existing Tournaments default to `international`, existing Teams default to `club`, and no existing sports records are deleted.
