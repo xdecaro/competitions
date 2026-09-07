@@ -3,7 +3,6 @@ namespace Xdecaro\Component\Decarodcl\Administrator\Model;
 
 defined('_JEXEC') or die;
 
-use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\Model\AdminModel;
 use Xdecaro\Component\Decarodcl\Administrator\Helper\LanguageHelper;
@@ -11,6 +10,8 @@ use Xdecaro\Component\Decarodcl\Administrator\Helper\LiveSyncHelper;
 
 abstract class BaseAdminModel extends AdminModel
 {
+    private const LEGACY_LOCK = '__dcl_unmodified__';
+
     public function save($data): bool
     {
         $entity = LiveSyncHelper::entityFromModelName($this->getName());
@@ -18,15 +19,16 @@ abstract class BaseAdminModel extends AdminModel
         $isNew = $id <= 0;
 
         // Every edit form carries the record's `modified` value as rendered.
-        // Remove it before Joomla binds the submitted data so the table remains
-        // authoritative for the new modified timestamp.
-        $expectedModified = trim((string) ($data['modified'] ?? ''));
+        // Older/seeded records can legitimately have NULL here, so use a
+        // deterministic sentinel until their first save. Remove the field
+        // before Joomla binds submitted data: the table owns the new timestamp.
+        $expectedModified = trim((string) ($data['modified'] ?? '')) ?: self::LEGACY_LOCK;
         unset($data['modified']);
 
-        if (!$isNew && $entity !== '' && $expectedModified !== '') {
+        if (!$isNew && $entity !== '') {
             $currentModified = LiveSyncHelper::currentModified($this->getDatabase(), $entity, $id);
 
-            if ($currentModified === null || $currentModified === '' || $currentModified !== $expectedModified) {
+            if ($currentModified === null || $currentModified !== $expectedModified) {
                 LanguageHelper::load();
                 $this->setError(Text::_('COM_DECARODCL_ERROR_LIVE_CONFLICT'));
 
