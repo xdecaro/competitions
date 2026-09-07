@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.10.2 - 2026-09-07
+
+- Refined the shared administrator search/filter toolbar from the 0.10.1 feedback cycle.
+- Replaced automatic debounced search with an explicit **Search** action; pressing Enter remains supported, while typing alone no longer reloads the list.
+- Kept **Clear** directly beside Search so the primary row is always `Search field → Search → Clear`.
+- Moved the **Filters** control to its own row below the primary search row, keeping secondary filters visually separate from search.
+- Preserved immediate application of secondary select filters, active-filter count and removable filter chips.
+- Improved desktop/tablet/smartphone spacing and kept light/dark/focus states centralized in the shared filterbar assets.
+- Preserved all server-side list models, sorting, pagination, Live Sync, Tournament scope logic, ACL/CSRF protections and existing sports data.
+- No database migration is introduced.
+- Bumped component, package, plugin, modules, Web Asset registry and Joomla update feed to 0.10.2.
+
 ## 0.10.1 - 2026-09-07
 
 - Redesigned administrator list search as one compact search-first toolbar across Competitions instead of a row of large native fields and buttons.
