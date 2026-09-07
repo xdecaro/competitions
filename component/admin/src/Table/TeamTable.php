@@ -9,6 +9,7 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Table\Table;
 use Joomla\Database\DatabaseDriver;
 use Joomla\Database\ParameterType;
+use Xdecaro\Component\Decarodcl\Administrator\Helper\TournamentScopeHelper;
 
 final class TeamTable extends Table
 {
@@ -28,6 +29,7 @@ final class TeamTable extends Table
         $this->rejection_reason = trim((string) $this->rejection_reason) ?: null;
         $this->owner_user_id = (int) $this->owner_user_id;
         $this->federation_id = (int) $this->federation_id;
+        $this->team_type = strtolower(trim((string) $this->team_type)) ?: 'club';
         $this->approval_status = trim((string) $this->approval_status) ?: 'pending';
 
         if ($this->name === '') {
@@ -37,6 +39,11 @@ final class TeamTable extends Table
 
         if ($this->federation_id <= 0) {
             $this->setError(Text::_('COM_DECARODCL_ERROR_TEAM_FEDERATION_REQUIRED'));
+            return false;
+        }
+
+        if (!in_array($this->team_type, TournamentScopeHelper::TEAM_TYPES, true)) {
+            $this->setError(Text::_('COM_DECARODCL_ERROR_TEAM_TYPE_INVALID'));
             return false;
         }
 
@@ -58,7 +65,11 @@ final class TeamTable extends Table
         $db = $this->getDbo();
 
         $query = $db->getQuery(true)
-            ->select([$db->quoteName('c.code'), $db->quoteName('c.iso3')])
+            ->select([
+                $db->quoteName('c.id', 'country_id'),
+                $db->quoteName('c.code'),
+                $db->quoteName('c.iso3'),
+            ])
             ->from($db->quoteName('#__dcl_federations', 'f'))
             ->innerJoin(
                 $db->quoteName('#__dcl_countries', 'c')
@@ -78,6 +89,34 @@ final class TeamTable extends Table
 
         $legacyCountryCode = strtoupper(trim((string) ($country->iso3 ?: $country->code)));
         $this->country_code = strlen($legacyCountryCode) <= 3 ? $legacyCountryCode : null;
+
+        if ($this->id) {
+            $query = $db->getQuery(true)
+                ->select('DISTINCT ' . $db->quoteName('s.tournament_id'))
+                ->from($db->quoteName('#__dcl_participations', 'p'))
+                ->innerJoin(
+                    $db->quoteName('#__dcl_seasons', 's')
+                    . ' ON ' . $db->quoteName('s.id') . ' = ' . $db->quoteName('p.season_id')
+                )
+                ->where($db->quoteName('p.team_id') . ' = :teamId')
+                ->where($db->quoteName('p.state') . ' <> -2')
+                ->where($db->quoteName('s.state') . ' <> -2')
+                ->bind(':teamId', $this->id, ParameterType::INTEGER);
+
+            foreach (array_map('intval', $db->setQuery($query)->loadColumn() ?: []) as $tournamentId) {
+                try {
+                    TournamentScopeHelper::assertTeamAttributesEligible(
+                        $db,
+                        $tournamentId,
+                        $this->team_type,
+                        (int) $country->country_id
+                    );
+                } catch (\RuntimeException $e) {
+                    $this->setError($e->getMessage());
+                    return false;
+                }
+            }
+        }
 
         if ($this->owner_user_id > 0) {
             $query = $db->getQuery(true)

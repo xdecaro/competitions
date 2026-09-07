@@ -17,6 +17,8 @@ final class TournamentsModel extends ListModel
             'code', 'a.code',
             'discipline', 'a.discipline',
             'gender', 'a.gender',
+            'scope_type', 'a.scope_type',
+            'participant_type', 'a.participant_type',
             'state', 'a.state',
             'ordering', 'a.ordering',
             'seasons_count',
@@ -29,9 +31,29 @@ final class TournamentsModel extends ListModel
     {
         $db = $this->getDatabase();
 
+        $countryNames = $db->getQuery(true)
+            ->select("GROUP_CONCAT(" . $db->quoteName('c.name') . " ORDER BY " . $db->quoteName('tc.ordering') . " SEPARATOR ', ')")
+            ->from($db->quoteName('#__dcl_tournament_countries', 'tc'))
+            ->innerJoin(
+                $db->quoteName('#__dcl_countries', 'c')
+                . ' ON ' . $db->quoteName('c.id') . ' = ' . $db->quoteName('tc.country_id')
+            )
+            ->where($db->quoteName('tc.tournament_id') . ' = ' . $db->quoteName('a.id'));
+
+        $zoneNames = $db->getQuery(true)
+            ->select("GROUP_CONCAT(" . $db->quoteName('z.name') . " ORDER BY " . $db->quoteName('tz.ordering') . " SEPARATOR ', ')")
+            ->from($db->quoteName('#__dcl_tournament_zones', 'tz'))
+            ->innerJoin(
+                $db->quoteName('#__dcl_zones', 'z')
+                . ' ON ' . $db->quoteName('z.id') . ' = ' . $db->quoteName('tz.zone_id')
+            )
+            ->where($db->quoteName('tz.tournament_id') . ' = ' . $db->quoteName('a.id'));
+
         $query = $db->getQuery(true)
             ->select('a.*')
             ->select('COUNT(s.id) AS ' . $db->quoteName('seasons_count'))
+            ->select('(' . $countryNames . ') AS ' . $db->quoteName('scope_countries'))
+            ->select('(' . $zoneNames . ') AS ' . $db->quoteName('scope_zones'))
             ->from($db->quoteName('#__dcl_tournaments', 'a'))
             ->leftJoin(
                 $db->quoteName('#__dcl_seasons', 's')
@@ -48,7 +70,10 @@ final class TournamentsModel extends ListModel
                 '(' . $db->quoteName('a.name') . ' LIKE :search'
                 . ' OR ' . $db->quoteName('a.code') . ' LIKE :search'
                 . ' OR ' . $db->quoteName('a.discipline') . ' LIKE :search'
-                . ' OR ' . $db->quoteName('a.gender') . ' LIKE :search)'
+                . ' OR ' . $db->quoteName('a.gender') . ' LIKE :search'
+                . ' OR ' . $db->quoteName('a.scope_type') . ' LIKE :search'
+                . ' OR ' . $db->quoteName('a.participant_type') . ' LIKE :search'
+                . ' OR ' . $db->quoteName('a.local_area') . ' LIKE :search)'
             )->bind(':search', $token);
         }
 
@@ -74,12 +99,28 @@ final class TournamentsModel extends ListModel
                 ->bind(':gender', $gender);
         }
 
+        $scopeType = trim((string) $this->getState('filter.scope_type'));
+
+        if ($scopeType !== '') {
+            $query->where($db->quoteName('a.scope_type') . ' = :scopeType')
+                ->bind(':scopeType', $scopeType);
+        }
+
+        $participantType = trim((string) $this->getState('filter.participant_type'));
+
+        if ($participantType !== '') {
+            $query->where($db->quoteName('a.participant_type') . ' = :participantType')
+                ->bind(':participantType', $participantType);
+        }
+
         $allowed = [
             'a.id' => 'a.id',
             'a.name' => 'a.name',
             'a.code' => 'a.code',
             'a.discipline' => 'a.discipline',
             'a.gender' => 'a.gender',
+            'a.scope_type' => 'a.scope_type',
+            'a.participant_type' => 'a.participant_type',
             'a.state' => 'a.state',
             'a.ordering' => 'a.ordering',
             'seasons_count' => 'seasons_count',
@@ -126,6 +167,19 @@ final class TournamentsModel extends ListModel
         $this->setState(
             'filter.gender',
             $this->getUserStateFromRequest($this->context . '.filter.gender', 'filter_gender', '', 'cmd')
+        );
+        $this->setState(
+            'filter.scope_type',
+            $this->getUserStateFromRequest($this->context . '.filter.scope_type', 'filter_scope_type', '', 'cmd')
+        );
+        $this->setState(
+            'filter.participant_type',
+            $this->getUserStateFromRequest(
+                $this->context . '.filter.participant_type',
+                'filter_participant_type',
+                '',
+                'cmd'
+            )
         );
 
         parent::populateState($ordering, $direction);

@@ -2,21 +2,22 @@
 <form>
   <fieldset name="details" label="COM_DECARODCL_PARTICIPATION_DETAILS">
     <field name="id" type="hidden" />
-    <field
-      name="team_id"
-      type="sql"
-      label="COM_DECARODCL_FIELD_TEAM"
-      required="true"
-      query="SELECT tm.id AS value, CONCAT(tm.name, ' — ', c.name, ' / ', f.name) AS text FROM #__dcl_teams AS tm INNER JOIN #__dcl_federations AS f ON f.id = tm.federation_id INNER JOIN #__dcl_countries AS c ON c.id = f.country_id WHERE tm.state &lt;&gt; -2 AND f.state &lt;&gt; -2 AND c.state &lt;&gt; -2 ORDER BY tm.name ASC"
-      key_field="value"
-      value_field="text"
-    />
+    <field name="modified" type="hidden" />
     <field
       name="season_id"
       type="sql"
       label="COM_DECARODCL_FIELD_SEASON"
       required="true"
       query="SELECT s.id AS value, CONCAT(t.name, ' — ', s.name, IF(s.season_year IS NULL, '', CONCAT(' (', s.season_year, ')'))) AS text FROM #__dcl_seasons AS s INNER JOIN #__dcl_tournaments AS t ON t.id = s.tournament_id WHERE s.state &lt;&gt; -2 AND t.state &lt;&gt; -2 ORDER BY s.season_year DESC, t.name ASC, s.name ASC"
+      key_field="value"
+      value_field="text"
+    />
+    <field
+      name="team_id"
+      type="sql"
+      label="COM_DECARODCL_FIELD_TEAM"
+      required="true"
+      query="SELECT tm.id AS value, CONCAT(tm.name, ' — ', c.name, ' / ', f.name, ' [', tm.team_type, ']') AS text FROM #__dcl_teams AS tm INNER JOIN #__dcl_federations AS f ON f.id = tm.federation_id INNER JOIN #__dcl_countries AS c ON c.id = f.country_id WHERE tm.state &lt;&gt; -2 AND f.state &lt;&gt; -2 AND c.state &lt;&gt; -2 ORDER BY tm.name ASC"
       key_field="value"
       value_field="text"
     />

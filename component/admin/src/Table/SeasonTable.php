@@ -8,6 +8,7 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Table\Table;
 use Joomla\Database\DatabaseDriver;
 use Joomla\Database\ParameterType;
+use Xdecaro\Component\Decarodcl\Administrator\Helper\TournamentScopeHelper;
 
 final class SeasonTable extends Table
 {
@@ -84,6 +85,17 @@ final class SeasonTable extends Table
 
             if ((int) $db->setQuery($query)->loadResult() === 0) {
                 $this->setError(Text::_('COM_DECARODCL_ERROR_SEASON_COUNTRY_INVALID'));
+                return false;
+            }
+
+            try {
+                TournamentScopeHelper::assertHostCountryAllowed(
+                    $db,
+                    $this->tournament_id,
+                    $this->host_country_code
+                );
+            } catch (\RuntimeException $e) {
+                $this->setError($e->getMessage());
                 return false;
             }
         }

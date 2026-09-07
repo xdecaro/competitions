@@ -4,11 +4,10 @@ namespace Xdecaro\Component\Decarodcl\Administrator\Model;
 defined('_JEXEC') or die;
 
 use Joomla\CMS\Factory;
-use Joomla\CMS\MVC\Model\AdminModel;
 use Joomla\CMS\Table\Table;
 use Xdecaro\Component\Decarodcl\Administrator\Helper\OrganizationAssignmentHelper;
 
-final class SeasonModel extends AdminModel
+final class SeasonModel extends BaseAdminModel
 {
     private const ORGANIZATION_FIELDS = ['organizer_ids'=>'organizer','governing_body_ids'=>'governing_body','co_organizer_ids'=>'co_organizer','local_organizer_ids'=>'local_organizer','partner_ids'=>'partner'];
 

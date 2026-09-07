@@ -2,6 +2,7 @@
 <form>
   <fieldset name="details" label="COM_DECARODCL_SEASON_DETAILS">
     <field name="id" type="hidden" />
+    <field name="modified" type="hidden" />
     <field name="tournament_id" type="sql" label="COM_DECARODCL_FIELD_TOURNAMENT" query="SELECT id AS value, name AS text FROM #__dcl_tournaments WHERE state &lt;&gt; -2 ORDER BY ordering ASC, name ASC" key_field="value" value_field="text" header="COM_DECARODCL_SELECT_TOURNAMENT" required="true" filter="uint" />
     <field name="name" type="text" label="COM_DECARODCL_FIELD_NAME" description="COM_DECARODCL_SEASON_NAME_DESC" required="true" maxlength="190" />
     <field name="season_year" type="number" label="COM_DECARODCL_FIELD_SEASON_YEAR" required="true" min="1900" max="2200" step="1" filter="uint" />

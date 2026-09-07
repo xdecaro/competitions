@@ -17,8 +17,38 @@ MANIFESTS = [
     ROOT / "modules/mod_dcl_countriesfederations/mod_dcl_countriesfederations.xml",
 ]
 
+EDIT_FORMS = [
+    "country",
+    "federation",
+    "organization",
+    "zone",
+    "tournament",
+    "season",
+    "team",
+    "participation",
+    "player",
+    "roster",
+    "match",
+]
+
+ADMIN_MODELS = [
+    "CountryModel.php",
+    "FederationModel.php",
+    "OrganizationModel.php",
+    "ZoneModel.php",
+    "TournamentModel.php",
+    "SeasonModel.php",
+    "TeamModel.php",
+    "ParticipationModel.php",
+    "PlayerModel.php",
+    "RosterModel.php",
+    "MatchModel.php",
+]
+
 EXPECTED_COMPONENT_FILES = {
     "decarodcl.xml",
+    "admin/forms/country.xml",
+    "admin/forms/federation.xml",
     "admin/forms/tournament.xml",
     "admin/forms/season.xml",
     "admin/forms/team.xml",
@@ -30,6 +60,8 @@ EXPECTED_COMPONENT_FILES = {
     "admin/forms/match.xml",
     "admin/layouts/page/header.php",
     "admin/src/Controller/DisplayController.php",
+    "admin/src/Controller/ScopeController.php",
+    "admin/src/Controller/SyncController.php",
     "admin/src/Controller/OrganizationController.php",
     "admin/src/Controller/OrganizationsController.php",
     "admin/src/Controller/ZoneController.php",
@@ -39,6 +71,9 @@ EXPECTED_COMPONENT_FILES = {
     "admin/src/Helper/LanguageHelper.php",
     "admin/src/Helper/PageHeaderHelper.php",
     "admin/src/Helper/OrganizationAssignmentHelper.php",
+    "admin/src/Helper/TournamentScopeHelper.php",
+    "admin/src/Helper/LiveSyncHelper.php",
+    "admin/src/Model/BaseAdminModel.php",
     "admin/src/Model/OrganizationModel.php",
     "admin/src/Model/OrganizationsModel.php",
     "admin/src/Model/ZoneModel.php",
@@ -48,6 +83,11 @@ EXPECTED_COMPONENT_FILES = {
     "admin/src/Model/InformationModel.php",
     "admin/src/Table/OrganizationTable.php",
     "admin/src/Table/ZoneTable.php",
+    "admin/src/Table/FederationTable.php",
+    "admin/src/Table/TeamTable.php",
+    "admin/src/Table/TournamentTable.php",
+    "admin/src/Table/ParticipationTable.php",
+    "admin/src/Table/SeasonTable.php",
     "admin/src/Table/MatchTable.php",
     "admin/src/View/Organization/HtmlView.php",
     "admin/src/View/Organizations/HtmlView.php",
@@ -66,19 +106,26 @@ EXPECTED_COMPONENT_FILES = {
     "admin/tmpl/information/default.php",
     "admin/sql/install.0.7.mysql.utf8mb4.sql",
     "admin/sql/install.0.8.mysql.utf8mb4.sql",
+    "admin/sql/install.0.10.mysql.utf8mb4.sql",
     "admin/sql/updates/mysql/0.7.0.sql",
     "admin/sql/updates/mysql/0.8.0.sql",
+    "admin/sql/updates/mysql/0.10.0.sql",
     "admin/language/en-GB/com_decarodcl.070.ini",
     "admin/language/en-GB/com_decarodcl.071.ini",
     "admin/language/en-GB/com_decarodcl.080.ini",
     "admin/language/en-GB/com_decarodcl.082.ini",
     "admin/language/en-GB/com_decarodcl.090.ini",
+    "admin/language/en-GB/com_decarodcl.100.ini",
     "admin/language/it-IT/com_decarodcl.070.ini",
     "admin/language/it-IT/com_decarodcl.071.ini",
     "admin/language/it-IT/com_decarodcl.080.ini",
     "admin/language/it-IT/com_decarodcl.082.ini",
     "admin/language/it-IT/com_decarodcl.090.ini",
+    "admin/language/it-IT/com_decarodcl.100.ini",
     "media/admin.css",
+    "media/live-sync.css",
+    "media/live-sync.js",
+    "media/scope.js",
     "media/joomla.asset.json",
 }
 
@@ -118,13 +165,21 @@ def validate_versions() -> None:
     if str(asset.get("version", "")).strip() != VERSION:
         fail("component/media/joomla.asset.json top-level version does not match VERSION")
 
-    for item in asset.get("assets", []):
-        if item.get("name") == "com_decarodcl.admin":
-            if str(item.get("version", "")).strip() != VERSION:
-                fail("com_decarodcl.admin asset version does not match VERSION")
-            break
-    else:
-        fail("com_decarodcl.admin asset is missing")
+    assets = {str(item.get("name", "")): item for item in asset.get("assets", [])}
+    required_assets = {
+        "com_decarodcl.admin": "style",
+        "com_decarodcl.live-sync-style": "style",
+        "com_decarodcl.live-sync": "script",
+        "com_decarodcl.scope": "script",
+    }
+    for name, asset_type in required_assets.items():
+        item = assets.get(name)
+        if item is None:
+            fail(f"Web Asset registry is missing {name}")
+        if item.get("type") != asset_type:
+            fail(f"Web Asset {name} has the wrong type")
+        if str(item.get("version", "")).strip() != VERSION:
+            fail(f"Web Asset {name} version does not match VERSION")
 
     updates = ET.parse(ROOT / "updates/pkg_decarodcl.xml").getroot()
     update = updates.find("update")
@@ -156,7 +211,11 @@ def validate_versions() -> None:
         if required_view not in submenu_views:
             fail(f"component submenu is missing view {required_view}")
 
-    admin_folders = {(node.text or "").strip() for node in component_manifest.findall("./administration/files/folder") if node.text}
+    admin_folders = {
+        (node.text or "").strip()
+        for node in component_manifest.findall("./administration/files/folder")
+        if node.text
+    }
     if "layouts" not in admin_folders:
         fail("component manifest is missing the shared administrator layouts folder")
 
@@ -170,9 +229,20 @@ def validate_versions() -> None:
         "it-IT/com_decarodcl.082.ini",
         "en-GB/com_decarodcl.090.ini",
         "it-IT/com_decarodcl.090.ini",
+        "en-GB/com_decarodcl.100.ini",
+        "it-IT/com_decarodcl.100.ini",
     ):
         if required_language not in component_languages:
             fail(f"component manifest is missing language file {required_language}")
+
+    component_media = {
+        (node.text or "").strip()
+        for node in component_manifest.findall("./media/filename")
+        if node.text
+    }
+    for required_media in ("joomla.asset.json", "admin.css", "live-sync.css", "live-sync.js", "scope.js"):
+        if required_media not in component_media:
+            fail(f"component manifest is missing media file {required_media}")
 
     install_sql = {
         (node.text or "").strip()
@@ -183,6 +253,7 @@ def validate_versions() -> None:
         "sql/install.mysql.utf8mb4.sql",
         "sql/install.0.7.mysql.utf8mb4.sql",
         "sql/install.0.8.mysql.utf8mb4.sql",
+        "sql/install.0.10.mysql.utf8mb4.sql",
     }
     if install_sql != expected_install_sql:
         fail(f"component install SQL list mismatch: {sorted(install_sql)}")
@@ -205,6 +276,92 @@ def validate_versions() -> None:
     ):
         if required not in migration_080:
             fail(f"0.8.0 migration is missing {required}")
+
+    migration_100 = (ROOT / "component/admin/sql/updates/mysql/0.10.0.sql").read_text(encoding="utf-8")
+    for required in (
+        "scope_type",
+        "participant_type",
+        "team_type",
+        "#__dcl_tournament_countries",
+        "#__dcl_tournament_zones",
+        "#__dcl_changes",
+        "#__dcl_edit_sessions",
+    ):
+        if required not in migration_100:
+            fail(f"0.10.0 migration is missing {required}")
+
+    tournament_form = (ROOT / "component/admin/forms/tournament.xml").read_text(encoding="utf-8")
+    for required in ('name="scope_type"', 'name="participant_type"', 'name="country_id"', 'name="zone_ids"'):
+        if required not in tournament_form:
+            fail(f"Tournament form is missing scope field {required}")
+
+    team_form = (ROOT / "component/admin/forms/team.xml").read_text(encoding="utf-8")
+    if 'name="team_type"' not in team_form:
+        fail("Team form is missing team_type")
+
+    for form_name in EDIT_FORMS:
+        form_text = (ROOT / f"component/admin/forms/{form_name}.xml").read_text(encoding="utf-8")
+        if 'name="modified" type="hidden"' not in form_text:
+            fail(f"{form_name}.xml is missing the rendered optimistic-lock timestamp")
+
+    for model_name in ADMIN_MODELS:
+        model_text = (ROOT / "component/admin/src/Model" / model_name).read_text(encoding="utf-8")
+        if "extends BaseAdminModel" not in model_text:
+            fail(f"{model_name} must extend BaseAdminModel for global Live Sync")
+
+    base_model = (ROOT / "component/admin/src/Model/BaseAdminModel.php").read_text(encoding="utf-8")
+    for required in (
+        "LiveSyncHelper::currentModified",
+        "LiveSyncHelper::touchModified",
+        "LiveSyncHelper::record",
+        "__dcl_unmodified__",
+    ):
+        if required not in base_model:
+            fail(f"BaseAdminModel Live Sync locking is missing {required}")
+
+    live_helper = (ROOT / "component/admin/src/Helper/LiveSyncHelper.php").read_text(encoding="utf-8")
+    for required in (
+        "#__dcl_changes",
+        "#__dcl_edit_sessions",
+        "touchModified",
+        "COALESCE(",
+        "__dcl_unmodified__",
+    ):
+        if required not in live_helper:
+            fail(f"LiveSyncHelper is missing {required}")
+
+    sync_controller = (ROOT / "component/admin/src/Controller/SyncController.php").read_text(encoding="utf-8")
+    for required in ("Session::checkToken('post')", "core.manage", "LiveSyncHelper::listChanges", "LiveSyncHelper::touchPresence"):
+        if required not in sync_controller:
+            fail(f"SyncController is missing required protection/behaviour {required}")
+
+    scope_controller = (ROOT / "component/admin/src/Controller/ScopeController.php").read_text(encoding="utf-8")
+    for required in ("Session::checkToken('post')", "core.manage", "team_type", "#__dcl_tournament_zones"):
+        if required not in scope_controller:
+            fail(f"ScopeController is missing required protection/behaviour {required}")
+
+    scope_helper = (ROOT / "component/admin/src/Helper/TournamentScopeHelper.php").read_text(encoding="utf-8")
+    for required in (
+        "assertTeamAttributesEligible",
+        "assertExistingParticipationsCompatible",
+        "assertExistingSeasonHostsCompatible",
+    ):
+        if required not in scope_helper:
+            fail(f"TournamentScopeHelper is missing {required}")
+
+    federation_table = (ROOT / "component/admin/src/Table/FederationTable.php").read_text(encoding="utf-8")
+    if "assertTeamAttributesEligible" not in federation_table:
+        fail("Federation country changes are not protected against existing participations")
+
+    zone_model = (ROOT / "component/admin/src/Model/ZoneModel.php").read_text(encoding="utf-8")
+    for required in ("assertExistingParticipationsCompatible", "assertExistingSeasonHostsCompatible"):
+        if required not in zone_model:
+            fail(f"Zone membership changes are not protected by {required}")
+
+    live_script = (ROOT / "component/media/live-sync.js").read_text(encoding="utf-8")
+    for required in ("BroadcastChannel", "jform[modified]", "__dcl_unmodified__", "dcl_client_id"):
+        if required not in live_script:
+            fail(f"Live Sync browser client is missing {required}")
 
     information_model = (ROOT / "component/admin/src/Model/InformationModel.php").read_text(encoding="utf-8")
     for required in ("extension_versions", "installation_consistent", "mod_dcl_matchtimeline", "mod_dcl_countriesfederations", "decarodcl"):
@@ -234,6 +391,8 @@ def validate_versions() -> None:
     language_helper = (ROOT / "component/admin/src/Helper/LanguageHelper.php").read_text(encoding="utf-8")
     if "com_decarodcl.090" not in language_helper:
         fail("LanguageHelper does not load the 0.9.0 language file")
+    if "com_decarodcl.100" not in language_helper:
+        fail("LanguageHelper does not load the 0.10.0 language file")
 
     package = ET.parse(ROOT / "package/pkg_decarodcl.xml").getroot()
     shipped = {node.text.strip() for node in package.findall("./files/file") if node.text}

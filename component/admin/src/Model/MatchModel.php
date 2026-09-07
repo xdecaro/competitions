@@ -5,10 +5,9 @@ defined('_JEXEC') or die;
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Form\Form;
-use Joomla\CMS\MVC\Model\AdminModel;
 use Joomla\CMS\Table\Table;
 
-final class MatchModel extends AdminModel
+final class MatchModel extends BaseAdminModel
 {
     public function getTable($type = 'Match', $prefix = 'Administrator', $config = []): Table
     {

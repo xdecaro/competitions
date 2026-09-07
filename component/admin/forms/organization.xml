@@ -2,6 +2,7 @@
 <form>
   <fieldset name="details" label="COM_DECARODCL_ORGANIZATION_DETAILS">
     <field name="id" type="hidden" />
+    <field name="modified" type="hidden" />
     <field name="name" type="text" label="COM_DECARODCL_FIELD_NAME" required="true" maxlength="190" />
     <field name="short_name" type="text" label="COM_DECARODCL_FIELD_SHORT_NAME" maxlength="100" />
     <field name="country_id" type="sql" label="COM_DECARODCL_FIELD_ORGANIZATION_COUNTRY" query="SELECT id AS value, CONCAT(name, ' (', code, ')') AS text FROM #__dcl_countries WHERE state &lt;&gt; -2 ORDER BY name ASC" key_field="value" value_field="text" header="JNONE" filter="uint" />

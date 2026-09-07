@@ -8,6 +8,7 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Table\Table;
 use Joomla\Database\DatabaseDriver;
 use Joomla\Database\ParameterType;
+use Xdecaro\Component\Decarodcl\Administrator\Helper\TournamentScopeHelper;
 
 final class ParticipationTable extends Table
 {
@@ -67,14 +68,22 @@ final class ParticipationTable extends Table
         }
 
         $query = $db->getQuery(true)
-            ->select('COUNT(*)')
+            ->select($db->quoteName('tournament_id'))
             ->from($db->quoteName('#__dcl_seasons'))
             ->where($db->quoteName('id') . ' = :seasonId')
             ->where($db->quoteName('state') . ' <> -2')
             ->bind(':seasonId', $this->season_id, ParameterType::INTEGER);
+        $tournamentId = (int) $db->setQuery($query, 0, 1)->loadResult();
 
-        if ((int) $db->setQuery($query)->loadResult() === 0) {
+        if ($tournamentId <= 0) {
             $this->setError(Text::_('COM_DECARODCL_ERROR_PARTICIPATION_SEASON_INVALID'));
+            return false;
+        }
+
+        try {
+            TournamentScopeHelper::assertTeamEligible($db, $tournamentId, $this->team_id);
+        } catch (\RuntimeException $e) {
+            $this->setError($e->getMessage());
             return false;
         }
 

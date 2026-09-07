@@ -16,6 +16,7 @@ final class TeamsModel extends ListModel
             'name', 'a.name',
             'short_name', 'a.short_name',
             'alias', 'a.alias',
+            'team_type', 'a.team_type',
             'federation_name', 'f.name',
             'country_name', 'c.name',
             'manager_name', 'u.name',
@@ -70,6 +71,7 @@ final class TeamsModel extends ListModel
                 '(' . $db->quoteName('a.name') . ' LIKE :search'
                 . ' OR ' . $db->quoteName('a.short_name') . ' LIKE :search'
                 . ' OR ' . $db->quoteName('a.alias') . ' LIKE :search'
+                . ' OR ' . $db->quoteName('a.team_type') . ' LIKE :search'
                 . ' OR ' . $db->quoteName('f.name') . ' LIKE :search'
                 . ' OR ' . $db->quoteName('c.name') . ' LIKE :search'
                 . ' OR ' . $db->quoteName('u.name') . ' LIKE :search'
@@ -92,6 +94,13 @@ final class TeamsModel extends ListModel
                 ->bind(':approvalStatus', $approvalStatus);
         }
 
+        $teamType = trim((string) $this->getState('filter.team_type'));
+
+        if ($teamType !== '') {
+            $query->where($db->quoteName('a.team_type') . ' = :teamType')
+                ->bind(':teamType', $teamType);
+        }
+
         $federationId = (int) $this->getState('filter.federation_id');
 
         if ($federationId > 0) {
@@ -111,6 +120,7 @@ final class TeamsModel extends ListModel
             'a.name' => 'a.name',
             'a.short_name' => 'a.short_name',
             'a.alias' => 'a.alias',
+            'a.team_type' => 'a.team_type',
             'f.name' => 'f.name',
             'c.name' => 'c.name',
             'u.name' => 'u.name',
@@ -185,6 +195,10 @@ final class TeamsModel extends ListModel
                 '',
                 'cmd'
             )
+        );
+        $this->setState(
+            'filter.team_type',
+            $this->getUserStateFromRequest($this->context . '.filter.team_type', 'filter_team_type', '', 'cmd')
         );
         $this->setState(
             'filter.federation_id',

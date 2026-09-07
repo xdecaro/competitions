@@ -4,10 +4,9 @@ namespace Xdecaro\Component\Decarodcl\Administrator\Model;
 defined('_JEXEC') or die;
 
 use Joomla\CMS\Factory;
-use Joomla\CMS\MVC\Model\AdminModel;
 use Joomla\CMS\Table\Table;
 
-final class CountryModel extends AdminModel
+final class CountryModel extends BaseAdminModel
 {
     public function getTable($type = 'Country', $prefix = 'Administrator', $config = []): Table
     {

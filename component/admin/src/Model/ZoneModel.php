@@ -6,12 +6,12 @@ defined('_JEXEC') or die;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Form\Form;
 use Joomla\CMS\Language\Text;
-use Joomla\CMS\MVC\Model\AdminModel;
 use Joomla\CMS\Table\Table;
 use Joomla\Database\ParameterType;
 use Xdecaro\Component\Decarodcl\Administrator\Helper\LanguageHelper;
+use Xdecaro\Component\Decarodcl\Administrator\Helper\TournamentScopeHelper;
 
-final class ZoneModel extends AdminModel
+final class ZoneModel extends BaseAdminModel
 {
     public function getTable($type = 'Zone', $prefix = 'Administrator', $config = []): Table
     {
@@ -105,6 +105,21 @@ final class ZoneModel extends AdminModel
                 }
 
                 $db->setQuery($query)->execute();
+            }
+
+            // A Zone can be used by multiple tournaments. Validate against the
+            // newly written membership before commit so a country removal cannot
+            // silently invalidate an existing participation or host country. The
+            // transaction rolls both the Zone and mapping changes back on failure.
+            $query = $db->getQuery(true)
+                ->select('DISTINCT ' . $db->quoteName('tournament_id'))
+                ->from($db->quoteName('#__dcl_tournament_zones'))
+                ->where($db->quoteName('zone_id') . ' = :zoneId')
+                ->bind(':zoneId', $zoneId, ParameterType::INTEGER);
+
+            foreach (array_map('intval', $db->setQuery($query)->loadColumn() ?: []) as $tournamentId) {
+                TournamentScopeHelper::assertExistingParticipationsCompatible($db, $tournamentId);
+                TournamentScopeHelper::assertExistingSeasonHostsCompatible($db, $tournamentId);
             }
 
             $db->transactionCommit();
