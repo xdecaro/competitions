@@ -9,7 +9,7 @@ use Joomla\CMS\Session\Session;
 
 final class UiHelper
 {
-    private const VERSION = '0.10.2';
+    private const VERSION = '0.10.3';
 
     public static function loadAssets(): void
     {
@@ -31,7 +31,7 @@ final class UiHelper
         if (!$wa->assetExists('style', $filterStyleName)) {
             $wa->registerStyle(
                 $filterStyleName,
-                'com_decarodcl/css/filterbar.css',
+                'com_decarodcl/filterbar.css',
                 ['version' => self::VERSION],
                 [],
                 [$styleName]
@@ -45,7 +45,7 @@ final class UiHelper
         if (!$wa->assetExists('script', $filterScriptName)) {
             $wa->registerScript(
                 $filterScriptName,
-                'com_decarodcl/js/filterbar.js',
+                'com_decarodcl/filterbar.js',
                 ['version' => self::VERSION],
                 ['defer' => true]
             );
