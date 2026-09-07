@@ -240,6 +240,22 @@ final class TournamentScopeHelper
         }
     }
 
+    public static function assertExistingSeasonHostsCompatible(DatabaseInterface $db, int $tournamentId): void
+    {
+        $query = $db->getQuery(true)
+            ->select($db->quoteName('host_country_code'))
+            ->from($db->quoteName('#__dcl_seasons'))
+            ->where($db->quoteName('tournament_id') . ' = :tournamentId')
+            ->where($db->quoteName('state') . ' <> -2')
+            ->where($db->quoteName('host_country_code') . ' IS NOT NULL')
+            ->where($db->quoteName('host_country_code') . " <> ''")
+            ->bind(':tournamentId', $tournamentId, ParameterType::INTEGER);
+
+        foreach ($db->setQuery($query)->loadColumn() ?: [] as $countryCode) {
+            self::assertHostCountryAllowed($db, $tournamentId, (string) $countryCode);
+        }
+    }
+
     public static function assertHostCountryAllowed(DatabaseInterface $db, int $tournamentId, string $countryCode): void
     {
         $countryCode = strtoupper(trim($countryCode));
