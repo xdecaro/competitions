@@ -9,7 +9,7 @@ use Joomla\CMS\Session\Session;
 
 final class UiHelper
 {
-    private const VERSION = '0.10.1';
+    private const VERSION = '0.10.2';
 
     public static function loadAssets(): void
     {
@@ -71,7 +71,6 @@ final class UiHelper
 
         $token = Session::getFormToken();
         $document->addScriptOptions('com_decarodcl.filterbar', [
-            'debounce' => 450,
             'strings' => [
                 'filters' => Text::_('COM_DECARODCL_FILTERBAR_FILTERS'),
                 'clear' => Text::_('COM_DECARODCL_FILTERBAR_CLEAR'),
