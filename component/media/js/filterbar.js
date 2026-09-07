@@ -136,7 +136,6 @@
 
     const chips = document.createElement('div');
     chips.className = 'dcl-filterbar__chips';
-    chips.setAttribute('role', 'list');
 
     bar.replaceChildren(top);
 
@@ -209,7 +208,6 @@
         const chip = document.createElement('button');
         chip.type = 'button';
         chip.className = 'dcl-filterbar__chip';
-        chip.setAttribute('role', 'listitem');
         chip.setAttribute('aria-label', strings.remove.replace('%s', label));
 
         const text = document.createElement('span');
@@ -235,7 +233,12 @@
 
   function fieldLabel(select) {
     const first = select.options[0]?.textContent?.trim() || strings.filters;
-    const cleaned = first.replace(/^[\s\-–—]+|[\s\-–—]+$/g, '').trim();
+    let cleaned = first.replace(/^[\s\-–—]+|[\s\-–—]+$/g, '').trim();
+
+    cleaned = cleaned.replace(
+      /^(?:all|tutti|tutte|tutto|tutta)(?:\s+(?:the|gli|i|le|la|il|lo))?\s+/i,
+      ''
+    ).trim();
 
     return cleaned || strings.filters;
   }
