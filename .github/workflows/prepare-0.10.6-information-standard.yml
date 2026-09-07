@@ -27,9 +27,11 @@ jobs:
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          # The preparation script validates information.js itself. Keep CI/release
+          # workflow files unchanged because the Actions token cannot push workflow edits.
+          git checkout -- .github/workflows/ci.yml .github/workflows/release.yml
           git add VERSION CHANGELOG.md README.md \
-                  component package plugins modules updates tools/validate_release.py \
-                  .github/workflows/ci.yml .github/workflows/release.yml
+                  component package plugins modules updates tools/validate_release.py
           git diff --cached --check
           git diff --cached --quiet && { echo "No changes to commit"; exit 0; }
           git commit -m "Standardize Competitions 0.10.6 Information page"
