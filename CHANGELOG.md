@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.10.4 - 2026-09-07
+
+- Reworked the shared administrator filterbar into two mutually exclusive modes instead of showing search and a second filter panel at the same time.
+- Default mode is one row with the wide search field, **Search**, **Clear** and **Filters**.
+- Opening **Filters** replaces that row with all available select filters plus **Close filters**; closing returns to search without losing the current search or filter values.
+- Kept immediate server-side submission when a select filter changes and preserved the active-filter count on the Filters button.
+- Removed the extra stacked filter panel and removable-chip row to reduce duplicated visual layers and keep list pages compact.
+- Added responsive behaviour: one-row filters on desktop, two-column adaptation on tablet and one-column controls on smartphone.
+- Updated Italian/English wording to **Chiudi filtri / Close filters** and retained keyboard/focus accessibility plus light/dark mode states.
+- Preserved list models, sorting, pagination, Live Sync, Tournament scope logic, ACL/CSRF protections and all existing sports data.
+- No database migration is introduced.
+- Bumped component, package, plugin, modules, Web Asset registry and Joomla update feed to 0.10.4.
+
 ## 0.10.3 - 2026-09-07
 
 - Fixed the Joomla Web Asset path mismatch that kept the 0.10.1/0.10.2 enhanced filterbar from loading even though the CSS/JS files were present in the package.
