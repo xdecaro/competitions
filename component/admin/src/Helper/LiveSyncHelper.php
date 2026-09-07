@@ -10,6 +10,8 @@ use Joomla\Database\ParameterType;
 
 final class LiveSyncHelper
 {
+    private const LEGACY_LOCK = '__dcl_unmodified__';
+
     private const ENTITY_TABLES = [
         'organization' => '#__dcl_organizations',
         'zone' => '#__dcl_zones',
@@ -82,8 +84,11 @@ final class LiveSyncHelper
         }
 
         $table = self::ENTITY_TABLES[$entity];
+        $legacyLock = self::LEGACY_LOCK;
         $query = $db->getQuery(true)
-            ->select($db->quoteName('modified'))
+            ->select(
+                'COALESCE(' . $db->quoteName('modified') . ', ' . $db->quote($legacyLock) . ')'
+            )
             ->from($db->quoteName($table))
             ->where($db->quoteName('id') . ' = :entityId')
             ->bind(':entityId', $entityId, ParameterType::INTEGER);
