@@ -71,6 +71,8 @@
         return;
       }
 
+      // Keep the form usable if the auxiliary filter request fails. The server
+      // remains authoritative and validates the team against the tournament.
       team.disabled = false;
     }
   }
