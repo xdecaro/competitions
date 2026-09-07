@@ -158,21 +158,6 @@ final class TournamentScopeHelper
 
         $query = $db->getQuery(true)
             ->select([
-                $db->quoteName('scope_type'),
-                $db->quoteName('participant_type'),
-            ])
-            ->from($db->quoteName('#__dcl_tournaments'))
-            ->where($db->quoteName('id') . ' = :tournamentId')
-            ->where($db->quoteName('state') . ' <> -2')
-            ->bind(':tournamentId', $tournamentId, ParameterType::INTEGER);
-        $tournament = $db->setQuery($query, 0, 1)->loadObject();
-
-        if (!$tournament) {
-            throw new \RuntimeException(Text::_('COM_DECARODCL_ERROR_PARTICIPATION_SCOPE_INVALID'));
-        }
-
-        $query = $db->getQuery(true)
-            ->select([
                 $db->quoteName('tm.team_type'),
                 $db->quoteName('f.country_id'),
             ])
@@ -191,14 +176,43 @@ final class TournamentScopeHelper
             throw new \RuntimeException(Text::_('COM_DECARODCL_ERROR_PARTICIPATION_TEAM_INVALID'));
         }
 
-        $participantType = (string) $tournament->participant_type;
-        $teamType = (string) $team->team_type;
+        self::assertTeamAttributesEligible(
+            $db,
+            $tournamentId,
+            (string) $team->team_type,
+            (int) $team->country_id
+        );
+    }
 
-        if ($participantType !== $teamType) {
+    public static function assertTeamAttributesEligible(
+        DatabaseInterface $db,
+        int $tournamentId,
+        string $teamType,
+        int $countryId
+    ): void {
+        LanguageHelper::load();
+        $teamType = strtolower(trim($teamType));
+
+        $query = $db->getQuery(true)
+            ->select([
+                $db->quoteName('scope_type'),
+                $db->quoteName('participant_type'),
+            ])
+            ->from($db->quoteName('#__dcl_tournaments'))
+            ->where($db->quoteName('id') . ' = :tournamentId')
+            ->where($db->quoteName('state') . ' <> -2')
+            ->bind(':tournamentId', $tournamentId, ParameterType::INTEGER);
+        $tournament = $db->setQuery($query, 0, 1)->loadObject();
+
+        if (!$tournament) {
+            throw new \RuntimeException(Text::_('COM_DECARODCL_ERROR_PARTICIPATION_SCOPE_INVALID'));
+        }
+
+        if ((string) $tournament->participant_type !== $teamType) {
             throw new \RuntimeException(Text::_('COM_DECARODCL_ERROR_PARTICIPATION_TEAM_TYPE_MISMATCH'));
         }
 
-        self::assertCountryAllowed($db, $tournamentId, (string) $tournament->scope_type, (int) $team->country_id);
+        self::assertCountryAllowed($db, $tournamentId, (string) $tournament->scope_type, $countryId);
     }
 
     public static function assertExistingParticipationsCompatible(DatabaseInterface $db, int $tournamentId): void
