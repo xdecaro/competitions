@@ -212,11 +212,21 @@
   min-width: 0;
   min-height: 46px;
   margin: 0;
+  padding: 10px 44px;
   border: 1px solid var(--dcl-border);
   border-radius: 11px;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
   background-color: var(--dcl-surface-soft);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23667585' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+  background-size: 16px 16px;
   color: var(--dcl-text);
   font: 500 14px / 1.35 var(--dcl-font);
+  text-align: center;
+  text-align-last: center;
   box-shadow: none;
   transition: border-color .16s ease, box-shadow .16s ease, background-color .16s ease;
 }
@@ -228,7 +238,7 @@
 .dcl-filterbar--enhanced .dcl-filterbar__drawer select:focus {
   border-color: var(--dcl-primary);
   outline: 0;
-  background: var(--dcl-surface);
+  background-color: var(--dcl-surface);
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--dcl-primary) 16%, transparent);
 }
 
@@ -244,6 +254,10 @@
 [data-bs-theme="dark"] .dcl-filterbar--enhanced .dcl-filterbar__submit:hover,
 [data-bs-theme="dark"] .dcl-filterbar--enhanced .dcl-filterbar__count {
   color: #101828;
+}
+
+[data-bs-theme="dark"] .dcl-filterbar--enhanced .dcl-filterbar__drawer select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23cbd5e1' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
 }
 
 @media (max-width: 1000px) {
