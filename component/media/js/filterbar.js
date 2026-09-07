@@ -10,7 +10,6 @@
     remove: 'Remove filter %s',
     ...options.strings,
   };
-  const debounceMs = Math.max(250, Number(options.debounce) || 450);
 
   document.querySelectorAll('.dcl-filterbar').forEach((bar, index) => enhance(bar, index));
 
@@ -33,8 +32,6 @@
 
     const panelId = `dcl-filterbar-panel-${index + 1}`;
     const storageKey = `com_decarodcl.filterbar.${window.location.pathname}.${new URLSearchParams(window.location.search).get('view') || 'list'}`;
-    let debounceTimer = null;
-    let lastSearch = search ? search.value : '';
 
     bar.dataset.dclFilterbarEnhanced = '1';
     bar.classList.add('dcl-filterbar--enhanced');
@@ -55,11 +52,33 @@
     const actions = document.createElement('div');
     actions.className = 'dcl-filterbar__actions';
 
+    if (submitButton) {
+      submitButton.hidden = false;
+      submitButton.className = 'dcl-filterbar__submit';
+      actions.append(submitButton);
+    }
+
+    if (clearLink) {
+      clearLink.hidden = false;
+      clearLink.className = 'dcl-filterbar__clear';
+      clearLink.replaceChildren(
+        icon('clear', 'dcl-filterbar__button-icon'),
+        document.createTextNode(strings.clear)
+      );
+      actions.append(clearLink);
+    }
+
+    top.append(actions);
+
     let toggle = null;
     let count = null;
     let panel = null;
+    let filterRow = null;
 
     if (selects.length > 0) {
+      filterRow = document.createElement('div');
+      filterRow.className = 'dcl-filterbar__filter-row';
+
       toggle = document.createElement('button');
       toggle.type = 'button';
       toggle.className = 'dcl-filterbar__toggle';
@@ -74,7 +93,7 @@
       count.className = 'dcl-filterbar__count';
       count.setAttribute('aria-hidden', 'true');
       toggle.append(count);
-      actions.append(toggle);
+      filterRow.append(toggle);
 
       panel = document.createElement('div');
       panel.id = panelId;
@@ -109,8 +128,7 @@
         });
       });
 
-      const open = readOpen(storageKey);
-      setPanelOpen(toggle, panel, open);
+      setPanelOpen(toggle, panel, readOpen(storageKey));
       toggle.addEventListener('click', () => {
         const nextOpen = toggle.getAttribute('aria-expanded') !== 'true';
         setPanelOpen(toggle, panel, nextOpen);
@@ -118,26 +136,14 @@
       });
     }
 
-    if (clearLink) {
-      clearLink.className = 'dcl-filterbar__clear';
-      clearLink.replaceChildren(
-        icon('clear', 'dcl-filterbar__button-icon'),
-        document.createTextNode(strings.clear)
-      );
-      actions.append(clearLink);
-    }
-
-    if (submitButton) {
-      submitButton.classList.add('dcl-filterbar__legacy-submit');
-      submitButton.hidden = true;
-    }
-
-    top.append(actions);
-
     const chips = document.createElement('div');
     chips.className = 'dcl-filterbar__chips';
 
     bar.replaceChildren(top);
+
+    if (filterRow) {
+      bar.append(filterRow);
+    }
 
     if (panel) {
       bar.append(panel);
@@ -147,52 +153,21 @@
     updateState();
 
     if (search) {
-      search.addEventListener('input', scheduleSearch);
-      search.addEventListener('search', scheduleSearch);
+      search.addEventListener('input', updateState);
+      search.addEventListener('search', updateState);
       search.addEventListener('keydown', (event) => {
         if (event.key === 'Enter') {
           event.preventDefault();
-          window.clearTimeout(debounceTimer);
-          submitSearch();
-          return;
-        }
-
-        if (event.key === 'Escape' && search.value !== '') {
-          event.preventDefault();
-          search.value = '';
-          window.clearTimeout(debounceTimer);
-          submitSearch();
+          submit(form);
         }
       });
     }
 
-    function scheduleSearch() {
-      updateState();
-      window.clearTimeout(debounceTimer);
-      debounceTimer = window.setTimeout(submitSearch, debounceMs);
-    }
-
-    function submitSearch() {
-      const current = search ? search.value : '';
-
-      if (current === lastSearch) {
-        return;
-      }
-
-      lastSearch = current;
-      submit(form);
-    }
-
     function updateState() {
       const active = selects.filter((select) => select.selectedIndex > 0);
-      const hasSearch = Boolean(search?.value.trim());
 
       if (count) {
         count.textContent = active.length > 0 ? String(active.length) : '';
-      }
-
-      if (clearLink) {
-        clearLink.hidden = active.length === 0 && !hasSearch;
       }
 
       chips.replaceChildren();
@@ -265,13 +240,13 @@
   }
 
   function submit(form) {
+    const task = form.querySelector('input[name="task"]');
+
+    if (task) {
+      task.value = '';
+    }
+
     if (typeof form.requestSubmit === 'function') {
-      const task = form.querySelector('input[name="task"]');
-
-      if (task) {
-        task.value = '';
-      }
-
       form.requestSubmit();
       return;
     }
