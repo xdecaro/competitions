@@ -17,18 +17,20 @@ abstract class BaseAdminModel extends AdminModel
         $id = (int) ($data['id'] ?? 0);
         $isNew = $id <= 0;
 
-        if (!$isNew && $entity !== '') {
-            $expectedModified = trim((string) Factory::getApplication()->input->post->getString('dcl_expected_modified', ''));
+        // Every edit form carries the record's `modified` value as rendered.
+        // Remove it before Joomla binds the submitted data so the table remains
+        // authoritative for the new modified timestamp.
+        $expectedModified = trim((string) ($data['modified'] ?? ''));
+        unset($data['modified']);
 
-            if ($expectedModified !== '') {
-                $currentModified = LiveSyncHelper::currentModified($this->getDatabase(), $entity, $id);
+        if (!$isNew && $entity !== '' && $expectedModified !== '') {
+            $currentModified = LiveSyncHelper::currentModified($this->getDatabase(), $entity, $id);
 
-                if ($currentModified !== null && $currentModified !== '' && $currentModified !== $expectedModified) {
-                    LanguageHelper::load();
-                    $this->setError(Text::_('COM_DECARODCL_ERROR_LIVE_CONFLICT'));
+            if ($currentModified === null || $currentModified === '' || $currentModified !== $expectedModified) {
+                LanguageHelper::load();
+                $this->setError(Text::_('COM_DECARODCL_ERROR_LIVE_CONFLICT'));
 
-                    return false;
-                }
+                return false;
             }
         }
 
