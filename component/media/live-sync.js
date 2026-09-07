@@ -154,10 +154,10 @@
         bootstrapped = true;
 
         if (isEditing && payload.current_modified) {
-          const renderedModified = String(modifiedField?.value || '');
+          const renderedModified = String(modifiedField?.value || '__dcl_unmodified__');
           const serverModified = String(payload.current_modified);
 
-          if (renderedModified && renderedModified !== serverModified) {
+          if (renderedModified !== serverModified) {
             if (dirty) {
               conflict = true;
               showConflict();
