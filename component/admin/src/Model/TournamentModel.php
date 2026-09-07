@@ -94,6 +94,7 @@ final class TournamentModel extends BaseAdminModel
                 $scope['zone_ids']
             );
             TournamentScopeHelper::assertExistingParticipationsCompatible($db, $id);
+            TournamentScopeHelper::assertExistingSeasonHostsCompatible($db, $id);
 
             $db->transactionCommit();
 
