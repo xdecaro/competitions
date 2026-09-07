@@ -17,7 +17,7 @@ The repository keeps the historical/internal `dcl` technical identifiers for upg
 
 ## Current version
 
-**0.10.4**
+**0.10.5**
 
 ## Architecture
 
@@ -79,6 +79,8 @@ Version 0.10.2 refines that interaction after administrator feedback: search is 
 Version 0.10.3 fixes the Joomla Web Asset paths used by the shared filterbar, Live Sync and scope scripts. Joomla resolves style/script URIs against the component `media/css` and `media/js` folders, so asset URIs must not repeat `/css/` or `/js/`. The runtime registrations and `joomla.asset.json` now follow the same convention already used by Courses. The standard folder copies are authoritative; root copies remain declared only as legacy compatibility fallbacks for upgrades from earlier Competitions builds.
 
 Version 0.10.4 replaces the stacked search-plus-filter panel with two mutually exclusive toolbar modes. The default mode is one wide search field followed by **Search**, **Clear** and **Filters**. Opening Filters replaces that same row with all available select filters plus **Close filters**, so desktop never shows a second filter panel underneath. Active filter selections are preserved while switching modes; select changes continue to submit immediately, and the Filters button shows the active-filter count. Tablet and smartphone layouts adapt to two columns or one column without forcing unusably narrow selects.
+
+Version 0.10.5 keeps the search row permanently visible and opens the filters underneath as a lightweight animated drawer inside the same toolbar card. The drawer uses only a subtle divider rather than a nested card, adds extra horizontal inset so the first filter is not flush against the left edge, preserves active selections after reload, and keeps the active-filter count on the Filters button. The opening/closing transition respects `prefers-reduced-motion`, while tablet and smartphone layouts remain responsive.
 
 The header is rendered centrally through `PageHeaderHelper` and a reusable Joomla layout rather than duplicated in each template. This keeps future visual changes synchronized across the whole component and preserves existing toolbar, form, filter, table and CRUD behaviour.
 
@@ -142,4 +144,4 @@ Organizations and native Match management:
 
 ## Data preservation
 
-Updates and uninstall routines do not delete `#__dcl_*` data tables automatically. The 0.7.0 migration adds Organizations and native Matches while preserving the previous `article_id` event relation. Version 0.8.0 adds Zones and Country mappings using additive tables and `INSERT IGNORE`, so existing Country records and sports data are not overwritten or deleted. Version 0.10.0 adds Tournament scope fields, Team type, scope relation tables and synchronization support tables through additive migrations; existing Teams and Tournaments default to the backward-compatible `club` / `international` configuration. Versions 0.10.1, 0.10.2, 0.10.3 and 0.10.4 change administrator UI/assets and release metadata only; they introduce no database migration and delete no sports data. Destructive data removal must be an explicit administrator action.
+Updates and uninstall routines do not delete `#__dcl_*` data tables automatically. The 0.7.0 migration adds Organizations and native Matches while preserving the previous `article_id` event relation. Version 0.8.0 adds Zones and Country mappings using additive tables and `INSERT IGNORE`, so existing Country records and sports data are not overwritten or deleted. Version 0.10.0 adds Tournament scope fields, Team type, scope relation tables and synchronization support tables through additive migrations; existing Teams and Tournaments default to the backward-compatible `club` / `international` configuration. Versions 0.10.1, 0.10.2, 0.10.3, 0.10.4 and 0.10.5 change administrator UI/assets and release metadata only; they introduce no database migration and delete no sports data. Destructive data removal must be an explicit administrator action.

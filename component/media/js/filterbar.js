@@ -30,7 +30,7 @@
       return;
     }
 
-    const filterModeId = `dcl-filterbar-filters-${index + 1}`;
+    const drawerId = `dcl-filterbar-filters-${index + 1}`;
     const storageKey = `com_decarodcl.filterbar.${window.location.pathname}.${new URLSearchParams(window.location.search).get('view') || 'list'}`;
 
     bar.dataset.dclFilterbarEnhanced = '1';
@@ -42,11 +42,11 @@
       searchWrap.prepend(icon('search', 'dcl-filterbar__search-icon'));
     }
 
-    const searchMode = document.createElement('div');
-    searchMode.className = 'dcl-filterbar__mode dcl-filterbar__mode--search';
+    const top = document.createElement('div');
+    top.className = 'dcl-filterbar__top';
 
     if (searchWrap) {
-      searchMode.append(searchWrap);
+      top.append(searchWrap);
     }
 
     const actions = document.createElement('div');
@@ -70,14 +70,14 @@
 
     let toggle = null;
     let count = null;
-    let filterMode = null;
+    let drawer = null;
     let closeFilters = null;
 
     if (selects.length > 0) {
       toggle = document.createElement('button');
       toggle.type = 'button';
       toggle.className = 'dcl-filterbar__toggle';
-      toggle.setAttribute('aria-controls', filterModeId);
+      toggle.setAttribute('aria-controls', drawerId);
       toggle.append(icon('filter', 'dcl-filterbar__button-icon'));
 
       const toggleText = document.createElement('span');
@@ -90,19 +90,22 @@
       toggle.append(count);
       actions.append(toggle);
 
-      filterMode = document.createElement('div');
-      filterMode.id = filterModeId;
-      filterMode.className = 'dcl-filterbar__mode dcl-filterbar__mode--filters';
-      filterMode.setAttribute('role', 'group');
-      filterMode.setAttribute('aria-label', strings.filters);
-      filterMode.style.setProperty('--dcl-filter-count', String(selects.length));
+      drawer = document.createElement('div');
+      drawer.id = drawerId;
+      drawer.className = 'dcl-filterbar__drawer';
+      drawer.setAttribute('role', 'group');
+      drawer.setAttribute('aria-label', strings.filters);
+
+      const drawerInner = document.createElement('div');
+      drawerInner.className = 'dcl-filterbar__drawer-inner';
+      drawerInner.style.setProperty('--dcl-filter-count', String(selects.length));
 
       selects.forEach((select, selectIndex) => {
         select.removeAttribute('onchange');
         select.onchange = null;
 
         if (!select.id) {
-          select.id = `${filterModeId}-field-${selectIndex + 1}`;
+          select.id = `${drawerId}-field-${selectIndex + 1}`;
         }
 
         const field = document.createElement('div');
@@ -118,7 +121,7 @@
         }
 
         field.append(label, select);
-        filterMode.append(field);
+        drawerInner.append(field);
 
         select.addEventListener('change', () => {
           storeOpen(storageKey, true);
@@ -129,31 +132,32 @@
       closeFilters = document.createElement('button');
       closeFilters.type = 'button';
       closeFilters.className = 'dcl-filterbar__close';
-      closeFilters.setAttribute('aria-controls', filterModeId);
+      closeFilters.setAttribute('aria-controls', drawerId);
       closeFilters.replaceChildren(
         icon('clear', 'dcl-filterbar__button-icon'),
         document.createTextNode(strings.hide)
       );
-      filterMode.append(closeFilters);
+      drawerInner.append(closeFilters);
+      drawer.append(drawerInner);
 
       toggle.addEventListener('click', () => {
-        setMode(true, true);
+        setDrawerOpen(toggle.getAttribute('aria-expanded') !== 'true', true);
       });
 
       closeFilters.addEventListener('click', () => {
-        setMode(false, true);
+        setDrawerOpen(false, true);
       });
     }
 
-    searchMode.append(actions);
-    bar.replaceChildren(searchMode);
+    top.append(actions);
+    bar.replaceChildren(top);
 
-    if (filterMode) {
-      bar.append(filterMode);
+    if (drawer) {
+      bar.append(drawer);
     }
 
     updateState();
-    setMode(Boolean(filterMode && readOpen(storageKey)), false);
+    setDrawerOpen(Boolean(drawer && readOpen(storageKey)), false);
 
     if (search) {
       search.addEventListener('keydown', (event) => {
@@ -164,32 +168,23 @@
       });
     }
 
-    function setMode(showFilters, moveFocus) {
-      const filtersOpen = Boolean(filterMode && showFilters);
-
-      searchMode.hidden = filtersOpen;
-
-      if (filterMode) {
-        filterMode.hidden = !filtersOpen;
-      }
+    function setDrawerOpen(open, moveFocus) {
+      const filtersOpen = Boolean(drawer && open);
 
       if (toggle) {
         toggle.setAttribute('aria-expanded', filtersOpen ? 'true' : 'false');
         toggle.setAttribute('aria-label', filtersOpen ? strings.hide : strings.show);
       }
 
-      bar.dataset.dclFilterMode = filtersOpen ? 'filters' : 'search';
-      storeOpen(storageKey, filtersOpen);
-
-      if (!moveFocus) {
-        return;
+      if (drawer) {
+        drawer.setAttribute('aria-hidden', filtersOpen ? 'false' : 'true');
+        drawer.inert = !filtersOpen;
       }
 
-      if (filtersOpen) {
-        selects[0]?.focus();
-      } else if (search) {
-        search.focus();
-      } else {
+      bar.dataset.dclFiltersOpen = filtersOpen ? '1' : '0';
+      storeOpen(storageKey, filtersOpen);
+
+      if (moveFocus && !filtersOpen) {
         toggle?.focus();
       }
     }
