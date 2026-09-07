@@ -2,6 +2,7 @@
 <form>
   <fieldset name="details" label="COM_DECARODCL_PLAYER_DETAILS">
     <field name="id" type="hidden" />
+    <field name="modified" type="hidden" />
     <field name="first_name" type="text" label="COM_DECARODCL_FIELD_FIRST_NAME" required="true" maxlength="190" />
     <field name="last_name" type="text" label="COM_DECARODCL_FIELD_LAST_NAME" required="true" maxlength="190" />
     <field name="external_ref" type="text" label="COM_DECARODCL_FIELD_EXTERNAL_REF" description="COM_DECARODCL_FIELD_EXTERNAL_REF_DESC" maxlength="100" />
