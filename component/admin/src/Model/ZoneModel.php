@@ -109,8 +109,8 @@ final class ZoneModel extends BaseAdminModel
 
             // A Zone can be used by multiple tournaments. Validate against the
             // newly written membership before commit so a country removal cannot
-            // silently invalidate an existing participation. The transaction
-            // rolls both the Zone and mapping changes back on failure.
+            // silently invalidate an existing participation or host country. The
+            // transaction rolls both the Zone and mapping changes back on failure.
             $query = $db->getQuery(true)
                 ->select('DISTINCT ' . $db->quoteName('tournament_id'))
                 ->from($db->quoteName('#__dcl_tournament_zones'))
@@ -119,6 +119,7 @@ final class ZoneModel extends BaseAdminModel
 
             foreach (array_map('intval', $db->setQuery($query)->loadColumn() ?: []) as $tournamentId) {
                 TournamentScopeHelper::assertExistingParticipationsCompatible($db, $tournamentId);
+                TournamentScopeHelper::assertExistingSeasonHostsCompatible($db, $tournamentId);
             }
 
             $db->transactionCommit();
