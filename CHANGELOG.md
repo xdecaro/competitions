@@ -1,5 +1,27 @@
 # Changelog
 
+## 0.10.0 - 2026-09-07
+
+- Added Tournament competition scope: International, Continental / Zone, National and Regional / Local.
+- Added Tournament participant type: Clubs / Teams or National teams.
+- Added explicit Team type (`club` or `national`) while preserving the existing Team, Participation, Roster and Match architecture.
+- Added `#__dcl_tournament_countries` and `#__dcl_tournament_zones` relation tables instead of duplicating geographic data in Tournament rows.
+- Added server-side Tournament scope validation: National/Local require a Country, Zone requires one or more valid Zones, International remains unrestricted.
+- Added server-side Participation eligibility validation through Season → Tournament, Team type and Federation → Country.
+- Added AJAX filtering of eligible Teams in the Participation form with CSRF and ACL checks; server validation remains authoritative if JavaScript is unavailable or tampered with.
+- Added Season host-country validation against Tournament geography.
+- Protected existing data when changing Tournament scope, Team type/Federation, Federation Country or Zone membership: incompatible existing Participations are rejected rather than silently invalidated.
+- Protected existing Season host Countries when Tournament scope or Zone membership changes.
+- Added global administrator Live Sync for Organizations, Zones, Countries, Federations, Tournaments, Seasons, Teams, Participations, Players, Rosters and Matches.
+- Added `#__dcl_changes` for incremental change cursors and `#__dcl_edit_sessions` for advisory edit presence.
+- Added BroadcastChannel synchronization for browser tabs plus lightweight polling for other browsers/computers; no WebSocket service is required.
+- Added race-safe optimistic locking based on the `modified` timestamp rendered with every edit form, including a sentinel for legacy rows with a NULL timestamp.
+- Added server-side conflict rejection so a stale edit cannot overwrite newer data even before the next browser poll.
+- State/publish actions now advance the record version timestamp and emit Live Sync change events.
+- Added responsive/light-dark Live Sync notices and a reload action for edit conflicts.
+- Added additive 0.10.0 fresh-install/update SQL. Existing Tournaments default to `international`, existing Teams default to `club`, and no existing sports records are deleted.
+- Bumped component, package, plugin, modules, Web Asset registry and Joomla update feed to 0.10.0.
+
 ## 0.9.1 - 2026-09-07
 
 - Fixed the administrator fatal error `PageHeaderHelper::render(): Argument #3 ($id) must be of type int, null given` introduced by the shared 0.9.0 page header.
