@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.12.0 - 2026-09-08
+
+- Added optional Core by xdecaro 1.1+ Web Asset Manager integration to the administrator Information/Diagnostics view.
+- Added an isolated `.xdecaro-scope` layout and a small token bridge from `--dcl-*` to the public `--xdecaro-*` design tokens.
+- Preserved the complete local Competitions CSS as an automatic fallback when Core is missing, older than 1.1.0 or its asset registry cannot be loaded.
+- Kept historical Joomla identifiers `com_decarodcl`, `pkg_decarodcl` and `#__dcl_*` unchanged for upgrade compatibility.
+- Preserved tournaments, seasons, teams, participations, rosters, matches, standings, Live Sync, ACL, CSRF and all sports-domain behavior.
+- No database migration is introduced.
+- Bumped component, package, plugin, modules, Web Asset registry and Joomla update feed to 0.12.0.
+
 ## 0.11.0 - 2026-09-08
 
 - Added an optional Xdecaro Core integration adapter registered through the Joomla dependency-injection container.
