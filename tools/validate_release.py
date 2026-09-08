@@ -104,6 +104,7 @@ EXPECTED_COMPONENT_FILES = {
     "admin/tmpl/match/edit.php",
     "admin/tmpl/matches/default.php",
     "admin/tmpl/information/default.php",
+    "admin/tmpl/information/core.php",
     "admin/sql/install.0.7.mysql.utf8mb4.sql",
     "admin/sql/install.0.8.mysql.utf8mb4.sql",
     "admin/sql/install.0.10.mysql.utf8mb4.sql",
@@ -116,17 +117,20 @@ EXPECTED_COMPONENT_FILES = {
     "admin/language/en-GB/com_decarodcl.082.ini",
     "admin/language/en-GB/com_decarodcl.090.ini",
     "admin/language/en-GB/com_decarodcl.100.ini",
+    "admin/language/en-GB/com_decarodcl.121.ini",
     "admin/language/it-IT/com_decarodcl.070.ini",
     "admin/language/it-IT/com_decarodcl.071.ini",
     "admin/language/it-IT/com_decarodcl.080.ini",
     "admin/language/it-IT/com_decarodcl.082.ini",
     "admin/language/it-IT/com_decarodcl.090.ini",
     "admin/language/it-IT/com_decarodcl.100.ini",
+    "admin/language/it-IT/com_decarodcl.121.ini",
     "media/admin.css",
     "media/live-sync.css",
     "media/live-sync.js",
     "media/scope.js",
     "media/joomla.asset.json",
+    "media/css/core-bridge.css",
     "media/css/information.css",
     "media/js/information.js",
 }
@@ -140,7 +144,8 @@ EXPECTED_TIMELINE_FILES = {
     "language/it-IT/mod_dcl_matchtimeline.ini",
 }
 
-UPDATE_SITE_URL = "https://raw.githubusercontent.com/xdecaro/dcl/main/updates/pkg_decarodcl.xml"
+UPDATE_SITE_URL = "https://raw.githubusercontent.com/xdecaro/competitions/main/updates/pkg_decarodcl.xml"
+LEGACY_UPDATE_SITE_URL = "https://raw.githubusercontent.com/xdecaro/dcl/main/updates/pkg_decarodcl.xml"
 
 
 def fail(message: str) -> None:
@@ -170,9 +175,12 @@ def validate_versions() -> None:
     assets = asset.get("assets", [])
     required_assets = [
         ("com_decarodcl.admin", "style"),
+        ("com_decarodcl.filterbar-style", "style"),
+        ("com_decarodcl.filterbar", "script"),
         ("com_decarodcl.live-sync-style", "style"),
         ("com_decarodcl.live-sync", "script"),
         ("com_decarodcl.scope", "script"),
+        ("com_decarodcl.core-bridge", "style"),
         ("com_decarodcl.information", "style"),
         ("com_decarodcl.information", "script"),
     ]
@@ -203,9 +211,13 @@ def validate_versions() -> None:
         fail("update-server Joomla targetplatform regex is not the expected Joomla 6 pattern")
 
     download_url = (update.findtext("./downloads/downloadurl") or "").strip()
-    expected_download = f"/v{VERSION}/pkg_decarodcl_{VERSION}.zip"
-    if expected_download not in download_url:
-        fail(f"update-server URL does not contain {expected_download}")
+    expected_download = f"https://github.com/xdecaro/competitions/releases/download/v{VERSION}/pkg_decarodcl_{VERSION}.zip"
+    if download_url != expected_download:
+        fail(f"update-server URL must be {expected_download}")
+
+    maintainer_url = (update.findtext("maintainerurl") or "").strip()
+    if maintainer_url != "https://github.com/xdecaro/competitions":
+        fail("update-server maintainer URL must point to xdecaro/competitions")
 
     component_manifest = ET.parse(ROOT / "component/decarodcl.xml").getroot()
     submenu_views = {node.get("view") for node in component_manifest.findall("./administration/submenu/menu")}
@@ -233,6 +245,8 @@ def validate_versions() -> None:
         "it-IT/com_decarodcl.090.ini",
         "en-GB/com_decarodcl.100.ini",
         "it-IT/com_decarodcl.100.ini",
+        "en-GB/com_decarodcl.121.ini",
+        "it-IT/com_decarodcl.121.ini",
     ):
         if required_language not in component_languages:
             fail(f"component manifest is missing language file {required_language}")
@@ -366,14 +380,35 @@ def validate_versions() -> None:
             fail(f"Live Sync browser client is missing {required}")
 
     information_model = (ROOT / "component/admin/src/Model/InformationModel.php").read_text(encoding="utf-8")
-    for required in ("extension_versions", "installation_consistent", "mod_dcl_matchtimeline", "mod_dcl_countriesfederations", "decarodcl"):
+    for required in (
+        "extension_versions",
+        "installation_consistent",
+        "mod_dcl_matchtimeline",
+        "mod_dcl_countriesfederations",
+        "pkg_xdecarocore",
+        "Core by xdecaro",
+        "api_available",
+        "xdecaro/competitions",
+    ):
         if required not in information_model:
             fail(f"InformationModel integrity diagnostics are missing {required}")
 
     information_template = (ROOT / "component/admin/tmpl/information/default.php").read_text(encoding="utf-8")
-    for required in ("dcl-information-grid", "dcl-card", "dcl-information-row", "dcl-badge", "dcl-information-integration", "dcl-information-checks", "dcl-information-details", "data-dcl-info-copy"):
+    for required in (
+        "dcl-information-grid",
+        "dcl-card",
+        "dcl-information-row",
+        "dcl-badge",
+        "dcl-information-integration",
+        "dcl-information-checks",
+        "dcl-information-details",
+        "data-dcl-info-copy",
+        "COM_DECARODCL_INFO_PUBLIC_API",
+        "Core by xdecaro",
+        "xdecaro/competitions/releases",
+    ):
         if required not in information_template:
-            fail(f"Information template is missing design-system class {required}")
+            fail(f"Information template is missing required integration/UI marker {required}")
 
     page_header_layout = (ROOT / "component/admin/layouts/page/header.php").read_text(encoding="utf-8")
     for required in ("dcl-page-header", "dcl-page-header__eyebrow", "dcl-page-header__title", "dcl-page-header__description"):
@@ -395,6 +430,8 @@ def validate_versions() -> None:
         fail("LanguageHelper does not load the 0.9.0 language file")
     if "com_decarodcl.100" not in language_helper:
         fail("LanguageHelper does not load the 0.10.0 language file")
+    if "com_decarodcl.121" not in language_helper:
+        fail("LanguageHelper does not load the 0.12.1 language file")
 
     package = ET.parse(ROOT / "package/pkg_decarodcl.xml").getroot()
     shipped = {node.text.strip() for node in package.findall("./files/file") if node.text}
@@ -408,13 +445,22 @@ def validate_versions() -> None:
         fail(f"package nested ZIP list mismatch: {sorted(shipped)}")
 
     update_servers = [(node.text or "").strip() for node in package.findall("./updateservers/server")]
-    if UPDATE_SITE_URL not in update_servers:
-        fail("package manifest is missing the Competitions update server")
+    if update_servers != [UPDATE_SITE_URL]:
+        fail("package manifest must use only the xdecaro/competitions update server")
 
     package_script = (ROOT / "package/script.php").read_text(encoding="utf-8")
-    for required in (UPDATE_SITE_URL, "#__update_sites", "#__update_sites_extensions"):
+    for required in (
+        UPDATE_SITE_URL,
+        LEGACY_UPDATE_SITE_URL,
+        "CURRENT_PACKAGE_ELEMENT",
+        "normalizeCurrentChildren",
+        "cleanupLegacyPackageMetadata",
+        "package_id",
+        "#__update_sites",
+        "#__update_sites_extensions",
+    ):
         if required not in package_script:
-            fail(f"package update-site repair is missing {required}")
+            fail(f"package metadata repair is missing {required}")
 
 
 def validate_zip_contents(path: Path, expected: set[str], label: str) -> None:
