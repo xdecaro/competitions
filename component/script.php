@@ -15,7 +15,7 @@ final class ComDecarodclInstallerScript
 {
     public function preflight(string $type, $parent): bool
     {
-        if (!in_array($type, ['install', 'update'], true)) {
+        if ($type !== 'update') {
             return true;
         }
 
