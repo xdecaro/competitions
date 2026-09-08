@@ -1,0 +1,314 @@
+name: Temporary Competitions DB Prefix Rewrite
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/db-prefix-rewrite-main.yml
+
+permissions:
+  contents: write
+
+jobs:
+  rewrite:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout working branch
+        uses: actions/checkout@v4
+        with:
+          ref: cleanup/competitions-db-prefix
+          fetch-depth: 0
+      - name: Rewrite database storage and release metadata
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import json
+          import re
+
+          root = Path('.')
+          excluded = {
+              Path('CHANGELOG.md'),
+              Path('.github/workflows/db-prefix-reset.yml'),
+              Path('.github/workflows/ci.yml'),
+              Path('.github/workflows/release.yml'),
+          }
+          suffixes = {'.php', '.sql', '.py', '.xml', '.json', '.md', '.ini', '.js'}
+
+          for path in root.rglob('*'):
+              if not path.is_file() or '.git' in path.parts or path in excluded:
+                  continue
+              if path.suffix.lower() not in suffixes:
+                  continue
+              text = path.read_text(encoding='utf-8')
+              new = text.replace('#__dcl_', '#__decarocompetitions_')
+              new = new.replace('idx_dcl_', 'idx_competitions_')
+              if new != text:
+                  path.write_text(new, encoding='utf-8')
+
+          installer = r'''<?php
+          defined('_JEXEC') or die;
+
+          use Joomla\CMS\Factory;
+          use Joomla\CMS\Log\Log;
+          use Joomla\Database\DatabaseInterface;
+
+          /**
+           * Competitions component schema migration helper.
+           *
+           * Database tables use the product namespace decarocompetitions.
+           * Older DCL-prefixed tables are renamed before Joomla applies the
+           * normal schema update chain, preserving data when upgrading.
+           */
+          final class ComDecarodclInstallerScript
+          {
+              public function preflight(string $type, $parent): bool
+              {
+                  if (!in_array($type, ['install', 'update'], true)) {
+                      return true;
+                  }
+
+                  return $this->migrateLegacyTablePrefix();
+              }
+
+              public function install($parent): bool
+              {
+                  return $this->migrateLegacySchema();
+              }
+
+              public function update($parent): bool
+              {
+                  return $this->migrateLegacySchema();
+              }
+
+              public function uninstall($parent): bool
+              {
+                  return true;
+              }
+
+              private function migrateLegacyTablePrefix(): bool
+              {
+                  try {
+                      /** @var DatabaseInterface $db */
+                      $db = Factory::getContainer()->get(DatabaseInterface::class);
+                      $sitePrefix = $db->getPrefix();
+                      $legacyPrefix = $sitePrefix . 'dcl_';
+                      $currentPrefix = $sitePrefix . 'decarocompetitions_';
+                      $tables = $db->getTableList();
+                      $existing = array_fill_keys($tables, true);
+                      $renames = [];
+
+                      foreach ($tables as $table) {
+                          if (!str_starts_with($table, $legacyPrefix)) {
+                              continue;
+                          }
+
+                          $suffix = substr($table, strlen($legacyPrefix));
+                          $target = $currentPrefix . $suffix;
+
+                          if (isset($existing[$target])) {
+                              Log::add(
+                                  'Competitions database migration stopped because both legacy and current tables exist for ' . $suffix,
+                                  Log::ERROR,
+                                  'competitions'
+                              );
+                              return false;
+                          }
+
+                          $renames[] = $db->quoteName($table) . ' TO ' . $db->quoteName($target);
+                      }
+
+                      if ($renames !== []) {
+                          $db->setQuery('RENAME TABLE ' . implode(', ', $renames))->execute();
+                      }
+
+                      return true;
+                  } catch (Throwable $e) {
+                      Log::add('Competitions table-prefix migration failed: ' . $e->getMessage(), Log::ERROR, 'competitions');
+                      return false;
+                  }
+              }
+
+              private function migrateLegacySchema(): bool
+              {
+                  try {
+                      /** @var DatabaseInterface $db */
+                      $db = Factory::getContainer()->get(DatabaseInterface::class);
+                      $table = $db->replacePrefix('#__decarocompetitions_federations');
+                      $columns = $db->getTableColumns($table, false);
+
+                      if (!isset($columns['country_id'])) {
+                          $query = 'ALTER TABLE ' . $db->quoteName($table)
+                              . ' ADD COLUMN ' . $db->quoteName('country_id')
+                              . ' INT UNSIGNED NOT NULL DEFAULT 0 AFTER ' . $db->quoteName('id');
+                          $db->setQuery($query)->execute();
+                      }
+
+                      $keys = $db->getTableKeys($table);
+                      $hasIndex = false;
+                      $legacyIndex = 'idx_' . 'dcl_' . 'federations_country_id';
+
+                      foreach ($keys as $key) {
+                          $keyName = (string) ($key->Key_name ?? '');
+                          if ($keyName === 'idx_competitions_federations_country_id' || $keyName === $legacyIndex) {
+                              $hasIndex = true;
+                              break;
+                          }
+                      }
+
+                      if (!$hasIndex) {
+                          $query = 'ALTER TABLE ' . $db->quoteName($table)
+                              . ' ADD INDEX ' . $db->quoteName('idx_competitions_federations_country_id')
+                              . ' (' . $db->quoteName('country_id') . ')';
+                          $db->setQuery($query)->execute();
+                      }
+
+                      $columns = $db->getTableColumns($table, false);
+
+                      if (isset($columns['country_code'])) {
+                          $countries = $db->replacePrefix('#__decarocompetitions_countries');
+                          $query = 'UPDATE ' . $db->quoteName($table) . ' AS f'
+                              . ' INNER JOIN ' . $db->quoteName($countries) . ' AS c'
+                              . ' ON (UPPER(c.' . $db->quoteName('code') . ') = UPPER(f.' . $db->quoteName('country_code') . ')'
+                              . ' OR UPPER(c.' . $db->quoteName('iso3') . ') = UPPER(f.' . $db->quoteName('country_code') . '))'
+                              . ' SET f.' . $db->quoteName('country_id') . ' = c.' . $db->quoteName('id')
+                              . ' WHERE f.' . $db->quoteName('country_id') . ' = 0'
+                              . ' AND f.' . $db->quoteName('country_code') . ' IS NOT NULL'
+                              . ' AND f.' . $db->quoteName('country_code') . " <> ''";
+                          $db->setQuery($query)->execute();
+                      }
+
+                      return true;
+                  } catch (Throwable $e) {
+                      Log::add('Competitions component migration failed: ' . $e->getMessage(), Log::ERROR, 'competitions');
+                      return false;
+                  }
+              }
+          }
+          '''
+          installer = '\n'.join(line[10:] if line.startswith('          ') else line for line in installer.splitlines()) + '\n'
+          Path('component/script.php').write_text(installer, encoding='utf-8')
+
+          Path('component/admin/sql/updates/mysql/0.13.0.sql').write_text(
+              '-- Competitions 0.13.0 database prefix migration is performed by component/script.php preflight.\n'
+              '-- Joomla records this schema version after the legacy tables, if present, have been renamed.\n',
+              encoding='utf-8'
+          )
+
+          Path('VERSION').write_text('0.13.0\n', encoding='utf-8')
+
+          xml_version_files = [
+              Path('component/decarodcl.xml'),
+              Path('package/pkg_decarodcl.xml'),
+              Path('plugins/system/decarodcl/decarodcl.xml'),
+              Path('modules/mod_dcl_matchtimeline/mod_dcl_matchtimeline.xml'),
+              Path('modules/mod_dcl_countriesfederations/mod_dcl_countriesfederations.xml'),
+              Path('updates/pkg_decarodcl.xml'),
+          ]
+          for path in xml_version_files:
+              text = path.read_text(encoding='utf-8')
+              text = re.sub(r'<version>[^<]+</version>', '<version>0.13.0</version>', text, count=1)
+              text = text.replace('/v0.12.2/pkg_competitions_0.12.2.zip', '/v0.13.0/pkg_competitions_0.13.0.zip')
+              path.write_text(text, encoding='utf-8')
+
+          asset_path = Path('component/media/joomla.asset.json')
+          asset = json.loads(asset_path.read_text(encoding='utf-8'))
+          asset['version'] = '0.13.0'
+          for item in asset.get('assets', []):
+              item['version'] = '0.13.0'
+          asset_path.write_text(json.dumps(asset, indent=2, ensure_ascii=False) + '\n', encoding='utf-8')
+
+          readme = Path('README.md')
+          text = readme.read_text(encoding='utf-8')
+          text, count = re.subn(r'(## Current version\n\n)\*\*[^*]+\*\*', r'\g<1>**0.13.0**', text, count=1)
+          if count != 1:
+              raise SystemExit('Unable to update README current version')
+          text = text.replace('- Database tables: `#__dcl_*`', '- Database tables: `#__decarocompetitions_*`')
+          text = text.replace('dedicated `#__dcl_*` tables', 'dedicated `#__decarocompetitions_*` tables')
+          readme.write_text(text, encoding='utf-8')
+
+          changelog = Path('CHANGELOG.md')
+          text = changelog.read_text(encoding='utf-8')
+          marker = '# Changelog\n\n'
+          if not text.startswith(marker):
+              raise SystemExit('Unexpected CHANGELOG.md header')
+          if '## 0.13.0 - 2026-09-08' not in text:
+              entry = '''## 0.13.0 - 2026-09-08
+
+- Rebased Competitions database storage from the legacy DCL table prefix to `#__decarocompetitions_*`.
+- Fresh installations create only `#__decarocompetitions_*` tables.
+- Existing installations are protected by a component preflight migration that renames legacy DCL-prefixed tables before normal Joomla schema updates.
+- Updated runtime queries, Table classes, modules, Live Sync helpers, SQL and release validation to the new table prefix.
+- Kept `com_decarodcl`, `pkg_decarodcl`, plugin/module identifiers and PHP namespace unchanged in this release to avoid coupling the database cleanup to a separate extension-identity migration.
+- No sports-domain behavior is intentionally changed.
+
+'''
+              changelog.write_text(marker + entry + text[len(marker):], encoding='utf-8')
+
+          validator = Path('tools/validate_release.py')
+          text = validator.read_text(encoding='utf-8')
+          anchor = '    "admin/sql/updates/mysql/0.10.0.sql",\n'
+          if 'admin/sql/updates/mysql/0.13.0.sql' not in text:
+              if anchor not in text:
+                  raise SystemExit('Unable to extend expected component SQL list')
+              text = text.replace(anchor, anchor + '    "admin/sql/updates/mysql/0.13.0.sql",\n', 1)
+          guard_anchor = 'def validate_versions() -> None:\n'
+          if 'def validate_no_legacy_table_prefix()' not in text:
+              guard = '''def validate_no_legacy_table_prefix() -> None:
+              legacy = "#__" + "dcl_"
+              roots = [ROOT / "component", ROOT / "modules", ROOT / "plugins", ROOT / "package", ROOT / "tools", ROOT / "docs", ROOT / "README.md"]
+              for root in roots:
+                  paths = [root] if root.is_file() else root.rglob("*")
+                  for path in paths:
+                      if not path.is_file() or path.suffix.lower() not in {".php", ".sql", ".py", ".md", ".xml"}:
+                          continue
+                      if legacy in path.read_text(encoding="utf-8"):
+                          fail(f"legacy Competitions table prefix remains in {path.relative_to(ROOT)}")
+
+
+'''
+              guard = '\n'.join(line[14:] if line.startswith('              ') else line for line in guard.splitlines()) + '\n'
+              if guard_anchor not in text:
+                  raise SystemExit('Unable to add legacy-prefix validator')
+              text = text.replace(guard_anchor, guard + guard_anchor, 1)
+          text = text.replace('    validate_versions()\n', '    validate_no_legacy_table_prefix()\n    validate_versions()\n', 1)
+          validator.write_text(text, encoding='utf-8')
+
+          ci = Path('.github/workflows/ci.yml')
+          text = ci.read_text(encoding='utf-8')
+          text = text.replace('PACKAGE="dist/pkg_decarodcl_${VERSION}.zip"', 'PACKAGE="dist/pkg_competitions_${VERSION}.zip"')
+          ci.write_text(text, encoding='utf-8')
+
+          release = Path('.github/workflows/release.yml')
+          text = release.read_text(encoding='utf-8')
+          notes_anchor = '          if [ "$VERSION" = "0.12.2" ]; then\n            NOTES="Competitions 0.12.2: public package renamed to pkg_competitions while preserving the historical Joomla package identifier for safe updates."\n          fi\n'
+          if 'Competitions 0.13.0: database tables moved' not in text:
+              if notes_anchor not in text:
+                  raise SystemExit('Unable to add 0.13.0 release notes')
+              text = text.replace(notes_anchor, notes_anchor + '          if [ "$VERSION" = "0.13.0" ]; then\n            NOTES="Competitions 0.13.0: database tables moved to the decarocompetitions namespace with protected legacy-table migration."\n          fi\n', 1)
+          release.write_text(text, encoding='utf-8')
+          PY
+      - name: Validate source
+        shell: bash
+        run: |
+          set -euo pipefail
+          if grep -RIn --exclude='CHANGELOG.md' --exclude='db-prefix-reset.yml' --exclude='db-prefix-rewrite-main.yml' '#__dcl_' component modules plugins package tools updates docs README.md; then
+            echo 'Legacy #__dcl_ schema/runtime reference remains.' >&2
+            exit 1
+          fi
+          find component modules plugins package -name '*.php' -print0 | xargs -0 -n1 php -l
+          python3 tools/validate_release.py
+          python3 tools/build.py
+          python3 tools/validate_release.py --dist
+          VERSION="$(cat VERSION)"
+          test -f "dist/pkg_competitions_${VERSION}.zip"
+      - name: Commit working branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add VERSION README.md CHANGELOG.md component modules plugins package tools updates docs .github/workflows/ci.yml .github/workflows/release.yml
+          git commit -m "Rebase Competitions database storage for 0.13.0"
+          git push origin HEAD:cleanup/competitions-db-prefix
