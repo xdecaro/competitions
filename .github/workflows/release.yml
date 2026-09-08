@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - VERSION
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -27,7 +28,7 @@ jobs:
             exit 1
           fi
       - name: Ensure 0.12.0 changelog entry
-        if: steps.version.outputs.version == '0.12.0'
+        if: ${{ steps.version.outputs.version == '0.12.0' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -43,15 +44,16 @@ jobs:
               raise SystemExit('Unexpected CHANGELOG.md header')
           entry = '''## 0.12.0 - 2026-09-08
 
-- Added optional Core by xdecaro 1.1+ Web Asset Manager integration to the administrator Information/Diagnostics view.
-- Added an isolated `.xdecaro-scope` layout and a small token bridge from `--dcl-*` to the public `--xdecaro-*` design tokens.
-- Preserved the complete local Competitions CSS as an automatic fallback when Core is missing, older than 1.1.0 or its asset registry cannot be loaded.
-- Kept historical Joomla identifiers `com_decarodcl`, `pkg_decarodcl` and `#__dcl_*` unchanged for upgrade compatibility.
-- Preserved tournaments, seasons, teams, participations, rosters, matches, standings, Live Sync, ACL, CSRF and all sports-domain behavior.
-- No database migration is introduced.
-- Bumped component, package, plugin, modules, Web Asset registry and Joomla update feed to 0.12.0.
+          - Added optional Core by xdecaro 1.1+ Web Asset Manager integration to the administrator Information/Diagnostics view.
+          - Added an isolated `.xdecaro-scope` layout and a small token bridge from `--dcl-*` to the public `--xdecaro-*` design tokens.
+          - Preserved the complete local Competitions CSS as an automatic fallback when Core is missing, older than 1.1.0 or its asset registry cannot be loaded.
+          - Kept historical Joomla identifiers `com_decarodcl`, `pkg_decarodcl` and `#__dcl_*` unchanged for upgrade compatibility.
+          - Preserved tournaments, seasons, teams, participations, rosters, matches, standings, Live Sync, ACL, CSRF and all sports-domain behavior.
+          - No database migration is introduced.
+          - Bumped component, package, plugin, modules, Web Asset registry and Joomla update feed to 0.12.0.
 
-'''
+          '''
+          entry = entry.replace('\n          ', '\n')
           path.write_text(marker + entry + text[len(marker):], encoding='utf-8')
           PY
           git config user.name "github-actions[bot]"
@@ -70,7 +72,8 @@ jobs:
           from pathlib import Path
           import xml.etree.ElementTree as ET
           for p in Path('.').rglob('*.xml'):
-              if '.git' in p.parts: continue
+              if '.git' in p.parts:
+                  continue
               ET.parse(p)
           PY
       - name: Release metadata consistency
