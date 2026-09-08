@@ -1,30 +1,30 @@
 <?php
-namespace Xdecaro\Component\Decarodcl\Administrator\Model;
+namespace Xdecaro\Component\Competitions\Administrator\Model;
 
 defined('_JEXEC') or die;
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Table\Table;
-use Xdecaro\Component\Decarodcl\Administrator\Helper\OrganizationAssignmentHelper;
-use Xdecaro\Component\Decarodcl\Administrator\Helper\TournamentScopeHelper;
+use Xdecaro\Component\Competitions\Administrator\Helper\OrganizationAssignmentHelper;
+use Xdecaro\Component\Competitions\Administrator\Helper\TournamentScopeHelper;
 
 final class TournamentModel extends BaseAdminModel
 {
     private const ORGANIZATION_FIELDS = ['organizer_ids'=>'organizer','governing_body_ids'=>'governing_body','co_organizer_ids'=>'co_organizer','partner_ids'=>'partner'];
 
     public function getTable($type = 'Tournament', $prefix = 'Administrator', $config = []): Table { return parent::getTable($type, $prefix, $config); }
-    public function getForm($data = [], $loadData = true) { return $this->loadForm('com_decarodcl.tournament', 'tournament', ['control'=>'jform','load_data'=>$loadData]); }
+    public function getForm($data = [], $loadData = true) { return $this->loadForm('com_xdecarocompetitions.tournament', 'tournament', ['control'=>'jform','load_data'=>$loadData]); }
 
     protected function loadFormData()
     {
-        $data = Factory::getApplication()->getUserState('com_decarodcl.edit.tournament.data', []);
+        $data = Factory::getApplication()->getUserState('com_xdecarocompetitions.edit.tournament.data', []);
 
         if (!$data) {
             $data = $this->getItem();
 
             if (!empty($data->id)) {
                 $db = $this->getDatabase();
-                $assignments = OrganizationAssignmentHelper::load($db, '#__decarocompetitions_tournament_organizations', 'tournament_id', (int) $data->id);
+                $assignments = OrganizationAssignmentHelper::load($db, '#__xdecarocompetitions_tournament_organizations', 'tournament_id', (int) $data->id);
 
                 foreach (self::ORGANIZATION_FIELDS as $field => $role) {
                     $data->{$field} = $assignments[$role] ?? [];
@@ -85,7 +85,7 @@ final class TournamentModel extends BaseAdminModel
                 throw new \RuntimeException('Tournament ID not available after save.');
             }
 
-            OrganizationAssignmentHelper::sync($db, '#__decarocompetitions_tournament_organizations', 'tournament_id', $id, $roles);
+            OrganizationAssignmentHelper::sync($db, '#__xdecarocompetitions_tournament_organizations', 'tournament_id', $id, $roles);
             TournamentScopeHelper::sync(
                 $db,
                 $id,

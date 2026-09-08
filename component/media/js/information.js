@@ -7,10 +7,10 @@
   };
 
   onReady(() => {
-    const data = document.getElementById('dcl-information-diagnostic-data');
-    const copyButton = document.querySelector('[data-dcl-info-copy]');
-    const downloadButton = document.querySelector('[data-dcl-info-download]');
-    const feedback = document.querySelector('[data-dcl-info-feedback]');
+    const data = document.getElementById('competitions-information-diagnostic-data');
+    const copyButton = document.querySelector('[data-competitions-info-copy]');
+    const downloadButton = document.querySelector('[data-competitions-info-download]');
+    const feedback = document.querySelector('[data-competitions-info-feedback]');
     if (!data || !feedback) return;
 
     const text = () => data.textContent || '';
@@ -34,9 +34,9 @@
       try {
         if (navigator.clipboard?.writeText) await navigator.clipboard.writeText(text());
         else if (!fallbackCopy(text())) throw new Error('copy failed');
-        setFeedback(message('COM_DECARODCL_INFO_COPIED', 'Diagnostica copiata.'));
+        setFeedback(message('COM_XDECAROCOMPETITIONS_INFO_COPIED', 'Diagnostica copiata.'));
       } catch (error) {
-        setFeedback(message('COM_DECARODCL_INFO_COPY_FAILED', 'Impossibile copiare la diagnostica.'));
+        setFeedback(message('COM_XDECAROCOMPETITIONS_INFO_COPY_FAILED', 'Impossibile copiare la diagnostica.'));
       }
     });
 
@@ -51,7 +51,7 @@
       anchor.click();
       anchor.remove();
       URL.revokeObjectURL(url);
-      setFeedback(message('COM_DECARODCL_INFO_DOWNLOADED', 'Diagnostica scaricata.'));
+      setFeedback(message('COM_XDECAROCOMPETITIONS_INFO_DOWNLOADED', 'Diagnostica scaricata.'));
     });
   });
 })();

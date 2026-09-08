@@ -1,5 +1,5 @@
 <?php
-namespace Xdecaro\Component\Decarodcl\Administrator\Model;
+namespace Xdecaro\Component\Competitions\Administrator\Model;
 
 defined('_JEXEC') or die;
 
@@ -41,17 +41,17 @@ final class ParticipationsModel extends ListModel
             ->select($db->quoteName('t.name', 'tournament_name'))
             ->select($db->quoteName('t.code', 'tournament_code'))
             ->select($db->quoteName('u.name', 'reviewer_name'))
-            ->from($db->quoteName('#__decarocompetitions_participations', 'a'))
+            ->from($db->quoteName('#__xdecarocompetitions_participations', 'a'))
             ->leftJoin(
-                $db->quoteName('#__decarocompetitions_teams', 'tm')
+                $db->quoteName('#__xdecarocompetitions_teams', 'tm')
                 . ' ON ' . $db->quoteName('tm.id') . ' = ' . $db->quoteName('a.team_id')
             )
             ->leftJoin(
-                $db->quoteName('#__decarocompetitions_seasons', 's')
+                $db->quoteName('#__xdecarocompetitions_seasons', 's')
                 . ' ON ' . $db->quoteName('s.id') . ' = ' . $db->quoteName('a.season_id')
             )
             ->leftJoin(
-                $db->quoteName('#__decarocompetitions_tournaments', 't')
+                $db->quoteName('#__xdecarocompetitions_tournaments', 't')
                 . ' ON ' . $db->quoteName('t.id') . ' = ' . $db->quoteName('s.tournament_id')
             )
             ->leftJoin(
@@ -129,7 +129,7 @@ final class ParticipationsModel extends ListModel
 
         $query = $db->getQuery(true)
             ->select([$db->quoteName('id'), $db->quoteName('name'), $db->quoteName('code')])
-            ->from($db->quoteName('#__decarocompetitions_tournaments'))
+            ->from($db->quoteName('#__xdecarocompetitions_tournaments'))
             ->where($db->quoteName('state') . ' <> -2')
             ->order($db->quoteName('name') . ' ASC');
 
@@ -147,9 +147,9 @@ final class ParticipationsModel extends ListModel
                 $db->quoteName('s.season_year'),
                 $db->quoteName('t.name', 'tournament_name'),
             ])
-            ->from($db->quoteName('#__decarocompetitions_seasons', 's'))
+            ->from($db->quoteName('#__xdecarocompetitions_seasons', 's'))
             ->leftJoin(
-                $db->quoteName('#__decarocompetitions_tournaments', 't')
+                $db->quoteName('#__xdecarocompetitions_tournaments', 't')
                 . ' ON ' . $db->quoteName('t.id') . ' = ' . $db->quoteName('s.tournament_id')
             )
             ->where($db->quoteName('s.state') . ' <> -2');

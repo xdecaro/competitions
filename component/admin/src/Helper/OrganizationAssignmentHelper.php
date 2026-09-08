@@ -1,5 +1,5 @@
 <?php
-namespace Xdecaro\Component\Decarodcl\Administrator\Helper;
+namespace Xdecaro\Component\Competitions\Administrator\Helper;
 
 defined('_JEXEC') or die;
 
@@ -61,7 +61,7 @@ final class OrganizationAssignmentHelper
 
         foreach ($roleMap as $role => $roleIds) {
             if (!is_string($role) || $role === '') {
-                throw new \RuntimeException(Text::_('COM_DECARODCL_ERROR_ORGANIZATION_REFERENCE_INVALID'));
+                throw new \RuntimeException(Text::_('COM_XDECAROCOMPETITIONS_ERROR_ORGANIZATION_REFERENCE_INVALID'));
             }
 
             foreach ($roleIds as $id) {
@@ -76,13 +76,13 @@ final class OrganizationAssignmentHelper
         foreach ($ids as $id) {
             $query = $db->getQuery(true)
                 ->select('COUNT(*)')
-                ->from($db->quoteName('#__decarocompetitions_organizations'))
+                ->from($db->quoteName('#__xdecarocompetitions_organizations'))
                 ->where($db->quoteName('id') . ' = :organizationId')
                 ->where($db->quoteName('state') . ' <> -2')
                 ->bind(':organizationId', $id, ParameterType::INTEGER);
 
             if ((int) $db->setQuery($query)->loadResult() === 0) {
-                throw new \RuntimeException(Text::_('COM_DECARODCL_ERROR_ORGANIZATION_REFERENCE_INVALID'));
+                throw new \RuntimeException(Text::_('COM_XDECAROCOMPETITIONS_ERROR_ORGANIZATION_REFERENCE_INVALID'));
             }
         }
     }

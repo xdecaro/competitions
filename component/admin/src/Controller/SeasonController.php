@@ -1,5 +1,5 @@
 <?php
-namespace Xdecaro\Component\Decarodcl\Administrator\Controller;
+namespace Xdecaro\Component\Competitions\Administrator\Controller;
 
 defined('_JEXEC') or die;
 
@@ -10,11 +10,11 @@ final class SeasonController extends FormController
 {
     protected function allowAdd($data = []): bool
     {
-        return Factory::getApplication()->getIdentity()->authorise('core.create', 'com_decarodcl');
+        return Factory::getApplication()->getIdentity()->authorise('core.create', 'com_xdecarocompetitions');
     }
 
     protected function allowEdit($data = [], $key = 'id'): bool
     {
-        return Factory::getApplication()->getIdentity()->authorise('core.edit', 'com_decarodcl');
+        return Factory::getApplication()->getIdentity()->authorise('core.edit', 'com_xdecarocompetitions');
     }
 }

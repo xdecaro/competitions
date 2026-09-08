@@ -1,5 +1,5 @@
 <?php
-namespace Xdecaro\Component\Decarodcl\Administrator\Table;
+namespace Xdecaro\Component\Competitions\Administrator\Table;
 
 defined('_JEXEC') or die;
 
@@ -8,13 +8,13 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Table\Table;
 use Joomla\Database\DatabaseDriver;
 use Joomla\Database\ParameterType;
-use Xdecaro\Component\Decarodcl\Administrator\Helper\TournamentScopeHelper;
+use Xdecaro\Component\Competitions\Administrator\Helper\TournamentScopeHelper;
 
 final class SeasonTable extends Table
 {
     public function __construct(DatabaseDriver $db)
     {
-        parent::__construct('#__decarocompetitions_seasons', 'id', $db);
+        parent::__construct('#__xdecarocompetitions_seasons', 'id', $db);
     }
 
     public function check(): bool
@@ -28,27 +28,27 @@ final class SeasonTable extends Table
         $this->end_date = trim((string) $this->end_date) ?: null;
 
         if ($this->name === '') {
-            $this->setError(Text::_('COM_DECARODCL_ERROR_SEASON_NAME_REQUIRED'));
+            $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_SEASON_NAME_REQUIRED'));
             return false;
         }
 
         if ($this->tournament_id <= 0) {
-            $this->setError(Text::_('COM_DECARODCL_ERROR_SEASON_TOURNAMENT_REQUIRED'));
+            $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_SEASON_TOURNAMENT_REQUIRED'));
             return false;
         }
 
         if ($this->season_year === null || $this->season_year < 1900 || $this->season_year > 2200) {
-            $this->setError(Text::_('COM_DECARODCL_ERROR_SEASON_YEAR_INVALID'));
+            $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_SEASON_YEAR_INVALID'));
             return false;
         }
 
         if ($this->start_date !== null && !$this->isValidDate($this->start_date)) {
-            $this->setError(Text::_('COM_DECARODCL_ERROR_START_DATE_INVALID'));
+            $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_START_DATE_INVALID'));
             return false;
         }
 
         if ($this->end_date !== null && !$this->isValidDate($this->end_date)) {
-            $this->setError(Text::_('COM_DECARODCL_ERROR_END_DATE_INVALID'));
+            $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_END_DATE_INVALID'));
             return false;
         }
 
@@ -57,7 +57,7 @@ final class SeasonTable extends Table
             && $this->end_date !== null
             && strcmp($this->end_date, $this->start_date) < 0
         ) {
-            $this->setError(Text::_('COM_DECARODCL_ERROR_END_BEFORE_START'));
+            $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_END_BEFORE_START'));
             return false;
         }
 
@@ -65,26 +65,26 @@ final class SeasonTable extends Table
 
         $query = $db->getQuery(true)
             ->select('COUNT(*)')
-            ->from($db->quoteName('#__decarocompetitions_tournaments'))
+            ->from($db->quoteName('#__xdecarocompetitions_tournaments'))
             ->where($db->quoteName('id') . ' = :tournamentId')
             ->where($db->quoteName('state') . ' <> -2')
             ->bind(':tournamentId', $this->tournament_id, ParameterType::INTEGER);
 
         if ((int) $db->setQuery($query)->loadResult() === 0) {
-            $this->setError(Text::_('COM_DECARODCL_ERROR_SEASON_TOURNAMENT_INVALID'));
+            $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_SEASON_TOURNAMENT_INVALID'));
             return false;
         }
 
         if ($this->host_country_code !== null) {
             $query = $db->getQuery(true)
                 ->select('COUNT(*)')
-                ->from($db->quoteName('#__decarocompetitions_countries'))
+                ->from($db->quoteName('#__xdecarocompetitions_countries'))
                 ->where($db->quoteName('code') . ' = :countryCode')
                 ->where($db->quoteName('state') . ' <> -2')
                 ->bind(':countryCode', $this->host_country_code);
 
             if ((int) $db->setQuery($query)->loadResult() === 0) {
-                $this->setError(Text::_('COM_DECARODCL_ERROR_SEASON_COUNTRY_INVALID'));
+                $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_SEASON_COUNTRY_INVALID'));
                 return false;
             }
 

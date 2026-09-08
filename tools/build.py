@@ -1,59 +1,57 @@
 from pathlib import Path
+import hashlib
 import shutil
 import zipfile
-import hashlib
 
 ROOT = Path(__file__).resolve().parents[1]
 VERSION = (ROOT / "VERSION").read_text(encoding="utf-8").strip()
 DIST = ROOT / "dist"
 DIST.mkdir(exist_ok=True)
+FIXED_TIME = (2026, 1, 1, 0, 0, 0)
 
-def zip_dir(src: Path, out: Path):
+
+def zip_dir(src: Path, out: Path) -> None:
     if out.exists():
         out.unlink()
-    with zipfile.ZipFile(out, "w", zipfile.ZIP_DEFLATED) as z:
-        for p in sorted(src.rglob("*")):
-            if p.is_file() and p.name != ".keep":
-                z.write(p, p.relative_to(src))
+    with zipfile.ZipFile(out, "w", zipfile.ZIP_DEFLATED, compresslevel=9) as archive:
+        for path in sorted(src.rglob("*")):
+            if not path.is_file() or path.name == ".keep":
+                continue
+            info = zipfile.ZipInfo(path.relative_to(src).as_posix(), FIXED_TIME)
+            info.compress_type = zipfile.ZIP_DEFLATED
+            info.external_attr = 0o100644 << 16
+            archive.writestr(info, path.read_bytes(), compress_type=zipfile.ZIP_DEFLATED, compresslevel=9)
+
 
 artifacts = []
+component = DIST / f"com_xdecarocompetitions_{VERSION}.zip"
+zip_dir(ROOT / "component", component)
+artifacts.append(component)
 
-component_zip = DIST / f"com_decarodcl_{VERSION}.zip"
-zip_dir(ROOT / "component", component_zip)
-artifacts.append(component_zip)
+plugin = DIST / f"plg_system_xdecarocompetitions_{VERSION}.zip"
+zip_dir(ROOT / "plugins/system/xdecarocompetitions", plugin)
+artifacts.append(plugin)
 
-plugin_zip = DIST / f"plg_system_decarodcl_{VERSION}.zip"
-zip_dir(ROOT / "plugins/system/decarodcl", plugin_zip)
-artifacts.append(plugin_zip)
-
-for module in ["mod_dcl_matchtimeline", "mod_dcl_countriesfederations"]:
-    out = DIST / f"{module}_{VERSION}.zip"
-    zip_dir(ROOT / "modules" / module, out)
-    artifacts.append(out)
+for module in ["mod_xdecarocompetitions_matchtimeline", "mod_xdecarocompetitions_countriesfederations"]:
+    artifact = DIST / f"{module}_{VERSION}.zip"
+    zip_dir(ROOT / "modules" / module, artifact)
+    artifacts.append(artifact)
 
 stage = DIST / "package-stage"
 if stage.exists():
     shutil.rmtree(stage)
 stage.mkdir()
-
-for p in artifacts:
-    shutil.copy2(p, stage / p.name)
-
-# The installed Joomla package element remains pkg_decarodcl for upgrade
-# compatibility. Only the public distribution archive uses the product name.
-shutil.copy2(ROOT / "package/pkg_decarodcl.xml", stage / "pkg_decarodcl.xml")
-shutil.copy2(ROOT / "package/script.php", stage / "script.php")
+for artifact in artifacts:
+    shutil.copyfile(artifact, stage / artifact.name)
+shutil.copyfile(ROOT / "package/pkg_xdecarocompetitions.xml", stage / "pkg_xdecarocompetitions.xml")
+shutil.copyfile(ROOT / "package/script.php", stage / "script.php")
 shutil.copytree(ROOT / "package/language", stage / "language")
 
-package_zip = DIST / f"pkg_competitions_{VERSION}.zip"
-zip_dir(stage, package_zip)
-artifacts.append(package_zip)
+package = DIST / f"pkg_xdecarocompetitions_{VERSION}.zip"
+zip_dir(stage, package)
+artifacts.append(package)
 
-checksums = []
-for p in artifacts:
-    digest = hashlib.sha256(p.read_bytes()).hexdigest()
-    checksums.append(f"{digest}  {p.name}")
-
+checksums = [f"{hashlib.sha256(path.read_bytes()).hexdigest()}  {path.name}" for path in artifacts]
 (DIST / "SHA256SUMS.txt").write_text("\n".join(checksums) + "\n", encoding="utf-8")
 shutil.rmtree(stage)
-print(package_zip)
+print(package)

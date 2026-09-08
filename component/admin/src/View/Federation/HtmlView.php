@@ -1,5 +1,5 @@
 <?php
-namespace Xdecaro\Component\Decarodcl\Administrator\View\Federation;
+namespace Xdecaro\Component\Competitions\Administrator\View\Federation;
 
 defined('_JEXEC') or die;
 
@@ -7,7 +7,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\View\HtmlView as BaseHtmlView;
 use Joomla\CMS\Toolbar\ToolbarHelper;
-use Xdecaro\Component\Decarodcl\Administrator\Helper\UiHelper;
+use Xdecaro\Component\Competitions\Administrator\Helper\UiHelper;
 
 final class HtmlView extends BaseHtmlView
 {
@@ -19,7 +19,7 @@ final class HtmlView extends BaseHtmlView
     {
         $user = Factory::getApplication()->getIdentity();
 
-        if (!$user->authorise('core.manage', 'com_decarodcl')) {
+        if (!$user->authorise('core.manage', 'com_xdecarocompetitions')) {
             throw new \RuntimeException(Text::_('JERROR_ALERTNOAUTHOR'), 403);
         }
 
@@ -34,11 +34,11 @@ final class HtmlView extends BaseHtmlView
 
         $isNew = empty($this->item->id);
         ToolbarHelper::title(
-            $isNew ? Text::_('COM_DECARODCL_FEDERATION_NEW') : Text::_('COM_DECARODCL_FEDERATION_EDIT'),
+            $isNew ? Text::_('COM_XDECAROCOMPETITIONS_FEDERATION_NEW') : Text::_('COM_XDECAROCOMPETITIONS_FEDERATION_EDIT'),
             'users'
         );
 
-        if ($user->authorise($isNew ? 'core.create' : 'core.edit', 'com_decarodcl')) {
+        if ($user->authorise($isNew ? 'core.create' : 'core.edit', 'com_xdecarocompetitions')) {
             ToolbarHelper::apply('federation.apply');
             ToolbarHelper::save('federation.save');
             ToolbarHelper::save2new('federation.save2new');

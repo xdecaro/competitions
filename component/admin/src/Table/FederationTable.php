@@ -1,5 +1,5 @@
 <?php
-namespace Xdecaro\Component\Decarodcl\Administrator\Table;
+namespace Xdecaro\Component\Competitions\Administrator\Table;
 
 defined('_JEXEC') or die;
 
@@ -8,13 +8,13 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Table\Table;
 use Joomla\Database\DatabaseDriver;
 use Joomla\Database\ParameterType;
-use Xdecaro\Component\Decarodcl\Administrator\Helper\TournamentScopeHelper;
+use Xdecaro\Component\Competitions\Administrator\Helper\TournamentScopeHelper;
 
 final class FederationTable extends Table
 {
     public function __construct(DatabaseDriver $db)
     {
-        parent::__construct('#__decarocompetitions_federations', 'id', $db);
+        parent::__construct('#__xdecarocompetitions_federations', 'id', $db);
     }
 
     public function check(): bool
@@ -26,35 +26,35 @@ final class FederationTable extends Table
         $this->country_id = (int) $this->country_id;
 
         if ($this->name === '') {
-            $this->setError(Text::_('COM_DECARODCL_ERROR_FEDERATION_NAME_REQUIRED'));
+            $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_FEDERATION_NAME_REQUIRED'));
             return false;
         }
 
         if ($this->country_id <= 0) {
-            $this->setError(Text::_('COM_DECARODCL_ERROR_FEDERATION_COUNTRY_REQUIRED'));
+            $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_FEDERATION_COUNTRY_REQUIRED'));
             return false;
         }
 
         if ($this->email !== null && filter_var($this->email, FILTER_VALIDATE_EMAIL) === false) {
-            $this->setError(Text::_('COM_DECARODCL_ERROR_EMAIL_INVALID'));
+            $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_EMAIL_INVALID'));
             return false;
         }
 
         if ($this->website !== null && filter_var($this->website, FILTER_VALIDATE_URL) === false) {
-            $this->setError(Text::_('COM_DECARODCL_ERROR_URL_INVALID'));
+            $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_URL_INVALID'));
             return false;
         }
 
         $db = $this->getDbo();
         $query = $db->getQuery(true)
             ->select('COUNT(*)')
-            ->from($db->quoteName('#__decarocompetitions_countries'))
+            ->from($db->quoteName('#__xdecarocompetitions_countries'))
             ->where($db->quoteName('id') . ' = :countryId')
             ->where($db->quoteName('state') . ' <> -2')
             ->bind(':countryId', $this->country_id, ParameterType::INTEGER);
 
         if ((int) $db->setQuery($query)->loadResult() === 0) {
-            $this->setError(Text::_('COM_DECARODCL_ERROR_FEDERATION_COUNTRY_INVALID'));
+            $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_FEDERATION_COUNTRY_INVALID'));
             return false;
         }
 
@@ -65,13 +65,13 @@ final class FederationTable extends Table
                     $db->quoteName('tm.team_type'),
                     $db->quoteName('s.tournament_id'),
                 ])
-                ->from($db->quoteName('#__decarocompetitions_teams', 'tm'))
+                ->from($db->quoteName('#__xdecarocompetitions_teams', 'tm'))
                 ->innerJoin(
-                    $db->quoteName('#__decarocompetitions_participations', 'p')
+                    $db->quoteName('#__xdecarocompetitions_participations', 'p')
                     . ' ON ' . $db->quoteName('p.team_id') . ' = ' . $db->quoteName('tm.id')
                 )
                 ->innerJoin(
-                    $db->quoteName('#__decarocompetitions_seasons', 's')
+                    $db->quoteName('#__xdecarocompetitions_seasons', 's')
                     . ' ON ' . $db->quoteName('s.id') . ' = ' . $db->quoteName('p.season_id')
                 )
                 ->where($db->quoteName('tm.federation_id') . ' = :federationId')

@@ -1,5 +1,5 @@
 <?php
-namespace Xdecaro\Component\Decarodcl\Administrator\Model;
+namespace Xdecaro\Component\Competitions\Administrator\Model;
 
 defined('_JEXEC') or die;
 
@@ -10,18 +10,18 @@ final class DashboardModel extends BaseDatabaseModel
     public function getCounts(): array
     {
         $tables = [
-            'organizations' => '#__decarocompetitions_organizations',
-            'zones' => '#__decarocompetitions_zones',
-            'countries' => '#__decarocompetitions_countries',
-            'federations' => '#__decarocompetitions_federations',
-            'tournaments' => '#__decarocompetitions_tournaments',
-            'seasons' => '#__decarocompetitions_seasons',
-            'teams' => '#__decarocompetitions_teams',
-            'participations' => '#__decarocompetitions_participations',
-            'players' => '#__decarocompetitions_players',
-            'rosters' => '#__decarocompetitions_rosters',
-            'matches' => '#__decarocompetitions_matches',
-            'events' => '#__decarocompetitions_match_events',
+            'organizations' => '#__xdecarocompetitions_organizations',
+            'zones' => '#__xdecarocompetitions_zones',
+            'countries' => '#__xdecarocompetitions_countries',
+            'federations' => '#__xdecarocompetitions_federations',
+            'tournaments' => '#__xdecarocompetitions_tournaments',
+            'seasons' => '#__xdecarocompetitions_seasons',
+            'teams' => '#__xdecarocompetitions_teams',
+            'participations' => '#__xdecarocompetitions_participations',
+            'players' => '#__xdecarocompetitions_players',
+            'rosters' => '#__xdecarocompetitions_rosters',
+            'matches' => '#__xdecarocompetitions_matches',
+            'events' => '#__xdecarocompetitions_match_events',
         ];
 
         $db = $this->getDatabase();

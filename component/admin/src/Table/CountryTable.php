@@ -1,5 +1,5 @@
 <?php
-namespace Xdecaro\Component\Decarodcl\Administrator\Table;
+namespace Xdecaro\Component\Competitions\Administrator\Table;
 
 defined('_JEXEC') or die;
 
@@ -13,7 +13,7 @@ final class CountryTable extends Table
 {
     public function __construct(DatabaseDriver $db)
     {
-        parent::__construct('#__decarocompetitions_countries', 'id', $db);
+        parent::__construct('#__xdecarocompetitions_countries', 'id', $db);
     }
 
     public function check(): bool
@@ -27,36 +27,36 @@ final class CountryTable extends Table
             : 'country';
 
         if ($this->name === '') {
-            $this->setError(Text::_('COM_DECARODCL_ERROR_COUNTRY_NAME_REQUIRED'));
+            $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_COUNTRY_NAME_REQUIRED'));
             return false;
         }
 
         if (!preg_match('/^[A-Z0-9_-]{2,10}$/', $this->code)) {
-            $this->setError(Text::_('COM_DECARODCL_ERROR_COUNTRY_CODE_INVALID'));
+            $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_COUNTRY_CODE_INVALID'));
             return false;
         }
 
         if ($this->iso2 !== null && !preg_match('/^[A-Z]{2}$/', $this->iso2)) {
-            $this->setError(Text::_('COM_DECARODCL_ERROR_ISO2_INVALID'));
+            $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_ISO2_INVALID'));
             return false;
         }
 
         if ($this->iso3 !== null && !preg_match('/^[A-Z]{3}$/', $this->iso3)) {
-            $this->setError(Text::_('COM_DECARODCL_ERROR_ISO3_INVALID'));
+            $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_ISO3_INVALID'));
             return false;
         }
 
         $db = $this->getDbo();
         $query = $db->getQuery(true)
             ->select('COUNT(*)')
-            ->from($db->quoteName('#__decarocompetitions_countries'))
+            ->from($db->quoteName('#__xdecarocompetitions_countries'))
             ->where($db->quoteName('code') . ' = :code')
             ->where($db->quoteName('id') . ' <> :id')
             ->bind(':code', $this->code)
             ->bind(':id', $this->id, ParameterType::INTEGER);
 
         if ((int) $db->setQuery($query)->loadResult() > 0) {
-            $this->setError(Text::_('COM_DECARODCL_ERROR_COUNTRY_CODE_DUPLICATE'));
+            $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_COUNTRY_CODE_DUPLICATE'));
             return false;
         }
 

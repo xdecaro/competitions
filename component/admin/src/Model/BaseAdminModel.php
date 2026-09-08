@@ -1,17 +1,17 @@
 <?php
-namespace Xdecaro\Component\Decarodcl\Administrator\Model;
+namespace Xdecaro\Component\Competitions\Administrator\Model;
 
 defined('_JEXEC') or die;
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\Model\AdminModel;
-use Xdecaro\Component\Decarodcl\Administrator\Helper\LanguageHelper;
-use Xdecaro\Component\Decarodcl\Administrator\Helper\LiveSyncHelper;
+use Xdecaro\Component\Competitions\Administrator\Helper\LanguageHelper;
+use Xdecaro\Component\Competitions\Administrator\Helper\LiveSyncHelper;
 
 abstract class BaseAdminModel extends AdminModel
 {
-    private const LEGACY_LOCK = '__dcl_unmodified__';
+    private const LEGACY_LOCK = '__competitions_unmodified__';
 
     public function save($data): bool
     {
@@ -31,7 +31,7 @@ abstract class BaseAdminModel extends AdminModel
 
             if ($currentModified === null || $currentModified !== $expectedModified) {
                 LanguageHelper::load();
-                $this->setError(Text::_('COM_DECARODCL_ERROR_LIVE_CONFLICT'));
+                $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_LIVE_CONFLICT'));
 
                 return false;
             }

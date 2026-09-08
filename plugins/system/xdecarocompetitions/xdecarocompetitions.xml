@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="plugin" group="system" method="upgrade">
+  <name>PLG_SYSTEM_XDECAROCOMPETITIONS</name>
+  <author>Luca De Caro</author>
+  <creationDate>2026-09</creationDate>
+  <copyright>Copyright (C) 2026 Luca De Caro. All rights reserved.</copyright>
+  <license>GNU General Public License version 2 or later</license>
+  <authorUrl>https://github.com/xdecaro/competitions</authorUrl>
+  <version>1.0.0</version>
+  <description>PLG_SYSTEM_XDECAROCOMPETITIONS_XML_DESCRIPTION</description>
+  <targetplatform name="joomla" version="6.*" />
+  <namespace path="src">Xdecaro\Plugin\System\Competitions</namespace>
+  <files>
+    <folder plugin="xdecarocompetitions">services</folder>
+    <folder>src</folder>
+  </files>
+  <languages folder="language">
+    <language tag="en-GB">en-GB/plg_system_xdecarocompetitions.ini</language>
+    <language tag="en-GB">en-GB/plg_system_xdecarocompetitions.sys.ini</language>
+    <language tag="it-IT">it-IT/plg_system_xdecarocompetitions.ini</language>
+    <language tag="it-IT">it-IT/plg_system_xdecarocompetitions.sys.ini</language>
+  </languages>
+</extension>

@@ -1,2 +1,2 @@
--- DCL data is intentionally preserved on uninstall.
+-- Competitions data is intentionally preserved on uninstall.
 -- Destructive cleanup must be an explicit administrator operation.

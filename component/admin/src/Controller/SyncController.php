@@ -1,5 +1,5 @@
 <?php
-namespace Xdecaro\Component\Decarodcl\Administrator\Controller;
+namespace Xdecaro\Component\Competitions\Administrator\Controller;
 
 defined('_JEXEC') or die;
 
@@ -9,7 +9,7 @@ use Joomla\CMS\MVC\Controller\BaseController;
 use Joomla\CMS\Response\JsonResponse;
 use Joomla\CMS\Session\Session;
 use Joomla\Database\DatabaseInterface;
-use Xdecaro\Component\Decarodcl\Administrator\Helper\LiveSyncHelper;
+use Xdecaro\Component\Competitions\Administrator\Helper\LiveSyncHelper;
 
 final class SyncController extends BaseController
 {
@@ -23,7 +23,7 @@ final class SyncController extends BaseController
 
         $identity = $app->getIdentity();
 
-        if (!$identity->authorise('core.manage', 'com_decarodcl')) {
+        if (!$identity->authorise('core.manage', 'com_xdecarocompetitions')) {
             throw new \RuntimeException(Text::_('JERROR_ALERTNOAUTHOR'), 403);
         }
 

@@ -6,11 +6,11 @@ use Joomla\CMS\HTML\HTMLHelper;
 HTMLHelper::_('behavior.formvalidator');
 ?>
 <form
-    action="index.php?option=com_decarodcl&layout=edit&id=<?= (int) $this->item->id; ?>"
+    action="index.php?option=com_xdecarocompetitions&layout=edit&id=<?= (int) $this->item->id; ?>"
     method="post"
     name="adminForm"
     id="participation-form"
-    class="form-validate dcl-admin"
+    class="form-validate competitions-admin"
 >
     <div class="card">
         <div class="card-body">

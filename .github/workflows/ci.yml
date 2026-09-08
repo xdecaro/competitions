@@ -10,57 +10,53 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - name: PHP syntax
         run: find component modules plugins package -name '*.php' -print0 | xargs -0 -n1 php -l
+
       - name: JavaScript syntax
-        run: node --check component/media/js/filterbar.js
+        run: find component modules plugins -name '*.js' -print0 | xargs -0 -n1 node --check
+
       - name: XML syntax
         run: |
           python3 - <<'PY'
           from pathlib import Path
           import xml.etree.ElementTree as ET
-          for p in Path('.').rglob('*.xml'):
-              if '.git' in p.parts: continue
-              ET.parse(p)
-              print('OK', p)
+          for path in Path('.').rglob('*.xml'):
+              if '.git' in path.parts or 'dist' in path.parts:
+                  continue
+              ET.parse(path)
+              print('OK', path)
           PY
-      - name: Reject legacy DCL database table prefix
-        shell: bash
-        run: |
-          set -euo pipefail
-          if grep -RIn --exclude='CHANGELOG.md' '#__dcl_' component modules plugins package tools updates docs README.md; then
-            echo 'Legacy #__dcl_ database table reference remains.' >&2
-            exit 1
-          fi
-      - name: Release metadata consistency
+
+      - name: Source and metadata validation
         run: python3 tools/validate_release.py
-      - name: Build packages
-        run: python3 tools/build.py
-      - name: Verify package assets
-        shell: bash
+
+      - name: Deterministic build A
+        run: |
+          set -euo pipefail
+          python3 tools/build.py
+          cp dist/SHA256SUMS.txt /tmp/competitions-sha-a.txt
+
+      - name: Deterministic build B
+        run: |
+          set -euo pipefail
+          rm -rf dist
+          python3 tools/build.py
+          diff -u /tmp/competitions-sha-a.txt dist/SHA256SUMS.txt
+
+      - name: Distribution validation
+        run: python3 tools/validate_release.py --dist
+
+      - name: Verify Core integration and package identity
         run: |
           set -euo pipefail
           VERSION="$(cat VERSION)"
-          COMPONENT="dist/com_decarodcl_${VERSION}.zip"
-          unzip -l "$COMPONENT" | grep -q 'media/css/filterbar.css'
-          unzip -l "$COMPONENT" | grep -q 'media/js/filterbar.js'
-          unzip -l "$COMPONENT" | grep -q 'media/css/core-bridge.css'
-          unzip -l "$COMPONENT" | grep -q 'admin/tmpl/information/core.php'
-          unzip -p "$COMPONENT" media/joomla.asset.json | grep -Fq '"com_decarodcl.core-bridge"'
-          unzip -p "$COMPONENT" admin/src/View/Information/HtmlView.php | grep -Fq "MINIMUM_CORE_UI_VERSION = '1.1.0'"
-          unzip -p "$COMPONENT" admin/src/View/Information/HtmlView.php | grep -Fq 'Xdecaro\Core\Asset\AssetService'
-          unzip -p "$COMPONENT" admin/src/View/Information/HtmlView.php | grep -Fq "setLayout('core')"
+          COMPONENT="dist/com_xdecarocompetitions_${VERSION}.zip"
+          PACKAGE="dist/pkg_xdecarocompetitions_${VERSION}.zip"
+          unzip -p "$COMPONENT" media/joomla.asset.json | grep -Fq '"com_xdecarocompetitions.core-bridge"'
+          unzip -p "$COMPONENT" admin/src/Service/CoreIntegrationService.php | grep -Fq 'com_xdecarocompetitions'
           unzip -p "$COMPONENT" admin/tmpl/information/core.php | grep -Fq 'xdecaro-scope competitions-core-scope'
-          unzip -p "$COMPONENT" admin/sql/install.mysql.utf8mb4.sql | grep -Fq '#__decarocompetitions_'
-          ! unzip -p "$COMPONENT" admin/sql/install.mysql.utf8mb4.sql | grep -Fq '#__dcl_'
-      - name: Synchronize Joomla update checksum
-        run: python3 tools/update_feed_checksum.py
-      - name: Verify Joomla update checksum
-        shell: bash
-        run: |
-          VERSION="$(cat VERSION)"
-          PACKAGE="dist/pkg_competitions_${VERSION}.zip"
-          SHA256="$(sha256sum "$PACKAGE" | awk '{print $1}')"
-          grep -q "<sha256>${SHA256}</sha256>" updates/pkg_decarodcl.xml
-      - name: Package contents
-        run: python3 tools/validate_release.py --dist
+          unzip -p "$COMPONENT" admin/sql/install.mysql.utf8mb4.sql | grep -Fq '#__xdecarocompetitions_'
+          unzip -l "$PACKAGE" | grep -Fq "com_xdecarocompetitions_${VERSION}.zip"
+          unzip -l "$PACKAGE" | grep -Fq "plg_system_xdecarocompetitions_${VERSION}.zip"

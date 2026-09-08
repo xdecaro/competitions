@@ -1,5 +1,5 @@
 <?php
-namespace Xdecaro\Component\Decarodcl\Administrator\Model;
+namespace Xdecaro\Component\Competitions\Administrator\Model;
 
 defined('_JEXEC') or die;
 
@@ -10,35 +10,35 @@ use Throwable;
 
 final class InformationModel extends BaseDatabaseModel
 {
-    public const UPDATE_SITE_URL = 'https://raw.githubusercontent.com/xdecaro/competitions/main/updates/pkg_decarodcl.xml';
+    public const UPDATE_SITE_URL = 'https://raw.githubusercontent.com/xdecaro/competitions/main/updates/pkg_xdecarocompetitions.xml';
     public const MINIMUM_JOOMLA = '6.0.0';
     public const MINIMUM_PHP = '8.3.0';
 
     private const EXPECTED_TABLES = [
-        '#__decarocompetitions_countries',
-        '#__decarocompetitions_federations',
-        '#__decarocompetitions_organizations',
-        '#__decarocompetitions_zones',
-        '#__decarocompetitions_tournaments',
-        '#__decarocompetitions_seasons',
-        '#__decarocompetitions_teams',
-        '#__decarocompetitions_participations',
-        '#__decarocompetitions_players',
-        '#__decarocompetitions_rosters',
-        '#__decarocompetitions_matches',
-        '#__decarocompetitions_changes',
-        '#__decarocompetitions_edit_sessions',
+        '#__xdecarocompetitions_countries',
+        '#__xdecarocompetitions_federations',
+        '#__xdecarocompetitions_organizations',
+        '#__xdecarocompetitions_zones',
+        '#__xdecarocompetitions_tournaments',
+        '#__xdecarocompetitions_seasons',
+        '#__xdecarocompetitions_teams',
+        '#__xdecarocompetitions_participations',
+        '#__xdecarocompetitions_players',
+        '#__xdecarocompetitions_rosters',
+        '#__xdecarocompetitions_matches',
+        '#__xdecarocompetitions_changes',
+        '#__xdecarocompetitions_edit_sessions',
     ];
 
     public function getInfo(): array
     {
         $db = $this->getDatabase();
 
-        $component = $this->getExtension('component', 'com_decarodcl');
-        $package = $this->getExtension('package', 'pkg_decarodcl');
-        $plugin = $this->getExtension('plugin', 'decarodcl', 'system');
-        $timelineModule = $this->getExtension('module', 'mod_dcl_matchtimeline', null, 0);
-        $countriesModule = $this->getExtension('module', 'mod_dcl_countriesfederations', null, 0);
+        $component = $this->getExtension('component', 'com_xdecarocompetitions');
+        $package = $this->getExtension('package', 'pkg_xdecarocompetitions');
+        $plugin = $this->getExtension('plugin', 'xdecarocompetitions', 'system');
+        $timelineModule = $this->getExtension('module', 'mod_xdecarocompetitions_matchtimeline', null, 0);
+        $countriesModule = $this->getExtension('module', 'mod_xdecarocompetitions_countriesfederations', null, 0);
 
         $versions = [
             'package' => $this->getManifestVersion($package),
@@ -171,8 +171,8 @@ final class InformationModel extends BaseDatabaseModel
             'integrations' => $integrations,
             'critical_issues' => $criticalIssues,
             'warnings' => $warnings,
-            'component_id' => 'com_decarodcl',
-            'package_id' => 'pkg_decarodcl',
+            'component_id' => 'com_xdecarocompetitions',
+            'package_id' => 'pkg_xdecarocompetitions',
             'repository' => 'xdecaro/competitions',
         ];
     }

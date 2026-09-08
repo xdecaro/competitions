@@ -1,5 +1,5 @@
 <?php
-namespace Xdecaro\Component\Decarodcl\Site\Controller;
+namespace Xdecaro\Component\Competitions\Site\Controller;
 
 defined('_JEXEC') or die;
 
@@ -9,6 +9,6 @@ final class DisplayController extends BaseController
 {
     public function display($cachable = false, $urlparams = []): static
     {
-        throw new \RuntimeException('DCL public pages are provided by Joomla articles and YOOtheme layouts.', 404);
+        throw new \RuntimeException('Competitions public pages are provided by Joomla articles and YOOtheme layouts.', 404);
     }
 }

@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const options = window.Joomla?.getOptions?.('com_decarodcl.scope') || {};
+  const options = window.Joomla?.getOptions?.('com_xdecarocompetitions.scope') || {};
   const season = document.getElementById('jform_season_id');
   const team = document.getElementById('jform_team_id');
 
@@ -96,6 +96,6 @@
     }
 
     team.replaceChildren(fragment);
-    team.dispatchEvent(new Event('dcl:options-updated', { bubbles: true }));
+    team.dispatchEvent(new Event('competitions:options-updated', { bubbles: true }));
   }
 })();

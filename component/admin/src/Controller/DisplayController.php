@@ -1,10 +1,10 @@
 <?php
-namespace Xdecaro\Component\Decarodcl\Administrator\Controller;
+namespace Xdecaro\Component\Competitions\Administrator\Controller;
 
 defined('_JEXEC') or die;
 
 use Joomla\CMS\MVC\Controller\BaseController;
-use Xdecaro\Component\Decarodcl\Administrator\Helper\PageHeaderHelper;
+use Xdecaro\Component\Competitions\Administrator\Helper\PageHeaderHelper;
 
 final class DisplayController extends BaseController
 {

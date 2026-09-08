@@ -1,5 +1,5 @@
 <?php
-namespace Xdecaro\Component\Decarodcl\Administrator\Table;
+namespace Xdecaro\Component\Competitions\Administrator\Table;
 
 defined('_JEXEC') or die;
 
@@ -9,7 +9,7 @@ use Joomla\CMS\Log\Log;
 use Joomla\CMS\Table\Table;
 use Joomla\Database\DatabaseDriver;
 use Joomla\Database\ParameterType;
-use Xdecaro\Component\Decarodcl\Administrator\Helper\LanguageHelper;
+use Xdecaro\Component\Competitions\Administrator\Helper\LanguageHelper;
 
 final class MatchTable extends Table
 {
@@ -29,7 +29,7 @@ final class MatchTable extends Table
 
     public function __construct(DatabaseDriver $db)
     {
-        parent::__construct('#__decarocompetitions_matches', 'id', $db);
+        parent::__construct('#__xdecarocompetitions_matches', 'id', $db);
     }
 
     public function check(): bool
@@ -53,7 +53,7 @@ final class MatchTable extends Table
         $this->attendance = $this->normalizeNullableUnsignedInteger($this->attendance, self::INT_UNSIGNED_MAX);
 
         if ($this->matchday === false || $this->attendance === false) {
-            $this->setError(Text::_('COM_DECARODCL_ERROR_MATCH_SCORE_INVALID'));
+            $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_MATCH_SCORE_INVALID'));
             return false;
         }
 
@@ -61,7 +61,7 @@ final class MatchTable extends Table
             $value = $this->normalizeNullableUnsignedInteger($this->{$field}, self::SMALLINT_UNSIGNED_MAX);
 
             if ($value === false) {
-                $this->setError(Text::_('COM_DECARODCL_ERROR_MATCH_SCORE_INVALID'));
+                $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_MATCH_SCORE_INVALID'));
                 return false;
             }
 
@@ -69,32 +69,32 @@ final class MatchTable extends Table
         }
 
         if ($this->season_id <= 0) {
-            $this->setError(Text::_('COM_DECARODCL_ERROR_MATCH_SEASON_REQUIRED'));
+            $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_MATCH_SEASON_REQUIRED'));
             return false;
         }
 
         if ($this->home_team_id <= 0) {
-            $this->setError(Text::_('COM_DECARODCL_ERROR_MATCH_HOME_TEAM_REQUIRED'));
+            $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_MATCH_HOME_TEAM_REQUIRED'));
             return false;
         }
 
         if ($this->away_team_id <= 0) {
-            $this->setError(Text::_('COM_DECARODCL_ERROR_MATCH_AWAY_TEAM_REQUIRED'));
+            $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_MATCH_AWAY_TEAM_REQUIRED'));
             return false;
         }
 
         if ($this->home_team_id === $this->away_team_id) {
-            $this->setError(Text::_('COM_DECARODCL_ERROR_MATCH_SAME_TEAM'));
+            $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_MATCH_SAME_TEAM'));
             return false;
         }
 
         if (!in_array($this->status, self::STATUSES, true)) {
-            $this->setError(Text::_('COM_DECARODCL_ERROR_MATCH_STATUS_INVALID'));
+            $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_MATCH_STATUS_INVALID'));
             return false;
         }
 
         if ($this->match_date !== null && !$this->isValidDate($this->match_date)) {
-            $this->setError(Text::_('COM_DECARODCL_ERROR_MATCH_DATE_INVALID'));
+            $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_MATCH_DATE_INVALID'));
             return false;
         }
 
@@ -102,7 +102,7 @@ final class MatchTable extends Table
             $normalizedTime = $this->normalizeTime($this->kickoff_time);
 
             if ($normalizedTime === null) {
-                $this->setError(Text::_('COM_DECARODCL_ERROR_MATCH_TIME_INVALID'));
+                $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_MATCH_TIME_INVALID'));
                 return false;
             }
 
@@ -113,13 +113,13 @@ final class MatchTable extends Table
 
         $query = $db->getQuery(true)
             ->select('COUNT(*)')
-            ->from($db->quoteName('#__decarocompetitions_seasons'))
+            ->from($db->quoteName('#__xdecarocompetitions_seasons'))
             ->where($db->quoteName('id') . ' = :seasonId')
             ->where($db->quoteName('state') . ' <> -2')
             ->bind(':seasonId', $this->season_id, ParameterType::INTEGER);
 
         if ((int) $db->setQuery($query)->loadResult() === 0) {
-            $this->setError(Text::_('COM_DECARODCL_ERROR_MATCH_SEASON_INVALID'));
+            $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_MATCH_SEASON_INVALID'));
             return false;
         }
 
@@ -127,20 +127,20 @@ final class MatchTable extends Table
             !$this->isApprovedParticipant($this->home_team_id, $this->season_id)
             || !$this->isApprovedParticipant($this->away_team_id, $this->season_id)
         ) {
-            $this->setError(Text::_('COM_DECARODCL_ERROR_MATCH_TEAM_NOT_APPROVED_PARTICIPANT'));
+            $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_MATCH_TEAM_NOT_APPROVED_PARTICIPANT'));
             return false;
         }
 
         if ($this->venue_id > 0) {
             $query = $db->getQuery(true)
                 ->select('COUNT(*)')
-                ->from($db->quoteName('#__decarocompetitions_venues'))
+                ->from($db->quoteName('#__xdecarocompetitions_venues'))
                 ->where($db->quoteName('id') . ' = :venueId')
                 ->where($db->quoteName('state') . ' <> -2')
                 ->bind(':venueId', $this->venue_id, ParameterType::INTEGER);
 
             if ((int) $db->setQuery($query)->loadResult() === 0) {
-                $this->setError(Text::_('COM_DECARODCL_ERROR_MATCH_VENUE_INVALID'));
+                $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_MATCH_VENUE_INVALID'));
                 return false;
             }
         }
@@ -154,20 +154,20 @@ final class MatchTable extends Table
                 ->bind(':articleId', $this->article_id, ParameterType::INTEGER);
 
             if ((int) $db->setQuery($query)->loadResult() === 0) {
-                $this->setError(Text::_('COM_DECARODCL_ERROR_MATCH_ARTICLE_INVALID'));
+                $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_MATCH_ARTICLE_INVALID'));
                 return false;
             }
 
             $query = $db->getQuery(true)
                 ->select('COUNT(*)')
-                ->from($db->quoteName('#__decarocompetitions_matches'))
+                ->from($db->quoteName('#__xdecarocompetitions_matches'))
                 ->where($db->quoteName('article_id') . ' = :articleId')
                 ->where($db->quoteName('id') . ' <> :matchId')
                 ->bind(':articleId', $this->article_id, ParameterType::INTEGER)
                 ->bind(':matchId', $this->id, ParameterType::INTEGER);
 
             if ((int) $db->setQuery($query)->loadResult() > 0) {
-                $this->setError(Text::_('COM_DECARODCL_ERROR_MATCH_ARTICLE_DUPLICATE'));
+                $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_MATCH_ARTICLE_DUPLICATE'));
                 return false;
             }
         }
@@ -177,12 +177,12 @@ final class MatchTable extends Table
             || !$this->validatePair($this->home_score_extra, $this->away_score_extra)
             || !$this->validatePair($this->home_penalties, $this->away_penalties)
         ) {
-            $this->setError(Text::_('COM_DECARODCL_ERROR_MATCH_SCORE_PAIR'));
+            $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_MATCH_SCORE_PAIR'));
             return false;
         }
 
         if ($this->status === 'finished' && ($this->home_score === null || $this->away_score === null)) {
-            $this->setError(Text::_('COM_DECARODCL_ERROR_MATCH_FINISHED_SCORE_REQUIRED'));
+            $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_MATCH_FINISHED_SCORE_REQUIRED'));
             return false;
         }
 
@@ -191,7 +191,7 @@ final class MatchTable extends Table
             && $this->away_penalties !== null
             && $this->home_penalties === $this->away_penalties
         ) {
-            $this->setError(Text::_('COM_DECARODCL_ERROR_MATCH_PENALTIES_TIE'));
+            $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_MATCH_PENALTIES_TIE'));
             return false;
         }
 
@@ -232,7 +232,7 @@ final class MatchTable extends Table
         try {
             $db = $this->getDbo();
             $query = $db->getQuery(true)
-                ->update($db->quoteName('#__decarocompetitions_match_events'))
+                ->update($db->quoteName('#__xdecarocompetitions_match_events'))
                 ->set($db->quoteName('match_id') . ' = :matchId')
                 ->where($db->quoteName('match_id') . ' = 0')
                 ->where($db->quoteName('article_id') . ' = :articleId')
@@ -244,7 +244,7 @@ final class MatchTable extends Table
             Log::add(
                 'Competitions could not link legacy match events to match #' . (int) $this->id . ': ' . $e->getMessage(),
                 Log::WARNING,
-                'dcl'
+                'competitions'
             );
         }
     }
@@ -254,9 +254,9 @@ final class MatchTable extends Table
         $db = $this->getDbo();
         $query = $db->getQuery(true)
             ->select('COUNT(*)')
-            ->from($db->quoteName('#__decarocompetitions_participations', 'p'))
+            ->from($db->quoteName('#__xdecarocompetitions_participations', 'p'))
             ->innerJoin(
-                $db->quoteName('#__decarocompetitions_teams', 'tm')
+                $db->quoteName('#__xdecarocompetitions_teams', 'tm')
                 . ' ON ' . $db->quoteName('tm.id') . ' = ' . $db->quoteName('p.team_id')
             )
             ->where($db->quoteName('p.team_id') . ' = :teamId')
@@ -358,7 +358,7 @@ final class MatchTable extends Table
     {
         $identity = Factory::getApplication()->getIdentity();
 
-        if ($identity->authorise('core.edit.state', 'com_decarodcl')) {
+        if ($identity->authorise('core.edit.state', 'com_xdecarocompetitions')) {
             return;
         }
 
@@ -370,7 +370,7 @@ final class MatchTable extends Table
         $db = $this->getDbo();
         $query = $db->getQuery(true)
             ->select($db->quoteName('state'))
-            ->from($db->quoteName('#__decarocompetitions_matches'))
+            ->from($db->quoteName('#__xdecarocompetitions_matches'))
             ->where($db->quoteName('id') . ' = :id')
             ->bind(':id', $this->id, ParameterType::INTEGER);
 

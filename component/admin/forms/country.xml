@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <form>
-  <fieldset name="details" label="COM_DECARODCL_COUNTRY_DETAILS">
+  <fieldset name="details" label="COM_XDECAROCOMPETITIONS_COUNTRY_DETAILS">
     <field name="id" type="hidden" />
     <field name="modified" type="hidden" />
-    <field name="name" type="text" label="COM_DECARODCL_FIELD_NAME" required="true" maxlength="190" />
-    <field name="code" type="text" label="COM_DECARODCL_FIELD_CODE" description="COM_DECARODCL_FIELD_CODE_DESC" required="true" maxlength="10" filter="cmd" />
-    <field name="entity_type" type="list" label="COM_DECARODCL_FIELD_ENTITY_TYPE" default="country">
-      <option value="country">COM_DECARODCL_ENTITY_COUNTRY</option>
-      <option value="sport_territory">COM_DECARODCL_ENTITY_SPORT_TERRITORY</option>
+    <field name="name" type="text" label="COM_XDECAROCOMPETITIONS_FIELD_NAME" required="true" maxlength="190" />
+    <field name="code" type="text" label="COM_XDECAROCOMPETITIONS_FIELD_CODE" description="COM_XDECAROCOMPETITIONS_FIELD_CODE_DESC" required="true" maxlength="10" filter="cmd" />
+    <field name="entity_type" type="list" label="COM_XDECAROCOMPETITIONS_FIELD_ENTITY_TYPE" default="country">
+      <option value="country">COM_XDECAROCOMPETITIONS_ENTITY_COUNTRY</option>
+      <option value="sport_territory">COM_XDECAROCOMPETITIONS_ENTITY_SPORT_TERRITORY</option>
     </field>
-    <field name="iso2" type="text" label="COM_DECARODCL_FIELD_ISO2" maxlength="2" filter="cmd" />
-    <field name="iso3" type="text" label="COM_DECARODCL_FIELD_ISO3" maxlength="3" filter="cmd" />
-    <field name="flag" type="media" label="COM_DECARODCL_FIELD_FLAG" types="images" />
+    <field name="iso2" type="text" label="COM_XDECAROCOMPETITIONS_FIELD_ISO2" maxlength="2" filter="cmd" />
+    <field name="iso3" type="text" label="COM_XDECAROCOMPETITIONS_FIELD_ISO3" maxlength="3" filter="cmd" />
+    <field name="flag" type="media" label="COM_XDECAROCOMPETITIONS_FIELD_FLAG" types="images" />
     <field name="state" type="list" label="JSTATUS" default="1">
       <option value="1">JPUBLISHED</option>
       <option value="0">JUNPUBLISHED</option>

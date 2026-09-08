@@ -163,7 +163,7 @@ Do not combine an opportunistic Core integration with unrelated large refactors.
 
 This repository is **Competitions**.
 
-Do not introduce new repository-level references to the former name `dcl` unless they refer to a historical compatibility identifier that is still technically required.
+Do not introduce new repository-level references to the former name `competitions` unless they refer to a historical compatibility identifier that is still technically required.
 
 Before renaming package names, extension element names, namespaces, database tables, update URLs or public identifiers inherited from the old project, inspect compatibility impact first.
 

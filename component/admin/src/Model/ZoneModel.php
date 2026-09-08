@@ -1,5 +1,5 @@
 <?php
-namespace Xdecaro\Component\Decarodcl\Administrator\Model;
+namespace Xdecaro\Component\Competitions\Administrator\Model;
 
 defined('_JEXEC') or die;
 
@@ -8,8 +8,8 @@ use Joomla\CMS\Form\Form;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Table\Table;
 use Joomla\Database\ParameterType;
-use Xdecaro\Component\Decarodcl\Administrator\Helper\LanguageHelper;
-use Xdecaro\Component\Decarodcl\Administrator\Helper\TournamentScopeHelper;
+use Xdecaro\Component\Competitions\Administrator\Helper\LanguageHelper;
+use Xdecaro\Component\Competitions\Administrator\Helper\TournamentScopeHelper;
 
 final class ZoneModel extends BaseAdminModel
 {
@@ -20,12 +20,12 @@ final class ZoneModel extends BaseAdminModel
 
     public function getForm($data = [], $loadData = true)
     {
-        return $this->loadForm('com_decarodcl.zone', 'zone', ['control' => 'jform', 'load_data' => $loadData]);
+        return $this->loadForm('com_xdecarocompetitions.zone', 'zone', ['control' => 'jform', 'load_data' => $loadData]);
     }
 
     protected function loadFormData()
     {
-        $data = Factory::getApplication()->getUserState('com_decarodcl.edit.zone.data', []);
+        $data = Factory::getApplication()->getUserState('com_xdecarocompetitions.edit.zone.data', []);
 
         if (!$data) {
             $data = $this->getItem();
@@ -34,7 +34,7 @@ final class ZoneModel extends BaseAdminModel
                 $db = $this->getDatabase();
                 $query = $db->getQuery(true)
                     ->select($db->quoteName('country_id'))
-                    ->from($db->quoteName('#__decarocompetitions_zone_countries'))
+                    ->from($db->quoteName('#__xdecarocompetitions_zone_countries'))
                     ->where($db->quoteName('zone_id') . ' = :zoneId')
                     ->order($db->quoteName('ordering') . ' ASC')
                     ->bind(':zoneId', $data->id, ParameterType::INTEGER);
@@ -50,7 +50,7 @@ final class ZoneModel extends BaseAdminModel
     {
         parent::preprocessForm($form, $data, $group);
 
-        if (!Factory::getApplication()->getIdentity()->authorise('core.edit.state', 'com_decarodcl')) {
+        if (!Factory::getApplication()->getIdentity()->authorise('core.edit.state', 'com_xdecarocompetitions')) {
             $form->setFieldAttribute('state', 'disabled', 'true');
             $form->setFieldAttribute('state', 'readonly', 'true');
         }
@@ -82,14 +82,14 @@ final class ZoneModel extends BaseAdminModel
             }
 
             $query = $db->getQuery(true)
-                ->delete($db->quoteName('#__decarocompetitions_zone_countries'))
+                ->delete($db->quoteName('#__xdecarocompetitions_zone_countries'))
                 ->where($db->quoteName('zone_id') . ' = :zoneId')
                 ->bind(':zoneId', $zoneId, ParameterType::INTEGER);
             $db->setQuery($query)->execute();
 
             if ($countryIds) {
                 $query = $db->getQuery(true)
-                    ->insert($db->quoteName('#__decarocompetitions_zone_countries'))
+                    ->insert($db->quoteName('#__xdecarocompetitions_zone_countries'))
                     ->columns([
                         $db->quoteName('zone_id'),
                         $db->quoteName('country_id'),
@@ -113,7 +113,7 @@ final class ZoneModel extends BaseAdminModel
             // transaction rolls both the Zone and mapping changes back on failure.
             $query = $db->getQuery(true)
                 ->select('DISTINCT ' . $db->quoteName('tournament_id'))
-                ->from($db->quoteName('#__decarocompetitions_tournament_zones'))
+                ->from($db->quoteName('#__xdecarocompetitions_tournament_zones'))
                 ->where($db->quoteName('zone_id') . ' = :zoneId')
                 ->bind(':zoneId', $zoneId, ParameterType::INTEGER);
 
@@ -171,7 +171,7 @@ final class ZoneModel extends BaseAdminModel
         $placeholders = [];
         $query = $db->getQuery(true)
             ->select('COUNT(*)')
-            ->from($db->quoteName('#__decarocompetitions_countries'))
+            ->from($db->quoteName('#__xdecarocompetitions_countries'))
             ->where($db->quoteName('state') . ' <> -2');
 
         foreach ($countryIds as $index => $countryId) {
@@ -184,7 +184,7 @@ final class ZoneModel extends BaseAdminModel
 
         if ((int) $db->setQuery($query)->loadResult() !== count($countryIds)) {
             LanguageHelper::load();
-            throw new \RuntimeException(Text::_('COM_DECARODCL_ERROR_ZONE_COUNTRY_INVALID'));
+            throw new \RuntimeException(Text::_('COM_XDECAROCOMPETITIONS_ERROR_ZONE_COUNTRY_INVALID'));
         }
     }
 }

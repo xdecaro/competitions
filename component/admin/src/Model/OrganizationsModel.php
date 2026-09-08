@@ -1,5 +1,5 @@
 <?php
-namespace Xdecaro\Component\Decarodcl\Administrator\Model;
+namespace Xdecaro\Component\Competitions\Administrator\Model;
 
 defined('_JEXEC') or die;
 
@@ -22,8 +22,8 @@ final class OrganizationsModel extends ListModel
             ->select('a.*')
             ->select($db->quoteName('c.name', 'country_name'))
             ->select($db->quoteName('c.code', 'country_code'))
-            ->from($db->quoteName('#__decarocompetitions_organizations', 'a'))
-            ->leftJoin($db->quoteName('#__decarocompetitions_countries', 'c') . ' ON ' . $db->quoteName('c.id') . ' = ' . $db->quoteName('a.country_id'));
+            ->from($db->quoteName('#__xdecarocompetitions_organizations', 'a'))
+            ->leftJoin($db->quoteName('#__xdecarocompetitions_countries', 'c') . ' ON ' . $db->quoteName('c.id') . ' = ' . $db->quoteName('a.country_id'));
 
         $search = trim((string) $this->getState('filter.search'));
         if ($search !== '') {
@@ -54,7 +54,7 @@ final class OrganizationsModel extends ListModel
     public function getCountryOptions(): array
     {
         $db = $this->getDatabase();
-        $query = $db->getQuery(true)->select([$db->quoteName('id'),$db->quoteName('name'),$db->quoteName('code')])->from($db->quoteName('#__decarocompetitions_countries'))->where($db->quoteName('state') . ' <> -2')->order($db->quoteName('name') . ' ASC');
+        $query = $db->getQuery(true)->select([$db->quoteName('id'),$db->quoteName('name'),$db->quoteName('code')])->from($db->quoteName('#__xdecarocompetitions_countries'))->where($db->quoteName('state') . ' <> -2')->order($db->quoteName('name') . ' ASC');
         return $db->setQuery($query)->loadObjectList() ?: [];
     }
 

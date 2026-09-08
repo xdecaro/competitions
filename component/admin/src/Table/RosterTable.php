@@ -1,5 +1,5 @@
 <?php
-namespace Xdecaro\Component\Decarodcl\Administrator\Table;
+namespace Xdecaro\Component\Competitions\Administrator\Table;
 
 defined('_JEXEC') or die;
 
@@ -13,7 +13,7 @@ final class RosterTable extends Table
 {
     public function __construct(DatabaseDriver $db)
     {
-        parent::__construct('#__decarocompetitions_rosters', 'id', $db);
+        parent::__construct('#__xdecarocompetitions_rosters', 'id', $db);
     }
 
     public function check(): bool
@@ -26,27 +26,27 @@ final class RosterTable extends Table
         $this->review_note = trim((string) $this->review_note) ?: null;
 
         if ($this->participation_id <= 0) {
-            $this->setError(Text::_('COM_DECARODCL_ERROR_ROSTER_PARTICIPATION_REQUIRED'));
+            $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_ROSTER_PARTICIPATION_REQUIRED'));
             return false;
         }
 
         if ($this->player_id <= 0) {
-            $this->setError(Text::_('COM_DECARODCL_ERROR_ROSTER_PLAYER_REQUIRED'));
+            $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_ROSTER_PLAYER_REQUIRED'));
             return false;
         }
 
         if ($this->shirt_number !== null && ($this->shirt_number < 0 || $this->shirt_number > 999)) {
-            $this->setError(Text::_('COM_DECARODCL_ERROR_ROSTER_SHIRT_NUMBER_INVALID'));
+            $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_ROSTER_SHIRT_NUMBER_INVALID'));
             return false;
         }
 
         if (!in_array($this->status, ['pending', 'approved', 'rejected'], true)) {
-            $this->setError(Text::_('COM_DECARODCL_ERROR_ROSTER_STATUS_INVALID'));
+            $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_ROSTER_STATUS_INVALID'));
             return false;
         }
 
         if (!$this->canChangeStatus()) {
-            $this->setError(Text::_('COM_DECARODCL_ERROR_APPROVAL_PERMISSION'));
+            $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_APPROVAL_PERMISSION'));
             return false;
         }
 
@@ -61,9 +61,9 @@ final class RosterTable extends Table
                 $db->quoteName('p.state'),
                 $db->quoteName('tm.approval_status', 'team_approval_status'),
             ])
-            ->from($db->quoteName('#__decarocompetitions_participations', 'p'))
+            ->from($db->quoteName('#__xdecarocompetitions_participations', 'p'))
             ->innerJoin(
-                $db->quoteName('#__decarocompetitions_teams', 'tm')
+                $db->quoteName('#__xdecarocompetitions_teams', 'tm')
                 . ' ON ' . $db->quoteName('tm.id') . ' = ' . $db->quoteName('p.team_id')
             )
             ->where($db->quoteName('p.id') . ' = :participationId')
@@ -74,7 +74,7 @@ final class RosterTable extends Table
         $participation = $db->setQuery($query)->loadObject();
 
         if (!$participation) {
-            $this->setError(Text::_('COM_DECARODCL_ERROR_ROSTER_PARTICIPATION_INVALID'));
+            $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_ROSTER_PARTICIPATION_INVALID'));
             return false;
         }
 
@@ -87,7 +87,7 @@ final class RosterTable extends Table
                 $db->quoteName('approval_status'),
                 $db->quoteName('state'),
             ])
-            ->from($db->quoteName('#__decarocompetitions_players'))
+            ->from($db->quoteName('#__xdecarocompetitions_players'))
             ->where($db->quoteName('id') . ' = :playerId')
             ->where($db->quoteName('state') . ' <> -2')
             ->bind(':playerId', $this->player_id, ParameterType::INTEGER);
@@ -95,28 +95,28 @@ final class RosterTable extends Table
         $player = $db->setQuery($query)->loadObject();
 
         if (!$player) {
-            $this->setError(Text::_('COM_DECARODCL_ERROR_ROSTER_PLAYER_INVALID'));
+            $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_ROSTER_PLAYER_INVALID'));
             return false;
         }
 
         if ($this->status === 'approved' && (string) $participation->status !== 'approved') {
-            $this->setError(Text::_('COM_DECARODCL_ERROR_ROSTER_PARTICIPATION_NOT_APPROVED'));
+            $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_ROSTER_PARTICIPATION_NOT_APPROVED'));
             return false;
         }
 
         if ($this->status === 'approved' && (string) $participation->team_approval_status !== 'approved') {
-            $this->setError(Text::_('COM_DECARODCL_ERROR_ROSTER_TEAM_NOT_APPROVED'));
+            $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_ROSTER_TEAM_NOT_APPROVED'));
             return false;
         }
 
         if ($this->status === 'approved' && (string) $player->approval_status !== 'approved') {
-            $this->setError(Text::_('COM_DECARODCL_ERROR_ROSTER_PLAYER_NOT_APPROVED'));
+            $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_ROSTER_PLAYER_NOT_APPROVED'));
             return false;
         }
 
         $query = $db->getQuery(true)
             ->select('COUNT(*)')
-            ->from($db->quoteName('#__decarocompetitions_rosters'))
+            ->from($db->quoteName('#__xdecarocompetitions_rosters'))
             ->where($db->quoteName('participation_id') . ' = :participationId')
             ->where($db->quoteName('player_id') . ' = :playerId')
             ->where($db->quoteName('id') . ' <> :id')
@@ -125,7 +125,7 @@ final class RosterTable extends Table
             ->bind(':id', $this->id, ParameterType::INTEGER);
 
         if ((int) $db->setQuery($query)->loadResult() > 0) {
-            $this->setError(Text::_('COM_DECARODCL_ERROR_ROSTER_DUPLICATE'));
+            $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_ROSTER_DUPLICATE'));
             return false;
         }
 
@@ -152,7 +152,7 @@ final class RosterTable extends Table
     {
         $identity = Factory::getApplication()->getIdentity();
 
-        if ($identity->authorise('core.edit.state', 'com_decarodcl')) {
+        if ($identity->authorise('core.edit.state', 'com_xdecarocompetitions')) {
             return true;
         }
 
@@ -163,7 +163,7 @@ final class RosterTable extends Table
         $db = $this->getDbo();
         $query = $db->getQuery(true)
             ->select($db->quoteName('status'))
-            ->from($db->quoteName('#__decarocompetitions_rosters'))
+            ->from($db->quoteName('#__xdecarocompetitions_rosters'))
             ->where($db->quoteName('id') . ' = :id')
             ->bind(':id', $this->id, ParameterType::INTEGER);
 
@@ -174,7 +174,7 @@ final class RosterTable extends Table
     {
         $identity = Factory::getApplication()->getIdentity();
 
-        if ($identity->authorise('core.edit.state', 'com_decarodcl')) {
+        if ($identity->authorise('core.edit.state', 'com_xdecarocompetitions')) {
             return;
         }
 
@@ -186,7 +186,7 @@ final class RosterTable extends Table
         $db = $this->getDbo();
         $query = $db->getQuery(true)
             ->select($db->quoteName('state'))
-            ->from($db->quoteName('#__decarocompetitions_rosters'))
+            ->from($db->quoteName('#__xdecarocompetitions_rosters'))
             ->where($db->quoteName('id') . ' = :stateId')
             ->bind(':stateId', $this->id, ParameterType::INTEGER);
 

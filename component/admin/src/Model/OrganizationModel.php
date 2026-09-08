@@ -1,5 +1,5 @@
 <?php
-namespace Xdecaro\Component\Decarodcl\Administrator\Model;
+namespace Xdecaro\Component\Competitions\Administrator\Model;
 
 defined('_JEXEC') or die;
 
@@ -16,12 +16,12 @@ final class OrganizationModel extends BaseAdminModel
 
     public function getForm($data = [], $loadData = true)
     {
-        return $this->loadForm('com_decarodcl.organization', 'organization', ['control' => 'jform', 'load_data' => $loadData]);
+        return $this->loadForm('com_xdecarocompetitions.organization', 'organization', ['control' => 'jform', 'load_data' => $loadData]);
     }
 
     protected function loadFormData()
     {
-        $data = Factory::getApplication()->getUserState('com_decarodcl.edit.organization.data', []);
+        $data = Factory::getApplication()->getUserState('com_xdecarocompetitions.edit.organization.data', []);
         if (!$data) {
             $data = $this->getItem();
         }
@@ -31,7 +31,7 @@ final class OrganizationModel extends BaseAdminModel
     protected function preprocessForm(Form $form, $data, $group = 'content'): void
     {
         parent::preprocessForm($form, $data, $group);
-        if (!Factory::getApplication()->getIdentity()->authorise('core.edit.state', 'com_decarodcl')) {
+        if (!Factory::getApplication()->getIdentity()->authorise('core.edit.state', 'com_xdecarocompetitions')) {
             $form->setFieldAttribute('state', 'disabled', 'true');
             $form->setFieldAttribute('state', 'readonly', 'true');
         }

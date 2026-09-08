@@ -1,5 +1,5 @@
 <?php
-namespace Xdecaro\Component\Decarodcl\Administrator\Table;
+namespace Xdecaro\Component\Competitions\Administrator\Table;
 
 defined('_JEXEC') or die;
 
@@ -9,13 +9,13 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Table\Table;
 use Joomla\Database\DatabaseDriver;
 use Joomla\Database\ParameterType;
-use Xdecaro\Component\Decarodcl\Administrator\Helper\TournamentScopeHelper;
+use Xdecaro\Component\Competitions\Administrator\Helper\TournamentScopeHelper;
 
 final class TeamTable extends Table
 {
     public function __construct(DatabaseDriver $db)
     {
-        parent::__construct('#__decarocompetitions_teams', 'id', $db);
+        parent::__construct('#__xdecarocompetitions_teams', 'id', $db);
     }
 
     public function check(): bool
@@ -33,32 +33,32 @@ final class TeamTable extends Table
         $this->approval_status = trim((string) $this->approval_status) ?: 'pending';
 
         if ($this->name === '') {
-            $this->setError(Text::_('COM_DECARODCL_ERROR_TEAM_NAME_REQUIRED'));
+            $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_TEAM_NAME_REQUIRED'));
             return false;
         }
 
         if ($this->federation_id <= 0) {
-            $this->setError(Text::_('COM_DECARODCL_ERROR_TEAM_FEDERATION_REQUIRED'));
+            $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_TEAM_FEDERATION_REQUIRED'));
             return false;
         }
 
         if (!in_array($this->team_type, TournamentScopeHelper::TEAM_TYPES, true)) {
-            $this->setError(Text::_('COM_DECARODCL_ERROR_TEAM_TYPE_INVALID'));
+            $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_TEAM_TYPE_INVALID'));
             return false;
         }
 
         if (!in_array($this->approval_status, ['pending', 'approved', 'rejected'], true)) {
-            $this->setError(Text::_('COM_DECARODCL_ERROR_TEAM_APPROVAL_INVALID'));
+            $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_TEAM_APPROVAL_INVALID'));
             return false;
         }
 
         if ($this->email !== null && filter_var($this->email, FILTER_VALIDATE_EMAIL) === false) {
-            $this->setError(Text::_('COM_DECARODCL_ERROR_EMAIL_INVALID'));
+            $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_EMAIL_INVALID'));
             return false;
         }
 
         if ($this->website !== null && filter_var($this->website, FILTER_VALIDATE_URL) === false) {
-            $this->setError(Text::_('COM_DECARODCL_ERROR_URL_INVALID'));
+            $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_URL_INVALID'));
             return false;
         }
 
@@ -70,9 +70,9 @@ final class TeamTable extends Table
                 $db->quoteName('c.code'),
                 $db->quoteName('c.iso3'),
             ])
-            ->from($db->quoteName('#__decarocompetitions_federations', 'f'))
+            ->from($db->quoteName('#__xdecarocompetitions_federations', 'f'))
             ->innerJoin(
-                $db->quoteName('#__decarocompetitions_countries', 'c')
+                $db->quoteName('#__xdecarocompetitions_countries', 'c')
                 . ' ON ' . $db->quoteName('c.id') . ' = ' . $db->quoteName('f.country_id')
             )
             ->where($db->quoteName('f.id') . ' = :federationId')
@@ -83,7 +83,7 @@ final class TeamTable extends Table
         $country = $db->setQuery($query)->loadObject();
 
         if (!$country) {
-            $this->setError(Text::_('COM_DECARODCL_ERROR_TEAM_FEDERATION_INVALID'));
+            $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_TEAM_FEDERATION_INVALID'));
             return false;
         }
 
@@ -93,9 +93,9 @@ final class TeamTable extends Table
         if ($this->id) {
             $query = $db->getQuery(true)
                 ->select('DISTINCT ' . $db->quoteName('s.tournament_id'))
-                ->from($db->quoteName('#__decarocompetitions_participations', 'p'))
+                ->from($db->quoteName('#__xdecarocompetitions_participations', 'p'))
                 ->innerJoin(
-                    $db->quoteName('#__decarocompetitions_seasons', 's')
+                    $db->quoteName('#__xdecarocompetitions_seasons', 's')
                     . ' ON ' . $db->quoteName('s.id') . ' = ' . $db->quoteName('p.season_id')
                 )
                 ->where($db->quoteName('p.team_id') . ' = :teamId')
@@ -126,18 +126,18 @@ final class TeamTable extends Table
                 ->bind(':ownerUserId', $this->owner_user_id, ParameterType::INTEGER);
 
             if ((int) $db->setQuery($query)->loadResult() === 0) {
-                $this->setError(Text::_('COM_DECARODCL_ERROR_TEAM_MANAGER_INVALID'));
+                $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_TEAM_MANAGER_INVALID'));
                 return false;
             }
         }
 
         if (!$this->canChangeApprovalStatus()) {
-            $this->setError(Text::_('COM_DECARODCL_ERROR_APPROVAL_PERMISSION'));
+            $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_APPROVAL_PERMISSION'));
             return false;
         }
 
         if (!$this->canChangeOwner()) {
-            $this->setError(Text::_('COM_DECARODCL_ERROR_TEAM_MANAGER_PERMISSION'));
+            $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_TEAM_MANAGER_PERMISSION'));
             return false;
         }
 
@@ -156,7 +156,7 @@ final class TeamTable extends Table
 
         while ($this->aliasExists($candidate)) {
             if ($aliasWasProvided) {
-                $this->setError(Text::_('COM_DECARODCL_ERROR_TEAM_ALIAS_DUPLICATE'));
+                $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_TEAM_ALIAS_DUPLICATE'));
                 return false;
             }
 
@@ -183,7 +183,7 @@ final class TeamTable extends Table
             $db = $this->getDbo();
             $query = $db->getQuery(true)
                 ->select($db->quoteName('approval_status'))
-                ->from($db->quoteName('#__decarocompetitions_teams'))
+                ->from($db->quoteName('#__xdecarocompetitions_teams'))
                 ->where($db->quoteName('id') . ' = :id')
                 ->bind(':id', $this->id, ParameterType::INTEGER);
             $previousStatus = $db->setQuery($query)->loadResult();
@@ -214,7 +214,7 @@ final class TeamTable extends Table
     {
         $identity = Factory::getApplication()->getIdentity();
 
-        if ($identity->authorise('core.edit.state', 'com_decarodcl')) {
+        if ($identity->authorise('core.edit.state', 'com_xdecarocompetitions')) {
             return true;
         }
 
@@ -225,7 +225,7 @@ final class TeamTable extends Table
         $db = $this->getDbo();
         $query = $db->getQuery(true)
             ->select($db->quoteName('approval_status'))
-            ->from($db->quoteName('#__decarocompetitions_teams'))
+            ->from($db->quoteName('#__xdecarocompetitions_teams'))
             ->where($db->quoteName('id') . ' = :id')
             ->bind(':id', $this->id, ParameterType::INTEGER);
 
@@ -236,7 +236,7 @@ final class TeamTable extends Table
     {
         $identity = Factory::getApplication()->getIdentity();
 
-        if ($identity->authorise('core.edit.state', 'com_decarodcl')) {
+        if ($identity->authorise('core.edit.state', 'com_xdecarocompetitions')) {
             return true;
         }
 
@@ -247,7 +247,7 @@ final class TeamTable extends Table
         $db = $this->getDbo();
         $query = $db->getQuery(true)
             ->select($db->quoteName('owner_user_id'))
-            ->from($db->quoteName('#__decarocompetitions_teams'))
+            ->from($db->quoteName('#__xdecarocompetitions_teams'))
             ->where($db->quoteName('id') . ' = :ownerId')
             ->bind(':ownerId', $this->id, ParameterType::INTEGER);
 
@@ -258,7 +258,7 @@ final class TeamTable extends Table
     {
         $identity = Factory::getApplication()->getIdentity();
 
-        if ($identity->authorise('core.edit.state', 'com_decarodcl')) {
+        if ($identity->authorise('core.edit.state', 'com_xdecarocompetitions')) {
             return;
         }
 
@@ -270,7 +270,7 @@ final class TeamTable extends Table
         $db = $this->getDbo();
         $query = $db->getQuery(true)
             ->select($db->quoteName('state'))
-            ->from($db->quoteName('#__decarocompetitions_teams'))
+            ->from($db->quoteName('#__xdecarocompetitions_teams'))
             ->where($db->quoteName('id') . ' = :stateId')
             ->bind(':stateId', $this->id, ParameterType::INTEGER);
 
@@ -287,7 +287,7 @@ final class TeamTable extends Table
 
         $query = $db->getQuery(true)
             ->select('COUNT(*)')
-            ->from($db->quoteName('#__decarocompetitions_teams'))
+            ->from($db->quoteName('#__xdecarocompetitions_teams'))
             ->where($db->quoteName('alias') . ' = :alias')
             ->where($db->quoteName('id') . ' <> :id')
             ->bind(':alias', $alias)
