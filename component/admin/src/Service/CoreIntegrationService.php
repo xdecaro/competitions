@@ -4,7 +4,7 @@ namespace Xdecaro\Component\Decarodcl\Administrator\Service;
 defined('_JEXEC') or die;
 
 /**
- * Optional adapter between Competitions and the public Xdecaro Core
+ * Optional adapter between Competitions and the public Core by xdecaro
  * cross-product reference contract.
  *
  * The historical Joomla component element remains com_decarodcl and must be
@@ -64,7 +64,7 @@ final class CoreIntegrationService
     {
         if (!$this->isAvailable()) {
             throw new \RuntimeException(
-                'Xdecaro Core integration is unavailable. Install a compatible Xdecaro Core version before using cross-product references.'
+                'Core by xdecaro integration is unavailable. Install a compatible Core by xdecaro version before using cross-product references.'
             );
         }
     }
