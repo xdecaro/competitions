@@ -79,4 +79,4 @@ jobs:
             "dist/SHA256SUMS.txt" \
             --target main \
             --title "Competitions by xdecaro ${VERSION}" \
-            --notes "Clean Competitions by xdecaro 1.0.0 technical baseline. Fresh install only: com_xdecarocompetitions, pkg_xdecarocompetitions, Xdecaro\\Component\\Competitions and #__xdecarocompetitions_* database tables. Core by xdecaro integration is preserved; competition-domain behavior remains in Competitions."
+            --notes "Competitions by xdecaro ${VERSION}. Keeps com_xdecarocompetitions, pkg_xdecarocompetitions and #__xdecarocompetitions_* stable while making xdecaro\\Component\\Competitions the canonical PHP namespace. No database structure or competition-domain behavior changes are introduced by this release."
