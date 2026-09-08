@@ -21,7 +21,8 @@ jobs:
         run: |
           set -euo pipefail
           python3 tools/clean_base_reset.py
-          rm tools/clean_base_reset.py
+          python3 tools/clean_base_reset_fix.py
+          rm tools/clean_base_reset.py tools/clean_base_reset_fix.py
       - name: PHP syntax
         run: find component modules plugins package -name '*.php' -print0 | xargs -0 -n1 php -l
       - name: XML syntax
