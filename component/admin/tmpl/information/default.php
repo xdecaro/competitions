@@ -19,6 +19,10 @@ $updateState = (string) ($info['update_state'] ?? 'inactive');
 $latestVersion = (string) ($info['latest_version'] ?? '');
 $lastCheck = (int) ($info['last_check_timestamp'] ?? 0);
 $tableHealth = (array) ($info['table_health'] ?? []);
+$core = (array) ($info['core'] ?? []);
+$coreInstalled = !empty($core['installed']);
+$coreApiAvailable = !empty($core['api_available']);
+$coreVersion = (string) ($core['version'] ?? '');
 $integrations = (array) ($info['integrations'] ?? []);
 $criticalIssues = (array) ($info['critical_issues'] ?? []);
 $warnings = (array) ($info['warnings'] ?? []);
@@ -43,6 +47,12 @@ $updateBadgeClass = match ($updateState) {
     default => 'is-muted',
 };
 
+$coreCheckClass = !$coreInstalled ? 'is-muted' : ($coreApiAvailable ? 'is-ok' : 'is-warning');
+$coreCheckIcon = !$coreInstalled ? '•' : ($coreApiAvailable ? '✓' : '!');
+$coreCheckLabelKey = !$coreInstalled
+    ? 'COM_DECARODCL_INFO_CORE_OPTIONAL_NOT_INSTALLED'
+    : ($coreApiAvailable ? 'COM_DECARODCL_INFO_CORE_API_AVAILABLE' : 'COM_DECARODCL_INFO_CORE_API_CHECK');
+
 $diagnosticLines = [
     'Competitions ' . $installedVersion,
     'Joomla: ' . (string) ($info['joomla_version'] ?? '—'),
@@ -53,6 +63,8 @@ $diagnosticLines = [
     'Plugin sistema: ' . ((string) ($versions['plugin'] ?? '') ?: '—'),
     'Modulo Timeline: ' . ((string) ($versions['timeline_module'] ?? '') ?: '—'),
     'Modulo Paesi/Federazioni: ' . ((string) ($versions['countries_module'] ?? '') ?: '—'),
+    'Core by xdecaro: ' . ($coreInstalled ? ($coreVersion !== '' ? $coreVersion : 'installed') : 'not installed'),
+    'Core public API: ' . ($coreApiAvailable ? 'available' : 'not available'),
     'Tabelle: ' . (int) ($tableHealth['present_count'] ?? 0) . '/' . (int) ($tableHealth['expected_count'] ?? 0),
     'Update server: ' . ($updateSiteEnabled ? 'attivo' : 'non attivo'),
     'Problemi critici: ' . count($criticalIssues),
@@ -91,7 +103,7 @@ $diagnosticText = implode("\n", $diagnosticLines);
                 <div class="dcl-information-row"><dt><?= Text::_('COM_DECARODCL_INFO_COMPONENT_ID'); ?></dt><dd><code>com_decarodcl</code></dd></div>
                 <div class="dcl-information-row"><dt><?= Text::_('COM_DECARODCL_INFO_PACKAGE_ID'); ?></dt><dd><code>pkg_decarodcl</code></dd></div>
                 <div class="dcl-information-row"><dt><?= Text::_('COM_DECARODCL_INFO_DEVELOPER'); ?></dt><dd>Luca De Caro</dd></div>
-                <div class="dcl-information-row"><dt><?= Text::_('COM_DECARODCL_INFO_REPOSITORY'); ?></dt><dd><a href="https://github.com/xdecaro/dcl" target="_blank" rel="noopener noreferrer">xdecaro/dcl <span aria-hidden="true">↗</span></a></dd></div>
+                <div class="dcl-information-row"><dt><?= Text::_('COM_DECARODCL_INFO_REPOSITORY'); ?></dt><dd><a href="https://github.com/xdecaro/competitions" target="_blank" rel="noopener noreferrer">xdecaro/competitions <span aria-hidden="true">↗</span></a></dd></div>
                 <div class="dcl-information-row"><dt><?= Text::_('COM_DECARODCL_INFO_LICENSE'); ?></dt><dd>GNU GPL v2 or later</dd></div>
             </dl>
         </section>
@@ -138,10 +150,19 @@ $diagnosticText = implode("\n", $diagnosticLines);
             <div class="dcl-card-head"><div><span class="dcl-eyebrow"><?= Text::_('COM_DECARODCL_INFO_INTEGRATIONS_SECTION'); ?></span><h2><?= Text::_('COM_DECARODCL_INFO_CONNECTED_COMPONENTS'); ?></h2></div></div>
             <p class="dcl-information-intro"><?= Text::_('COM_DECARODCL_INFO_CONNECTED_COMPONENTS_DESC'); ?></p>
             <div class="dcl-information-integrations">
-                <?php foreach ($integrations as $integration) : $installed = !empty($integration['installed']); ?>
+                <?php foreach ($integrations as $integration) :
+                    $installed = !empty($integration['installed']);
+                    $metricType = (string) ($integration['metric_type'] ?? 'count');
+                    $metricLabel = $metricType === 'api'
+                        ? Text::_('COM_DECARODCL_INFO_PUBLIC_API')
+                        : Text::_('COM_DECARODCL_INFO_AVAILABLE_MODULES');
+                    $metricValue = $metricType === 'api'
+                        ? Text::_(!empty($integration['api_available']) ? 'COM_DECARODCL_INFO_AVAILABLE' : 'COM_DECARODCL_INFO_NOT_AVAILABLE')
+                        : (string) (int) ($integration['available_count'] ?? 0);
+                ?>
                     <article class="dcl-information-integration">
                         <div class="dcl-information-integration-main"><strong><?= $this->escape((string) ($integration['name'] ?? '')); ?></strong><span><?= Text::_('COM_DECARODCL_INFO_OPTIONAL_INTEGRATION'); ?> · <code><?= $this->escape((string) ($integration['element'] ?? '')); ?></code></span></div>
-                        <div class="dcl-information-integration-metrics"><div><small><?= Text::_('COM_DECARODCL_INFO_INSTALLED_VERSION'); ?></small><strong><?= $installed && (string) ($integration['version'] ?? '') !== '' ? $this->escape((string) $integration['version']) : '—'; ?></strong></div><div><small><?= Text::_('COM_DECARODCL_INFO_AVAILABLE_MODULES'); ?></small><strong><?= (int) ($integration['available_count'] ?? 0); ?></strong></div></div>
+                        <div class="dcl-information-integration-metrics"><div><small><?= Text::_('COM_DECARODCL_INFO_INSTALLED_VERSION'); ?></small><strong><?= $installed && (string) ($integration['version'] ?? '') !== '' ? $this->escape((string) $integration['version']) : '—'; ?></strong></div><div><small><?= $this->escape($metricLabel); ?></small><strong><?= $this->escape($metricValue); ?></strong></div></div>
                         <div class="dcl-information-integration-badges"><span class="dcl-badge <?= $installed ? 'is-success' : 'is-muted'; ?>"><?= Text::_($installed ? 'COM_DECARODCL_INFO_INSTALLED' : 'COM_DECARODCL_INFO_NOT_INSTALLED'); ?></span><span class="dcl-badge is-muted"><?= Text::_('COM_DECARODCL_INFO_OPTIONAL'); ?></span></div>
                     </article>
                 <?php endforeach; ?>
@@ -157,10 +178,11 @@ $diagnosticText = implode("\n", $diagnosticLines);
                 <div class="dcl-information-check <?= $updateSiteEnabled ? 'is-ok' : 'is-warning'; ?>"><span aria-hidden="true"><?= $updateSiteEnabled ? '✓' : '!'; ?></span><?= Text::_('COM_DECARODCL_INFO_CHECK_UPDATE_SERVER'); ?></div>
                 <div class="dcl-information-check <?= $environmentCompatible ? 'is-ok' : 'is-error'; ?>"><span aria-hidden="true"><?= $environmentCompatible ? '✓' : '!'; ?></span><?= Text::_('COM_DECARODCL_INFO_CHECK_ENVIRONMENT'); ?></div>
                 <div class="dcl-information-check <?= $packageDetected ? 'is-ok' : 'is-error'; ?>"><span aria-hidden="true"><?= $packageDetected ? '✓' : '!'; ?></span><?= Text::_('COM_DECARODCL_INFO_CHECK_PACKAGE'); ?></div>
+                <div class="dcl-information-check <?= $coreCheckClass; ?>"><span aria-hidden="true"><?= $coreCheckIcon; ?></span><?= Text::_($coreCheckLabelKey); ?></div>
             </div>
-            <details class="dcl-information-details"><summary><?= Text::_('COM_DECARODCL_INFO_TECHNICAL_DETAILS'); ?></summary><dl class="dcl-information-list"><div class="dcl-information-row"><dt><?= Text::_('COM_DECARODCL_INFO_COMPONENT_ID'); ?></dt><dd><code>com_decarodcl</code></dd></div><div class="dcl-information-row"><dt><?= Text::_('COM_DECARODCL_INFO_PACKAGE_ID'); ?></dt><dd><code>pkg_decarodcl</code></dd></div><div class="dcl-information-row"><dt><?= Text::_('COM_DECARODCL_INFO_TABLES'); ?></dt><dd><?= (int) ($tableHealth['present_count'] ?? 0); ?>/<?= (int) ($tableHealth['expected_count'] ?? 0); ?></dd></div><div class="dcl-information-row"><dt><?= Text::_('COM_DECARODCL_INFO_DATABASE'); ?></dt><dd><?= $this->escape(trim((string) ($info['database_type'] ?? '') . ' ' . (string) ($info['database_version'] ?? ''))); ?></dd></div><div class="dcl-information-row"><dt><?= Text::_('COM_DECARODCL_INFO_UPDATE_SERVER'); ?></dt><dd><code><?= $this->escape((string) ($info['update_site_url'] ?? '')); ?></code></dd></div></dl></details>
+            <details class="dcl-information-details"><summary><?= Text::_('COM_DECARODCL_INFO_TECHNICAL_DETAILS'); ?></summary><dl class="dcl-information-list"><div class="dcl-information-row"><dt><?= Text::_('COM_DECARODCL_INFO_COMPONENT_ID'); ?></dt><dd><code>com_decarodcl</code></dd></div><div class="dcl-information-row"><dt><?= Text::_('COM_DECARODCL_INFO_PACKAGE_ID'); ?></dt><dd><code>pkg_decarodcl</code></dd></div><div class="dcl-information-row"><dt>Core by xdecaro</dt><dd><?= $coreInstalled ? $this->escape($coreVersion !== '' ? $coreVersion : Text::_('COM_DECARODCL_INFO_INSTALLED')) : Text::_('COM_DECARODCL_INFO_NOT_INSTALLED'); ?> · <?= Text::_('COM_DECARODCL_INFO_PUBLIC_API'); ?>: <?= Text::_($coreApiAvailable ? 'COM_DECARODCL_INFO_AVAILABLE' : 'COM_DECARODCL_INFO_NOT_AVAILABLE'); ?></dd></div><div class="dcl-information-row"><dt><?= Text::_('COM_DECARODCL_INFO_TABLES'); ?></dt><dd><?= (int) ($tableHealth['present_count'] ?? 0); ?>/<?= (int) ($tableHealth['expected_count'] ?? 0); ?></dd></div><div class="dcl-information-row"><dt><?= Text::_('COM_DECARODCL_INFO_DATABASE'); ?></dt><dd><?= $this->escape(trim((string) ($info['database_type'] ?? '') . ' ' . (string) ($info['database_version'] ?? ''))); ?></dd></div><div class="dcl-information-row"><dt><?= Text::_('COM_DECARODCL_INFO_UPDATE_SERVER'); ?></dt><dd><code><?= $this->escape((string) ($info['update_site_url'] ?? '')); ?></code></dd></div></dl></details>
             <pre id="dcl-information-diagnostic-data" hidden><?= $this->escape($diagnosticText); ?></pre>
-            <div class="dcl-information-actions dcl-information-diagnostic-actions"><button type="button" class="btn btn-outline-secondary" data-dcl-info-copy><?= Text::_('COM_DECARODCL_INFO_COPY_DIAGNOSTICS'); ?></button><button type="button" class="btn btn-outline-secondary" data-dcl-info-download data-version="<?= $this->escape($installedVersion); ?>"><?= Text::_('COM_DECARODCL_INFO_DOWNLOAD_DIAGNOSTICS'); ?></button><a class="btn btn-outline-secondary" href="https://github.com/xdecaro/dcl/releases" target="_blank" rel="noopener noreferrer"><?= Text::_('COM_DECARODCL_INFO_GITHUB_RELEASES'); ?></a></div>
+            <div class="dcl-information-actions dcl-information-diagnostic-actions"><button type="button" class="btn btn-outline-secondary" data-dcl-info-copy><?= Text::_('COM_DECARODCL_INFO_COPY_DIAGNOSTICS'); ?></button><button type="button" class="btn btn-outline-secondary" data-dcl-info-download data-version="<?= $this->escape($installedVersion); ?>"><?= Text::_('COM_DECARODCL_INFO_DOWNLOAD_DIAGNOSTICS'); ?></button><a class="btn btn-outline-secondary" href="https://github.com/xdecaro/competitions/releases" target="_blank" rel="noopener noreferrer"><?= Text::_('COM_DECARODCL_INFO_GITHUB_RELEASES'); ?></a></div>
             <div class="dcl-information-feedback" data-dcl-info-feedback aria-live="polite"></div>
         </section>
     </div>
