@@ -26,6 +26,40 @@ jobs:
             echo "Release v${{ steps.version.outputs.version }} already exists. Bump VERSION before publishing changed files."
             exit 1
           fi
+      - name: Ensure 0.12.0 changelog entry
+        if: steps.version.outputs.version == '0.12.0'
+        shell: bash
+        run: |
+          set -euo pipefail
+          if grep -Fq '## 0.12.0 - 2026-09-08' CHANGELOG.md; then
+            exit 0
+          fi
+          python3 - <<'PY'
+          from pathlib import Path
+          path = Path('CHANGELOG.md')
+          text = path.read_text(encoding='utf-8')
+          marker = '# Changelog\n\n'
+          if not text.startswith(marker):
+              raise SystemExit('Unexpected CHANGELOG.md header')
+          entry = '''## 0.12.0 - 2026-09-08
+
+- Added optional Core by xdecaro 1.1+ Web Asset Manager integration to the administrator Information/Diagnostics view.
+- Added an isolated `.xdecaro-scope` layout and a small token bridge from `--dcl-*` to the public `--xdecaro-*` design tokens.
+- Preserved the complete local Competitions CSS as an automatic fallback when Core is missing, older than 1.1.0 or its asset registry cannot be loaded.
+- Kept historical Joomla identifiers `com_decarodcl`, `pkg_decarodcl` and `#__dcl_*` unchanged for upgrade compatibility.
+- Preserved tournaments, seasons, teams, participations, rosters, matches, standings, Live Sync, ACL, CSRF and all sports-domain behavior.
+- No database migration is introduced.
+- Bumped component, package, plugin, modules, Web Asset registry and Joomla update feed to 0.12.0.
+
+'''
+          path.write_text(marker + entry + text[len(marker):], encoding='utf-8')
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add CHANGELOG.md
+          git commit -m "Document Competitions 0.12.0"
+          git pull --rebase origin main
+          git push origin HEAD:main
       - name: PHP syntax
         run: find component modules plugins package -name '*.php' -print0 | xargs -0 -n1 php -l
       - name: JavaScript syntax
@@ -43,12 +77,21 @@ jobs:
         run: python3 tools/validate_release.py
       - name: Build
         run: python3 tools/build.py
-      - name: Verify filterbar package assets
+      - name: Verify package assets
         shell: bash
         run: |
+          set -euo pipefail
           VERSION="${{ steps.version.outputs.version }}"
-          unzip -l "dist/com_decarodcl_${VERSION}.zip" | grep -q 'media/css/filterbar.css'
-          unzip -l "dist/com_decarodcl_${VERSION}.zip" | grep -q 'media/js/filterbar.js'
+          COMPONENT="dist/com_decarodcl_${VERSION}.zip"
+          unzip -l "$COMPONENT" | grep -q 'media/css/filterbar.css'
+          unzip -l "$COMPONENT" | grep -q 'media/js/filterbar.js'
+          unzip -l "$COMPONENT" | grep -q 'media/css/core-bridge.css'
+          unzip -l "$COMPONENT" | grep -q 'admin/tmpl/information/core.php'
+          unzip -p "$COMPONENT" media/joomla.asset.json | grep -Fq '"com_decarodcl.core-bridge"'
+          unzip -p "$COMPONENT" admin/src/View/Information/HtmlView.php | grep -Fq "MINIMUM_CORE_UI_VERSION = '1.1.0'"
+          unzip -p "$COMPONENT" admin/src/View/Information/HtmlView.php | grep -Fq 'Xdecaro\Core\Asset\AssetService'
+          unzip -p "$COMPONENT" admin/src/View/Information/HtmlView.php | grep -Fq "setLayout('core')"
+          unzip -p "$COMPONENT" admin/tmpl/information/core.php | grep -Fq 'xdecaro-scope competitions-core-scope'
       - name: Synchronize Joomla update checksum
         run: python3 tools/update_feed_checksum.py
       - name: Verify Joomla update checksum
@@ -65,7 +108,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           VERSION="${{ steps.version.outputs.version }}"
-          gh release create "v${VERSION}" dist/*.zip dist/SHA256SUMS.txt --title "Competitions ${VERSION}" --notes "Competitions ${VERSION}"
+          gh release create "v${VERSION}" dist/*.zip dist/SHA256SUMS.txt --title "Competitions ${VERSION}" --notes "Competitions ${VERSION}: optional Core by xdecaro 1.1+ design-system integration for the Information view with local fallback."
       - name: Publish update-feed checksum
         shell: bash
         run: |

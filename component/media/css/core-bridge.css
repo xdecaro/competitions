@@ -1,0 +1,20 @@
+/* Competitions 0.12.0 - optional bridge to Core by xdecaro 1.1+ design tokens. */
+
+.competitions-core-scope .dcl-admin {
+  --dcl-font: var(--xdecaro-font-family);
+  --dcl-text: var(--xdecaro-color-text);
+  --dcl-muted: var(--xdecaro-color-muted);
+  --dcl-border: var(--xdecaro-color-border);
+  --dcl-surface: var(--xdecaro-color-surface);
+  --dcl-surface-soft: var(--xdecaro-color-surface-subtle);
+  --dcl-primary: var(--xdecaro-color-primary);
+  --dcl-primary-dark: var(--xdecaro-color-primary-hover);
+  --dcl-success: var(--xdecaro-color-success);
+  --dcl-success-soft: var(--xdecaro-color-success-soft);
+  --dcl-warning: var(--xdecaro-color-warning);
+  --dcl-warning-soft: var(--xdecaro-color-warning-soft);
+  --dcl-danger: var(--xdecaro-color-danger);
+  --dcl-danger-soft: var(--xdecaro-color-danger-soft);
+  --dcl-card-radius: var(--xdecaro-radius-lg);
+  --dcl-shadow: var(--xdecaro-shadow-sm);
+}
