@@ -63,6 +63,27 @@ def validate_source() -> None:
     sql = (ROOT / "component/admin/sql/install.mysql.utf8mb4.sql").read_text(encoding="utf-8")
     if "#__xdecarocompetitions_" not in sql:
         fail("fresh-install SQL does not use #__xdecarocompetitions_ tables")
+    required_schema_tokens = [
+        "#__xdecarocompetitions_organizations",
+        "#__xdecarocompetitions_tournament_organizations",
+        "#__xdecarocompetitions_season_organizations",
+        "#__xdecarocompetitions_matches",
+        "#__xdecarocompetitions_zones",
+        "#__xdecarocompetitions_zone_countries",
+        "#__xdecarocompetitions_tournament_countries",
+        "#__xdecarocompetitions_tournament_zones",
+        "#__xdecarocompetitions_changes",
+        "#__xdecarocompetitions_edit_sessions",
+        "`team_type` VARCHAR(20)",
+        "`scope_type` VARCHAR(20)",
+        "`participant_type` VARCHAR(20)",
+        "`match_id` BIGINT UNSIGNED",
+    ]
+    for token in required_schema_tokens:
+        if token not in sql:
+            fail(f"canonical fresh-install schema is missing {token}")
+    if "ALTER TABLE" in sql.upper():
+        fail("canonical 1.0 fresh-install schema must not replay legacy ALTER migrations")
     if "#__decarocompetitions_" in sql or "#__dcl_" in sql:
         fail("fresh-install SQL still contains a legacy table prefix")
 

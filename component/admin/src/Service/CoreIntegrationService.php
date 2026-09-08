@@ -7,8 +7,8 @@ defined('_JEXEC') or die;
  * Optional adapter between Competitions and the public Core by xdecaro
  * cross-product reference contract.
  *
- * The historical Joomla component element remains com_xdecarocompetitions and must be
- * used in public entity references for upgrade compatibility.
+ * Public cross-product references use the stable 1.x component identifier
+ * com_xdecarocompetitions.
  */
 final class CoreIntegrationService
 {
