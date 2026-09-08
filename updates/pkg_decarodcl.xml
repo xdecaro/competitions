@@ -13,7 +13,7 @@
     <tags>
       <tag>stable</tag>
     </tags>
-    <sha256>e74a75a5dc768e31de22ed81de86e32ea45eb97034f3d87263c0f48bcb0c21ad</sha256>
+    <sha256>6707b1191f38549ba7be48343748c0565d0f603f3eea122c740b4bfc29ca5514</sha256>
     <maintainer>Luca De Caro</maintainer>
     <maintainerurl>https://github.com/xdecaro/competitions</maintainerurl>
     <targetplatform name="joomla" version="6\.[0-9]+" />
