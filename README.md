@@ -9,7 +9,8 @@ The repository keeps the historical/internal `dcl` technical identifiers for upg
 - Visible product: `Competitions`
 - Administrator area: `Competitions`
 - Joomla component: `com_decarodcl`
-- Joomla package: `pkg_decarodcl`
+- Joomla package identifier (upgrade compatibility): `pkg_decarodcl`
+- Distribution ZIP: `pkg_competitions_<version>.zip`
 - Core plugin: `plg_system_decarodcl`
 - GitHub repository: `xdecaro/competitions`
 - Database tables: `#__dcl_*`
@@ -17,7 +18,7 @@ The repository keeps the historical/internal `dcl` technical identifiers for upg
 
 ## Current version
 
-**0.12.1**
+**0.12.2**
 
 ## Architecture
 

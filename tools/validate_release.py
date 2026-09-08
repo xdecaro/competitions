@@ -211,7 +211,7 @@ def validate_versions() -> None:
         fail("update-server Joomla targetplatform regex is not the expected Joomla 6 pattern")
 
     download_url = (update.findtext("./downloads/downloadurl") or "").strip()
-    expected_download = f"https://github.com/xdecaro/competitions/releases/download/v{VERSION}/pkg_decarodcl_{VERSION}.zip"
+    expected_download = f"https://github.com/xdecaro/competitions/releases/download/v{VERSION}/pkg_competitions_{VERSION}.zip"
     if download_url != expected_download:
         fail(f"update-server URL must be {expected_download}")
 
@@ -479,7 +479,7 @@ def validate_dist() -> None:
     dist = ROOT / "dist"
     component_zip = dist / f"com_decarodcl_{VERSION}.zip"
     timeline_zip = dist / f"mod_dcl_matchtimeline_{VERSION}.zip"
-    package_zip = dist / f"pkg_decarodcl_{VERSION}.zip"
+    package_zip = dist / f"pkg_competitions_{VERSION}.zip"
 
     validate_zip_contents(component_zip, EXPECTED_COMPONENT_FILES, "component")
     validate_zip_contents(timeline_zip, EXPECTED_TIMELINE_FILES, "timeline module")

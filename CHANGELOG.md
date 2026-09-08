@@ -1,6 +1,15 @@
 # Changelog
 
-## 0.12.1 - 2026-09-08
+## 0.12.2 - 2026-09-08
+
+    - Renamed the public Competitions distribution archive to `pkg_competitions_<version>.zip`.
+    - Kept the historical Joomla package element `pkg_decarodcl` and internal manifest filename unchanged so existing installations continue to receive normal Joomla updates.
+    - Updated build, release validation, checksum publication and update-feed download URL to the new public package filename.
+    - Preserved `com_decarodcl`, `plg_system_decarodcl`, `mod_dcl_*`, namespaces, `#__dcl_*` tables, sports data and configuration.
+    - No database migration is introduced.
+    - Bumped component, package, plugin, modules, Web Asset registry and Joomla update feed to 0.12.2.
+
+    ## 0.12.1 - 2026-09-08
 
     - Renamed the visible system plugin from **Competitions Core** to **Competitions - System Plugin / Competitions - Plugin di sistema** without changing `plg_system_decarodcl`.
     - Added **Core by xdecaro** to Information → Connected components with installed version and public-API status.
