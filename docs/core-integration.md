@@ -9,6 +9,17 @@ Use:
 - `Xdecaro\Core\Integration\EntityReference` for `component/entity/id` references;
 - `Xdecaro\Core\Integration\RelationReference` for typed links between references.
 
+## Optional runtime adapter
+
+From Competitions 0.11.0, `Xdecaro\Component\Decarodcl\Administrator\Service\CoreIntegrationService` is registered in the Joomla DI container.
+
+Core remains optional:
+
+- `isAvailable()` checks whether the Core public reference classes are available;
+- `createEntityReference()` creates a Competitions-owned reference using the required historical component element `com_decarodcl`;
+- `createRelationReference()` creates a typed relation from a Competitions entity to another product's published entity;
+- Core-dependent calls fail with a controlled `RuntimeException` when Core is unavailable.
+
 Competitions remains the owner of tournaments, seasons, organizations, zones, federations, teams, players, participations, rosters, matches, results, standings, rankings and coefficients.
 
 Typical integrations include:

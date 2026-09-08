@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.11.0 - 2026-09-08
+
+- Added an optional Xdecaro Core integration adapter registered through the Joomla dependency-injection container.
+- Added support for the public Core `EntityReference` and `RelationReference` cross-product contracts when Core is installed.
+- Preserved the historical Joomla component element `com_decarodcl` in all public cross-product references for upgrade compatibility.
+- Core remains optional; Core-dependent calls fail with a controlled runtime exception instead of a class-not-found fatal error when Core is unavailable.
+- Added integration documentation for Forms, Courses, Membership, Documents and Events without exposing private `#__dcl_*` tables as an API.
+- Preserved all tournament, season, team, participant, roster, match, result, standing, Live Sync, ACL and CSRF behavior.
+- No database migration is introduced.
+- Bumped component, package, plugin, modules, Web Asset registry and Joomla update feed to 0.11.0.
+
+## 0.10.7 - 2026-09-08
+
+- Centered administrator filter select values and replaced native select arrows with consistent inset chevrons.
+- Preserved dark-mode behavior and the existing search/filter workflow.
+- No database migration or sports-data change was introduced.
+- Bumped component, package, plugin, modules, Web Asset registry and Joomla update feed to 0.10.7.
+
 ## 0.10.6 - 2026-09-08
 
 - Rebuilt the administrator **Informazioni** page to the approved xdecaro standard used by Courses and Forms.
@@ -72,7 +90,7 @@
 - Added one centralized `filterbar.js`/`filterbar.css` enhancement instead of duplicating list-specific JavaScript or CSS.
 - Preserved toolbar actions, sorting, pagination, Live Sync, Tournament scope logic, ACL, CSRF protections and all existing sports data.
 - No database migration is introduced.
-- Bumped component, package, plugin, modules, Web Asset registry and Joomla update feed to 0.10.1.
+- Bumped component, package, plugin, modules, Web Asset registry and update feed to 0.10.1.
 
 ## 0.10.0 - 2026-09-07
 

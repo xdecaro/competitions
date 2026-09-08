@@ -11,13 +11,13 @@ The repository keeps the historical/internal `dcl` technical identifiers for upg
 - Joomla component: `com_decarodcl`
 - Joomla package: `pkg_decarodcl`
 - Core plugin: `plg_system_decarodcl`
-- GitHub repository: `xdecaro/dcl`
+- GitHub repository: `xdecaro/competitions`
 - Database tables: `#__dcl_*`
 - PHP component namespace: `Xdecaro\Component\Decarodcl`
 
 ## Current version
 
-**0.10.6**
+**0.11.0**
 
 ## Architecture
 
@@ -34,6 +34,12 @@ Competitions separates authentication, sport data and presentation:
 - Match timeline events use `match_id` as the primary relation. The legacy `article_id` relation remains available for backward compatibility.
 - `com_decarodcl` is the central administrator component.
 - Frontend modules can be placed directly in YOOtheme layouts without moving authoritative sports data into Joomla articles.
+
+## Xdecaro Core integration
+
+Version 0.11.0 adds an optional Joomla DI service for the public Xdecaro Core cross-product reference contract. Competitions can create `EntityReference` and `RelationReference` values when Core is installed while continuing to work normally without Core.
+
+The public component identifier in those references is deliberately `com_decarodcl`, not `com_decarocompetitions`, because the historical Joomla element remains the compatibility contract for installed sites and updates. Competitions keeps ownership of all sports-domain data and never exposes `#__dcl_*` tables as the cross-product API.
 
 ## Competition scope and participant types
 
@@ -82,6 +88,8 @@ Version 0.10.4 replaces the stacked search-plus-filter panel with two mutually e
 
 Version 0.10.5 keeps the search row permanently visible and opens the filters underneath as a lightweight animated drawer inside the same toolbar card. The drawer uses only a subtle divider rather than a nested card, adds extra horizontal inset so the first filter is not flush against the left edge, preserves active selections after reload, and keeps the active-filter count on the Filters button. The opening/closing transition respects `prefers-reduced-motion`, while tablet and smartphone layouts remain responsive.
 
+Version 0.10.7 centers filter select values and uses consistent inset chevrons while preserving the existing responsive and dark-mode behavior.
+
 The header is rendered centrally through `PageHeaderHelper` and a reusable Joomla layout rather than duplicated in each template. This keeps future visual changes synchronized across the whole component and preserves existing toolbar, form, filter, table and CRUD behaviour.
 
 Version 0.9.1 hardened that shared header integration by normalizing the optional record ID before rendering. Joomla input returns `null` when an `id` query parameter is absent unless a default is supplied, which affected list, Dashboard and Information views. The controller supplies `0` explicitly and the helper also accepts/normalizes a nullable ID defensively.
@@ -115,7 +123,7 @@ Version 0.8.2 added an installation-integrity check comparing the package, compo
 
 Version 0.8.3 fixed the package postflight update-site repair itself. Joomla's database `bind()` API requires variables passed by reference; the previous installer script passed constants/literals for update-site values, so the repair could fail silently and Competitions would not appear in Joomla's extension update list. The installer now binds local variables and recreates/enables the package update-site association on installation or update.
 
-The package registers `https://raw.githubusercontent.com/xdecaro/dcl/main/updates/pkg_decarodcl.xml` as its Joomla update server. The update feed identifies the distributable as the `pkg_decarodcl` site-client package and uses a Joomla 6 version regular expression compatible with Joomla's update finder. The package installer also repairs the update-site association on install/update if it is missing or disabled. Installing an available release remains managed through Joomla's native extension updater.
+The package registers `https://raw.githubusercontent.com/xdecaro/dcl/main/updates/pkg_decarodcl.xml` as its Joomla update server. The historical URL is intentionally retained for installed-site compatibility and GitHub redirect support. The update feed identifies the distributable as the `pkg_decarodcl` site-client package and uses a Joomla 6 version regular expression compatible with Joomla's update finder. The package installer also repairs the update-site association on install/update if it is missing or disabled. Installing an available release remains managed through Joomla's native extension updater.
 
 ## 0.7.0
 
@@ -144,4 +152,4 @@ Organizations and native Match management:
 
 ## Data preservation
 
-Updates and uninstall routines do not delete `#__dcl_*` data tables automatically. The 0.7.0 migration adds Organizations and native Matches while preserving the previous `article_id` event relation. Version 0.8.0 adds Zones and Country mappings using additive tables and `INSERT IGNORE`, so existing Country records and sports data are not overwritten or deleted. Version 0.10.0 adds Tournament scope fields, Team type, scope relation tables and synchronization support tables through additive migrations; existing Teams and Tournaments default to the backward-compatible `club` / `international` configuration. Versions 0.10.1, 0.10.2, 0.10.3, 0.10.4 and 0.10.5 change administrator UI/assets and release metadata only; they introduce no database migration and delete no sports data. Destructive data removal must be an explicit administrator action.
+Updates and uninstall routines do not delete `#__dcl_*` data tables automatically. The 0.7.0 migration adds Organizations and native Matches while preserving the previous `article_id` event relation. Version 0.8.0 adds Zones and Country mappings using additive tables and `INSERT IGNORE`, so existing Country records and sports data are not overwritten or deleted. Version 0.10.0 adds Tournament scope fields, Team type, scope relation tables and synchronization support tables through additive migrations; existing Teams and Tournaments default to the backward-compatible `club` / `international` configuration. Versions 0.10.1 through 0.10.7 and 0.11.0 change administrator UI/assets/integration code and release metadata only; they introduce no database migration and delete no sports data. Destructive data removal must be an explicit administrator action.
