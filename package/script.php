@@ -73,14 +73,19 @@ final class PkgDecarodclInstallerScript
     private function normalizeCurrentChildren(DatabaseInterface $db, int $packageId): void
     {
         foreach (self::CURRENT_CHILDREN as $child) {
+            // Joomla DatabaseQuery::bind() binds by reference. Always bind local
+            // variables rather than array-access expressions.
+            $childType = $child['type'];
+            $childElement = $child['element'];
+
             $query = $db->getQuery(true)
                 ->update($db->quoteName('#__extensions'))
                 ->set($db->quoteName('package_id') . ' = :packageId')
                 ->where($db->quoteName('type') . ' = :type')
                 ->where($db->quoteName('element') . ' = :element')
                 ->bind(':packageId', $packageId, ParameterType::INTEGER)
-                ->bind(':type', $child['type'])
-                ->bind(':element', $child['element']);
+                ->bind(':type', $childType)
+                ->bind(':element', $childElement);
 
             if ($child['folder'] !== null) {
                 $folder = $child['folder'];
