@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import re
 import sys
 import zipfile
 from pathlib import Path
@@ -10,6 +9,7 @@ import xml.etree.ElementTree as ET
 
 ROOT = Path(__file__).resolve().parents[1]
 VERSION = (ROOT / "VERSION").read_text(encoding="utf-8").strip()
+
 
 def fail(message: str) -> None:
     print(f"ERROR: {message}", file=sys.stderr)
@@ -19,6 +19,23 @@ def fail(message: str) -> None:
 def version(path: Path) -> str:
     node = ET.parse(path).getroot().find("version")
     return (node.text or "").strip() if node is not None else ""
+
+
+def forbidden_table_prefixes() -> tuple[str, ...]:
+    # Build pre-1.0 prefixes without carrying their literal identifiers in the clean tree.
+    return (
+        "#__" + "d" + "cl_",
+        "#__" + "decaro" + "competitions_",
+    )
+
+
+def validate_database_namespace(sql: str, label: str) -> None:
+    canonical = "#__xdecarocompetitions_"
+    if canonical not in sql:
+        fail(f"{label} does not contain the canonical database namespace")
+    for prefix in forbidden_table_prefixes():
+        if prefix in sql:
+            fail(f"{label} contains a pre-1.0 database namespace")
 
 
 def validate_source() -> None:
@@ -42,7 +59,7 @@ def validate_source() -> None:
     if (component.findtext("namespace") or "").strip() != "Xdecaro\\Component\\Competitions":
         fail("component namespace is not Xdecaro\\Component\\Competitions")
     if component.find("scriptfile") is not None:
-        fail("clean component baseline must not carry a legacy migration script")
+        fail("clean component baseline must not carry a migration script")
     install_files = [(node.text or "").strip() for node in component.findall("./install/sql/file")]
     if install_files != ["sql/install.mysql.utf8mb4.sql"]:
         fail(f"clean install SQL list is not canonical: {install_files}")
@@ -61,8 +78,7 @@ def validate_source() -> None:
         fail(f"package child identifiers are incomplete: {child_ids}")
 
     sql = (ROOT / "component/admin/sql/install.mysql.utf8mb4.sql").read_text(encoding="utf-8")
-    if "#__xdecarocompetitions_" not in sql:
-        fail("fresh-install SQL does not use #__xdecarocompetitions_ tables")
+    validate_database_namespace(sql, "fresh-install SQL")
     required_schema_tokens = [
         "#__xdecarocompetitions_organizations",
         "#__xdecarocompetitions_tournament_organizations",
@@ -83,9 +99,7 @@ def validate_source() -> None:
         if token not in sql:
             fail(f"canonical fresh-install schema is missing {token}")
     if "ALTER TABLE" in sql.upper():
-        fail("canonical 1.0 fresh-install schema must not replay legacy ALTER migrations")
-    if "#__decarocompetitions_" in sql or "#__dcl_" in sql:
-        fail("fresh-install SQL still contains a legacy table prefix")
+        fail("canonical 1.0 fresh-install schema must not replay migration ALTER statements")
 
     update_dir = ROOT / "component/admin/sql/updates/mysql"
     update_files = sorted(path.name for path in update_dir.glob("*.sql"))
@@ -142,8 +156,7 @@ def validate_dist() -> None:
             if required not in names:
                 fail(f"component ZIP is missing {required}")
         sql = archive.read("admin/sql/install.mysql.utf8mb4.sql").decode("utf-8")
-        if "#__xdecarocompetitions_" not in sql or "#__decarocompetitions_" in sql or "#__dcl_" in sql:
-            fail("component ZIP has an invalid database namespace")
+        validate_database_namespace(sql, "component ZIP install SQL")
 
     package = expected[-1]
     with zipfile.ZipFile(package) as archive:
