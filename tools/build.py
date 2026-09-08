@@ -39,11 +39,13 @@ stage.mkdir()
 for p in artifacts:
     shutil.copy2(p, stage / p.name)
 
+# The installed Joomla package element remains pkg_decarodcl for upgrade
+# compatibility. Only the public distribution archive uses the product name.
 shutil.copy2(ROOT / "package/pkg_decarodcl.xml", stage / "pkg_decarodcl.xml")
 shutil.copy2(ROOT / "package/script.php", stage / "script.php")
 shutil.copytree(ROOT / "package/language", stage / "language")
 
-package_zip = DIST / f"pkg_decarodcl_{VERSION}.zip"
+package_zip = DIST / f"pkg_competitions_{VERSION}.zip"
 zip_dir(stage, package_zip)
 artifacts.append(package_zip)
 
