@@ -1,0 +1,66 @@
+name: Temporary Finalize Competitions Clean Schema
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/finalize-clean-schema.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  finalize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: clean-base-1.0.0
+          fetch-depth: 0
+      - name: Consolidate schema
+        run: |
+          set -euo pipefail
+          python3 tools/finalize_clean_schema.py
+          rm tools/finalize_clean_schema.py
+      - name: Validate PHP XML and source
+        run: |
+          set -euo pipefail
+          find component modules plugins package -name '*.php' -print0 | xargs -0 -n1 php -l
+          python3 - <<'PY'
+          from pathlib import Path
+          import xml.etree.ElementTree as ET
+          for path in Path('.').rglob('*.xml'):
+              if '.git' not in path.parts and 'dist' not in path.parts:
+                  ET.parse(path)
+          PY
+          python3 tools/validate_release.py
+      - name: Validate deterministic distribution
+        run: |
+          set -euo pipefail
+          python3 tools/build.py
+          cp dist/SHA256SUMS.txt /tmp/sha-a.txt
+          rm -rf dist
+          python3 tools/build.py
+          diff -u /tmp/sha-a.txt dist/SHA256SUMS.txt
+          python3 tools/validate_release.py --dist
+      - name: Verify final schema directly
+        run: |
+          set -euo pipefail
+          SQL=component/admin/sql/install.mysql.utf8mb4.sql
+          grep -Fq '#__xdecarocompetitions_organizations' "$SQL"
+          grep -Fq '#__xdecarocompetitions_matches' "$SQL"
+          grep -Fq '#__xdecarocompetitions_zones' "$SQL"
+          grep -Fq '#__xdecarocompetitions_tournament_countries' "$SQL"
+          grep -Fq '#__xdecarocompetitions_changes' "$SQL"
+          grep -Fq '`team_type` VARCHAR(20)' "$SQL"
+          grep -Fq '`scope_type` VARCHAR(20)' "$SQL"
+          grep -Fq '`match_id` BIGINT UNSIGNED' "$SQL"
+          ! grep -Fq 'ALTER TABLE' "$SQL"
+      - name: Commit finalized branch
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'Consolidate complete Competitions 1.0.0 fresh-install schema'
+          git push origin HEAD:clean-base-1.0.0
