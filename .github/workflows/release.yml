@@ -5,7 +5,6 @@ on:
     branches: [main]
     paths:
       - VERSION
-      - tools/release-trigger
   workflow_dispatch:
 
 permissions:
@@ -16,260 +15,68 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
       - name: Read version
         id: version
-        shell: bash
         run: echo "version=$(cat VERSION)" >> "$GITHUB_OUTPUT"
-      - name: Stop if version already exists
+
+      - name: Refuse an existing release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          set -euo pipefail
           if gh release view "v${{ steps.version.outputs.version }}" >/dev/null 2>&1; then
-            echo "Release v${{ steps.version.outputs.version }} already exists. Bump VERSION before publishing changed files."
+            echo "Release v${{ steps.version.outputs.version }} already exists." >&2
             exit 1
           fi
-      - name: Ensure 0.12.0 changelog entry
-        if: ${{ steps.version.outputs.version == '0.12.0' }}
-        shell: bash
+
+      - name: Validate source
         run: |
           set -euo pipefail
-          if grep -Fq '## 0.12.0 - 2026-09-08' CHANGELOG.md; then
-            exit 0
-          fi
-          python3 - <<'PY'
-          from pathlib import Path
-          path = Path('CHANGELOG.md')
-          text = path.read_text(encoding='utf-8')
-          marker = '# Changelog\n\n'
-          if not text.startswith(marker):
-              raise SystemExit('Unexpected CHANGELOG.md header')
-          entry = '''## 0.12.0 - 2026-09-08
+          find component modules plugins package -name '*.php' -print0 | xargs -0 -n1 php -l
+          python3 tools/validate_release.py
 
-          - Added optional Core by xdecaro 1.1+ Web Asset Manager integration to the administrator Information/Diagnostics view.
-          - Added an isolated `.xdecaro-scope` layout and a small token bridge from `--dcl-*` to the public `--xdecaro-*` design tokens.
-          - Preserved the complete local Competitions CSS as an automatic fallback when Core is missing, older than 1.1.0 or its asset registry cannot be loaded.
-          - Kept historical Joomla identifiers `com_decarodcl`, `pkg_decarodcl` and `#__dcl_*` unchanged for upgrade compatibility.
-          - Preserved tournaments, seasons, teams, participations, rosters, matches, standings, Live Sync, ACL, CSRF and all sports-domain behavior.
-          - No database migration is introduced.
-          - Bumped component, package, plugin, modules, Web Asset registry and Joomla update feed to 0.12.0.
-
-          '''
-          entry = entry.replace('\n          ', '\n')
-          path.write_text(marker + entry + text[len(marker):], encoding='utf-8')
-          PY
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add CHANGELOG.md
-          git commit -m "Document Competitions 0.12.0"
-          git pull --rebase origin main
-          git push origin HEAD:main
-      - name: Ensure 0.12.1 documentation
-        if: ${{ steps.version.outputs.version == '0.12.1' }}
-        shell: bash
+      - name: Build twice and verify determinism
         run: |
           set -euo pipefail
-          python3 - <<'PY'
-          from pathlib import Path
-          import re
+          python3 tools/build.py
+          cp dist/SHA256SUMS.txt /tmp/competitions-sha-a.txt
+          rm -rf dist
+          python3 tools/build.py
+          diff -u /tmp/competitions-sha-a.txt dist/SHA256SUMS.txt
+          python3 tools/validate_release.py --dist
 
-          changelog = Path('CHANGELOG.md')
-          text = changelog.read_text(encoding='utf-8')
-          marker = '# Changelog\n\n'
-          if not text.startswith(marker):
-              raise SystemExit('Unexpected CHANGELOG.md header')
-          if '## 0.12.1 - 2026-09-08' not in text:
-              entry = '''## 0.12.1 - 2026-09-08
-
-              - Renamed the visible system plugin from **Competitions Core** to **Competitions - System Plugin / Competitions - Plugin di sistema** without changing `plg_system_decarodcl`.
-              - Added **Core by xdecaro** to Information → Connected components with installed version and public-API status.
-              - Added Core status to diagnostics and technical details while keeping Core optional.
-              - Moved public repository/update URLs from the renamed `xdecaro/dcl` location to `xdecaro/competitions`; historical Joomla identifiers remain unchanged.
-              - Added safe package-metadata repair: current Competitions children are reassociated with the canonical package record, and only orphan legacy `PKG_DCL` / duplicate package metadata is removed.
-              - The current lightweight `plg_system_decarodcl` plugin is enabled during package postflight; obsolete `dclcore` remains disabled.
-              - No `#__dcl_*` table, sports record, configuration or user data is deleted.
-              - Bumped component, package, plugin, modules, Web Asset registry and Joomla update feed to 0.12.1.
-
-              '''
-              entry = entry.replace('\n              ', '\n')
-              changelog.write_text(marker + entry + text[len(marker):], encoding='utf-8')
-
-          readme = Path('README.md')
-          readme_text = readme.read_text(encoding='utf-8')
-          readme_text, count = re.subn(
-              r'(## Current version\n\n)\*\*[^*]+\*\*',
-              r'\g<1>**0.12.1**',
-              readme_text,
-              count=1,
-          )
-          if count != 1:
-              raise SystemExit('Unable to update README current version')
-          readme.write_text(readme_text, encoding='utf-8')
-          PY
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add CHANGELOG.md README.md
-          if git diff --cached --quiet; then
-            echo "Competitions 0.12.1 documentation already current."
-          else
-            git commit -m "Document Competitions 0.12.1"
-            git pull --rebase origin main
-            git push origin HEAD:main
-          fi
-      - name: Finalize 0.12.2 public package naming
-        if: ${{ steps.version.outputs.version == '0.12.2' }}
-        shell: bash
+      - name: Publish update-feed checksum
         run: |
           set -euo pipefail
-          python3 - <<'PY'
-          from pathlib import Path
-          import re
-
-          validator = Path('tools/validate_release.py')
-          validator_text = validator.read_text(encoding='utf-8')
-          replacements = (
-              (
-                  'expected_download = f"https://github.com/xdecaro/competitions/releases/download/v{VERSION}/pkg_decarodcl_{VERSION}.zip"',
-                  'expected_download = f"https://github.com/xdecaro/competitions/releases/download/v{VERSION}/pkg_competitions_{VERSION}.zip"',
-              ),
-              (
-                  'package_zip = dist / f"pkg_decarodcl_{VERSION}.zip"',
-                  'package_zip = dist / f"pkg_competitions_{VERSION}.zip"',
-              ),
-          )
-          for old, new in replacements:
-              if old in validator_text:
-                  validator_text = validator_text.replace(old, new, 1)
-              elif new not in validator_text:
-                  raise SystemExit(f'Unable to migrate validator package naming: {old}')
-          validator.write_text(validator_text, encoding='utf-8')
-
-          changelog = Path('CHANGELOG.md')
-          text = changelog.read_text(encoding='utf-8')
-          marker = '# Changelog\n\n'
-          if not text.startswith(marker):
-              raise SystemExit('Unexpected CHANGELOG.md header')
-          if '## 0.12.2 - 2026-09-08' not in text:
-              entry = '''## 0.12.2 - 2026-09-08
-
-              - Renamed the public Competitions distribution archive to `pkg_competitions_<version>.zip`.
-              - Kept the historical Joomla package element `pkg_decarodcl` and internal manifest filename unchanged so existing installations continue to receive normal Joomla updates.
-              - Updated build, release validation, checksum publication and update-feed download URL to the new public package filename.
-              - Preserved `com_decarodcl`, `plg_system_decarodcl`, `mod_dcl_*`, namespaces, `#__dcl_*` tables, sports data and configuration.
-              - No database migration is introduced.
-              - Bumped component, package, plugin, modules, Web Asset registry and Joomla update feed to 0.12.2.
-
-              '''
-              entry = entry.replace('\n              ', '\n')
-              changelog.write_text(marker + entry + text[len(marker):], encoding='utf-8')
-
-          readme = Path('README.md')
-          readme_text = readme.read_text(encoding='utf-8')
-          readme_text, count = re.subn(
-              r'(## Current version\n\n)\*\*[^*]+\*\*',
-              r'\g<1>**0.12.2**',
-              readme_text,
-              count=1,
-          )
-          if count != 1:
-              raise SystemExit('Unable to update README current version')
-          old_naming = '- Joomla package: `pkg_decarodcl`\n'
-          new_naming = '- Joomla package identifier (upgrade compatibility): `pkg_decarodcl`\n- Distribution ZIP: `pkg_competitions_<version>.zip`\n'
-          if old_naming in readme_text:
-              readme_text = readme_text.replace(old_naming, new_naming, 1)
-          elif new_naming not in readme_text:
-              raise SystemExit('Unable to update README package naming')
-          readme.write_text(readme_text, encoding='utf-8')
-          PY
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add tools/validate_release.py CHANGELOG.md README.md
-          if git diff --cached --quiet; then
-            echo "Competitions 0.12.2 package naming already current."
-          else
-            git commit -m "Finalize Competitions 0.12.2 package naming"
-            git pull --rebase origin main
-            git push origin HEAD:main
-          fi
-      - name: PHP syntax
-        run: find component modules plugins package -name '*.php' -print0 | xargs -0 -n1 php -l
-      - name: JavaScript syntax
-        run: node --check component/media/js/filterbar.js
-      - name: XML syntax
-        run: |
-          python3 - <<'PY'
-          from pathlib import Path
-          import xml.etree.ElementTree as ET
-          for p in Path('.').rglob('*.xml'):
-              if '.git' in p.parts:
-                  continue
-              ET.parse(p)
-          PY
-      - name: Release metadata consistency
-        run: python3 tools/validate_release.py
-      - name: Build
-        run: python3 tools/build.py
-      - name: Verify package assets
-        shell: bash
-        run: |
-          set -euo pipefail
+          python3 tools/update_feed_checksum.py
           VERSION="${{ steps.version.outputs.version }}"
-          COMPONENT="dist/com_decarodcl_${VERSION}.zip"
-          PACKAGE="dist/pkg_competitions_${VERSION}.zip"
-          PLUGIN="dist/plg_system_decarodcl_${VERSION}.zip"
-          unzip -l "$COMPONENT" | grep -q 'media/css/filterbar.css'
-          unzip -l "$COMPONENT" | grep -q 'media/js/filterbar.js'
-          unzip -l "$COMPONENT" | grep -q 'media/css/core-bridge.css'
-          unzip -l "$COMPONENT" | grep -q 'admin/tmpl/information/core.php'
-          unzip -l "$COMPONENT" | grep -q 'admin/language/it-IT/com_decarodcl.121.ini'
-          unzip -l "$COMPONENT" | grep -q 'admin/language/en-GB/com_decarodcl.121.ini'
-          unzip -p "$COMPONENT" media/joomla.asset.json | grep -Fq '"com_decarodcl.core-bridge"'
-          unzip -p "$COMPONENT" admin/src/View/Information/HtmlView.php | grep -Fq "MINIMUM_CORE_UI_VERSION = '1.1.0'"
-          unzip -p "$COMPONENT" admin/src/View/Information/HtmlView.php | grep -Fq 'Xdecaro\Core\Asset\AssetService'
-          unzip -p "$COMPONENT" admin/src/View/Information/HtmlView.php | grep -Fq "setLayout('core')"
-          unzip -p "$COMPONENT" admin/src/Model/InformationModel.php | grep -Fq 'Core by xdecaro'
-          unzip -p "$COMPONENT" admin/src/Model/InformationModel.php | grep -Fq 'pkg_xdecarocore'
-          unzip -p "$COMPONENT" admin/tmpl/information/core.php | grep -Fq 'xdecaro-scope competitions-core-scope'
-          unzip -p "$PLUGIN" language/it-IT/plg_system_decarodcl.sys.ini | grep -Fq 'Competitions - Plugin di sistema'
-          unzip -p "$PACKAGE" script.php | grep -Fq 'normalizeCurrentChildren'
-          unzip -p "$PACKAGE" script.php | grep -Fq 'cleanupLegacyPackageMetadata'
-          unzip -p "$PACKAGE" script.php | grep -Fq 'xdecaro/competitions/main/updates/pkg_decarodcl.xml'
-          unzip -l "$PACKAGE" | grep -q 'pkg_decarodcl.xml'
-      - name: Synchronize Joomla update checksum
-        run: python3 tools/update_feed_checksum.py
-      - name: Verify Joomla update checksum
-        shell: bash
-        run: |
-          VERSION="${{ steps.version.outputs.version }}"
-          PACKAGE="dist/pkg_competitions_${VERSION}.zip"
+          PACKAGE="dist/pkg_xdecarocompetitions_${VERSION}.zip"
           SHA256="$(sha256sum "$PACKAGE" | awk '{print $1}')"
-          grep -q "<sha256>${SHA256}</sha256>" updates/pkg_decarodcl.xml
-      - name: Package contents
-        run: python3 tools/validate_release.py --dist
-      - name: Create release
+          grep -Fq "<sha256>${SHA256}</sha256>" updates/pkg_xdecarocompetitions.xml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add updates/pkg_xdecarocompetitions.xml
+          if ! git diff --cached --quiet; then
+            git commit -m "Publish SHA-256 for Competitions $VERSION"
+            git push origin HEAD:main
+          fi
+
+      - name: Create GitHub release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        shell: bash
         run: |
+          set -euo pipefail
           VERSION="${{ steps.version.outputs.version }}"
-          NOTES="Competitions ${VERSION}: optional Core by xdecaro 1.1+ design-system integration for the Information view with local fallback."
-          if [ "$VERSION" = "0.12.1" ]; then
-            NOTES="Competitions 0.12.1: Core by xdecaro diagnostics, visible plugin naming, canonical package metadata repair and xdecaro/competitions update URLs."
-          fi
-          if [ "$VERSION" = "0.12.2" ]; then
-            NOTES="Competitions 0.12.2: public package renamed to pkg_competitions while preserving the historical Joomla package identifier for safe updates."
-          fi
-          gh release create "v${VERSION}" dist/*.zip dist/SHA256SUMS.txt --title "Competitions ${VERSION}" --notes "$NOTES"
-      - name: Publish update-feed checksum
-        shell: bash
-        run: |
-          VERSION="${{ steps.version.outputs.version }}"
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add updates/pkg_decarodcl.xml
-          if git diff --cached --quiet; then
-            echo "Update feed checksum already current."
-            exit 0
-          fi
-          git commit -m "Publish SHA-256 for Competitions ${VERSION}"
-          git pull --rebase origin main
-          git push origin HEAD:main
+          gh release create "v${VERSION}" \
+            "dist/com_xdecarocompetitions_${VERSION}.zip" \
+            "dist/plg_system_xdecarocompetitions_${VERSION}.zip" \
+            "dist/mod_xdecarocompetitions_matchtimeline_${VERSION}.zip" \
+            "dist/mod_xdecarocompetitions_countriesfederations_${VERSION}.zip" \
+            "dist/pkg_xdecarocompetitions_${VERSION}.zip" \
+            "dist/SHA256SUMS.txt" \
+            --target main \
+            --title "Competitions by xdecaro ${VERSION}" \
+            --notes "Clean Competitions by xdecaro 1.0.0 technical baseline. Fresh install only: com_xdecarocompetitions, pkg_xdecarocompetitions, Xdecaro\\Component\\Competitions and #__xdecarocompetitions_* database tables. Core by xdecaro integration is preserved; competition-domain behavior remains in Competitions."
