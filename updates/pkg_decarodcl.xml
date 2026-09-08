@@ -6,14 +6,14 @@
     <element>pkg_decarodcl</element>
     <type>package</type>
     <client>site</client>
-    <version>0.11.0</version>
+    <version>0.12.0</version>
     <downloads>
-      <downloadurl type="full" format="zip">https://github.com/xdecaro/dcl/releases/download/v0.11.0/pkg_decarodcl_0.11.0.zip</downloadurl>
+      <downloadurl type="full" format="zip">https://github.com/xdecaro/dcl/releases/download/v0.12.0/pkg_decarodcl_0.12.0.zip</downloadurl>
     </downloads>
     <tags>
       <tag>stable</tag>
     </tags>
-    <sha256>23036206e291c0ac67e9c745d508071b34db68f38e0674fcb3efbd7a1f19f42c</sha256>
+    <sha256>0000000000000000000000000000000000000000000000000000000000000000</sha256>
     <maintainer>Luca De Caro</maintainer>
     <maintainerurl>https://github.com/xdecaro/dcl</maintainerurl>
     <targetplatform name="joomla" version="6\.[0-9]+" />
