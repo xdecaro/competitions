@@ -1,0 +1,64 @@
+name: Temporary Competitions Clean Base 1.0.0
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/clean-base-1.0.0.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  reset:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: clean-base-1.0.0
+          fetch-depth: 0
+      - name: Apply clean identity reset
+        run: |
+          set -euo pipefail
+          python3 tools/clean_base_reset.py
+          rm tools/clean_base_reset.py
+      - name: PHP syntax
+        run: find component modules plugins package -name '*.php' -print0 | xargs -0 -n1 php -l
+      - name: XML syntax
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import xml.etree.ElementTree as ET
+          for path in Path('.').rglob('*.xml'):
+              if '.git' in path.parts or 'dist' in path.parts:
+                  continue
+              ET.parse(path)
+              print('OK', path)
+          PY
+      - name: Validate clean source
+        run: python3 tools/validate_release.py
+      - name: Verify deterministic build
+        run: |
+          set -euo pipefail
+          python3 tools/build.py
+          A="$(sha256sum dist/pkg_xdecarocompetitions_1.0.0.zip | awk '{print $1}')"
+          rm -rf dist
+          python3 tools/build.py
+          B="$(sha256sum dist/pkg_xdecarocompetitions_1.0.0.zip | awk '{print $1}')"
+          test "$A" = "$B"
+          python3 tools/validate_release.py --dist
+      - name: Reject legacy technical identities
+        run: |
+          set -euo pipefail
+          if grep -RIniE 'com_decarodcl|pkg_decarodcl|plg_system_decarodcl|mod_dcl_|#__dcl_|#__decarocompetitions_|Xdecaro\\Component\\Decarodcl' component modules plugins package updates docs README.md AGENTS.md tools; then
+            echo 'Legacy Competitions technical identity remains.' >&2
+            exit 1
+          fi
+      - name: Commit clean branch
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'Establish clean Competitions by xdecaro 1.0.0 identity'
+          git push origin HEAD:clean-base-1.0.0
