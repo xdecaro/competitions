@@ -13,24 +13,24 @@ The repository keeps the historical/internal `dcl` technical identifiers for upg
 - Distribution ZIP: `pkg_competitions_<version>.zip`
 - Core plugin: `plg_system_decarodcl`
 - GitHub repository: `xdecaro/competitions`
-- Database tables: `#__dcl_*`
+- Database tables: `#__decarocompetitions_*`
 - PHP component namespace: `Xdecaro\Component\Decarodcl`
 
 ## Current version
 
-**0.12.2**
+**0.13.0**
 
 ## Architecture
 
 Competitions separates authentication, sport data and presentation:
 
 - Joomla users are used for team-manager authentication and permissions only.
-- Organizations, zones, teams, players, participations, rosters, matches, events, rankings and coefficients use dedicated `#__dcl_*` tables.
-- `#__dcl_organizations` stores reusable organizations such as competition organizers, governing bodies, local organizers and partners.
-- `#__dcl_zones` stores reusable sporting zones and may optionally be scoped to an Organization.
-- `#__dcl_zone_countries` links Countries or sporting territories to Zones without forcing one global Zone per Country.
+- Organizations, zones, teams, players, participations, rosters, matches, events, rankings and coefficients use dedicated `#__decarocompetitions_*` tables.
+- `#__decarocompetitions_organizations` stores reusable organizations such as competition organizers, governing bodies, local organizers and partners.
+- `#__decarocompetitions_zones` stores reusable sporting zones and may optionally be scoped to an Organization.
+- `#__decarocompetitions_zone_countries` links Countries or sporting territories to Zones without forcing one global Zone per Country.
 - Tournament and Season organization roles are stored in dedicated relation tables instead of duplicated text fields.
-- `#__dcl_matches` is the authoritative source for match date, teams, status and scores.
+- `#__decarocompetitions_matches` is the authoritative source for match date, teams, status and scores.
 - Joomla articles are optional editorial links only; `article_id` is not the sports-data source of truth.
 - Match timeline events use `match_id` as the primary relation. The legacy `article_id` relation remains available for backward compatibility.
 - `com_decarodcl` is the central administrator component.
@@ -40,7 +40,7 @@ Competitions separates authentication, sport data and presentation:
 
 Version 0.11.0 adds an optional Joomla DI service for the public Xdecaro Core cross-product reference contract. Competitions can create `EntityReference` and `RelationReference` values when Core is installed while continuing to work normally without Core.
 
-The public component identifier in those references is deliberately `com_decarodcl`, not `com_decarocompetitions`, because the historical Joomla element remains the compatibility contract for installed sites and updates. Competitions keeps ownership of all sports-domain data and never exposes `#__dcl_*` tables as the cross-product API.
+The public component identifier in those references is deliberately `com_decarodcl`, not `com_decarocompetitions`, because the historical Joomla element remains the compatibility contract for installed sites and updates. Competitions keeps ownership of all sports-domain data and never exposes `#__decarocompetitions_*` tables as the cross-product API.
 
 ## Competition scope and participant types
 
@@ -55,7 +55,7 @@ Tournament scope supports:
 
 Tournament participant type supports **Clubs / Teams** or **National teams**. Teams also have an explicit `team_type` (`club` or `national`) so a World Championship for national teams and an international club competition such as DCL can use the same Team, Participation, Roster and Match architecture without treating a national selection as a normal club.
 
-Tournament → Country and Tournament → Zone relations are stored in `#__dcl_tournament_countries` and `#__dcl_tournament_zones`. Participation eligibility is enforced server-side through Season → Tournament → scope, participant type and Federation → Country. The Participation form also filters eligible Teams dynamically, but JavaScript is only a UX aid: server validation remains authoritative.
+Tournament → Country and Tournament → Zone relations are stored in `#__decarocompetitions_tournament_countries` and `#__decarocompetitions_tournament_zones`. Participation eligibility is enforced server-side through Season → Tournament → scope, participant type and Federation → Country. The Participation form also filters eligible Teams dynamically, but JavaScript is only a UX aid: server validation remains authoritative.
 
 Existing data is protected when scope-related master data changes. A Tournament scope change, Team type/Federation change, Federation Country change or Zone membership change is rejected when it would make an existing Participation incompatible. Existing Season host Countries are checked as well, so scope changes cannot silently leave a Season outside its Tournament geography.
 
@@ -67,8 +67,8 @@ The implementation intentionally does not require WebSockets or a special daemon
 
 - `BroadcastChannel` for fast communication between open browser tabs;
 - lightweight incremental polling for other browsers and other computers;
-- `#__dcl_changes` as a short-lived change cursor/log;
-- `#__dcl_edit_sessions` for advisory edit presence;
+- `#__decarocompetitions_changes` as a short-lived change cursor/log;
+- `#__decarocompetitions_edit_sessions` for advisory edit presence;
 - optimistic locking based on the record `modified` value rendered with the edit form.
 
 Lists and Dashboard reload when relevant remote changes are detected while keeping the current URL, filters, sorting and pagination. A clean edit form can reload automatically when its record changes. If the local form already contains unsaved edits, Competitions shows a conflict warning instead of replacing the form. The same `modified` baseline is checked again server-side on save, preventing a stale browser from overwriting a newer record even if it saves before the next poll. State/publish actions explicitly advance the version timestamp for the same reason.
@@ -130,17 +130,17 @@ The package registers `https://raw.githubusercontent.com/xdecaro/dcl/main/update
 
 Organizations and native Match management:
 
-- added administrator CRUD for Organizations using `#__dcl_organizations`;
+- added administrator CRUD for Organizations using `#__decarocompetitions_organizations`;
 - Organizations can optionally reference an existing Country and store short name, logo, website and email;
 - added Tournament organization roles: organizer, governing body, co-organizer and partner;
 - added Season organization roles, including local organizer;
-- added native `#__dcl_matches` storage and administrator CRUD for Matches;
+- added native `#__decarocompetitions_matches` storage and administrator CRUD for Matches;
 - Match records link Season, Home Team, Away Team and optional Venue;
 - both Teams must have an approved Participation in the selected Season;
 - Match status supports scheduled, live, finished, postponed and cancelled;
 - scores, extra-time scores and penalties are validated in pairs and the winner is derived server-side for finished Matches;
 - optional Joomla `article_id` remains available for editorial compatibility and cannot be reused by multiple Matches;
-- added `match_id` to `#__dcl_match_events` while preserving legacy `article_id` data;
+- added `match_id` to `#__decarocompetitions_match_events` while preserving legacy `article_id` data;
 - the Match Timeline module now prefers `match_id` and falls back to the legacy article relation;
 - added backward-compatible SQL update and fresh-install SQL without deleting existing sports data;
 - enabled Organizations and Matches in the administrator menu and Dashboard.
@@ -153,4 +153,4 @@ Organizations and native Match management:
 
 ## Data preservation
 
-Updates and uninstall routines do not delete `#__dcl_*` data tables automatically. The 0.7.0 migration adds Organizations and native Matches while preserving the previous `article_id` event relation. Version 0.8.0 adds Zones and Country mappings using additive tables and `INSERT IGNORE`, so existing Country records and sports data are not overwritten or deleted. Version 0.10.0 adds Tournament scope fields, Team type, scope relation tables and synchronization support tables through additive migrations; existing Teams and Tournaments default to the backward-compatible `club` / `international` configuration. Versions 0.10.1 through 0.10.7 and 0.11.0 change administrator UI/assets/integration code and release metadata only; they introduce no database migration and delete no sports data. Destructive data removal must be an explicit administrator action.
+Updates and uninstall routines do not delete `#__decarocompetitions_*` data tables automatically. The 0.7.0 migration adds Organizations and native Matches while preserving the previous `article_id` event relation. Version 0.8.0 adds Zones and Country mappings using additive tables and `INSERT IGNORE`, so existing Country records and sports data are not overwritten or deleted. Version 0.10.0 adds Tournament scope fields, Team type, scope relation tables and synchronization support tables through additive migrations; existing Teams and Tournaments default to the backward-compatible `club` / `international` configuration. Versions 0.10.1 through 0.10.7 and 0.11.0 change administrator UI/assets/integration code and release metadata only; they introduce no database migration and delete no sports data. Destructive data removal must be an explicit administrator action.

@@ -36,7 +36,7 @@ final class TournamentScopeHelper
 
         $query = $db->getQuery(true)
             ->select($db->quoteName('country_id'))
-            ->from($db->quoteName('#__dcl_tournament_countries'))
+            ->from($db->quoteName('#__decarocompetitions_tournament_countries'))
             ->where($db->quoteName('tournament_id') . ' = :tournamentId')
             ->order($db->quoteName('ordering') . ' ASC')
             ->bind(':tournamentId', $tournamentId, ParameterType::INTEGER);
@@ -44,7 +44,7 @@ final class TournamentScopeHelper
 
         $query = $db->getQuery(true)
             ->select($db->quoteName('zone_id'))
-            ->from($db->quoteName('#__dcl_tournament_zones'))
+            ->from($db->quoteName('#__decarocompetitions_tournament_zones'))
             ->where($db->quoteName('tournament_id') . ' = :tournamentId')
             ->order($db->quoteName('ordering') . ' ASC')
             ->bind(':tournamentId', $tournamentId, ParameterType::INTEGER);
@@ -110,20 +110,20 @@ final class TournamentScopeHelper
         array $zoneIds
     ): void {
         $query = $db->getQuery(true)
-            ->delete($db->quoteName('#__dcl_tournament_countries'))
+            ->delete($db->quoteName('#__decarocompetitions_tournament_countries'))
             ->where($db->quoteName('tournament_id') . ' = :tournamentId')
             ->bind(':tournamentId', $tournamentId, ParameterType::INTEGER);
         $db->setQuery($query)->execute();
 
         $query = $db->getQuery(true)
-            ->delete($db->quoteName('#__dcl_tournament_zones'))
+            ->delete($db->quoteName('#__decarocompetitions_tournament_zones'))
             ->where($db->quoteName('tournament_id') . ' = :tournamentId')
             ->bind(':tournamentId', $tournamentId, ParameterType::INTEGER);
         $db->setQuery($query)->execute();
 
         if (in_array($scopeType, ['national', 'local'], true) && $countryId > 0) {
             $query = $db->getQuery(true)
-                ->insert($db->quoteName('#__dcl_tournament_countries'))
+                ->insert($db->quoteName('#__decarocompetitions_tournament_countries'))
                 ->columns([
                     $db->quoteName('tournament_id'),
                     $db->quoteName('country_id'),
@@ -137,7 +137,7 @@ final class TournamentScopeHelper
 
         if ($scopeType === 'zone' && $zoneIds) {
             $query = $db->getQuery(true)
-                ->insert($db->quoteName('#__dcl_tournament_zones'))
+                ->insert($db->quoteName('#__decarocompetitions_tournament_zones'))
                 ->columns([
                     $db->quoteName('tournament_id'),
                     $db->quoteName('zone_id'),
@@ -161,9 +161,9 @@ final class TournamentScopeHelper
                 $db->quoteName('tm.team_type'),
                 $db->quoteName('f.country_id'),
             ])
-            ->from($db->quoteName('#__dcl_teams', 'tm'))
+            ->from($db->quoteName('#__decarocompetitions_teams', 'tm'))
             ->innerJoin(
-                $db->quoteName('#__dcl_federations', 'f')
+                $db->quoteName('#__decarocompetitions_federations', 'f')
                 . ' ON ' . $db->quoteName('f.id') . ' = ' . $db->quoteName('tm.federation_id')
             )
             ->where($db->quoteName('tm.id') . ' = :teamId')
@@ -198,7 +198,7 @@ final class TournamentScopeHelper
                 $db->quoteName('scope_type'),
                 $db->quoteName('participant_type'),
             ])
-            ->from($db->quoteName('#__dcl_tournaments'))
+            ->from($db->quoteName('#__decarocompetitions_tournaments'))
             ->where($db->quoteName('id') . ' = :tournamentId')
             ->where($db->quoteName('state') . ' <> -2')
             ->bind(':tournamentId', $tournamentId, ParameterType::INTEGER);
@@ -219,9 +219,9 @@ final class TournamentScopeHelper
     {
         $query = $db->getQuery(true)
             ->select('DISTINCT ' . $db->quoteName('p.team_id'))
-            ->from($db->quoteName('#__dcl_participations', 'p'))
+            ->from($db->quoteName('#__decarocompetitions_participations', 'p'))
             ->innerJoin(
-                $db->quoteName('#__dcl_seasons', 's')
+                $db->quoteName('#__decarocompetitions_seasons', 's')
                 . ' ON ' . $db->quoteName('s.id') . ' = ' . $db->quoteName('p.season_id')
             )
             ->where($db->quoteName('s.tournament_id') . ' = :tournamentId')
@@ -244,7 +244,7 @@ final class TournamentScopeHelper
     {
         $query = $db->getQuery(true)
             ->select($db->quoteName('host_country_code'))
-            ->from($db->quoteName('#__dcl_seasons'))
+            ->from($db->quoteName('#__decarocompetitions_seasons'))
             ->where($db->quoteName('tournament_id') . ' = :tournamentId')
             ->where($db->quoteName('state') . ' <> -2')
             ->where($db->quoteName('host_country_code') . ' IS NOT NULL')
@@ -266,7 +266,7 @@ final class TournamentScopeHelper
 
         $query = $db->getQuery(true)
             ->select($db->quoteName('id'))
-            ->from($db->quoteName('#__dcl_countries'))
+            ->from($db->quoteName('#__decarocompetitions_countries'))
             ->where($db->quoteName('code') . ' = :countryCode')
             ->where($db->quoteName('state') . ' <> -2')
             ->bind(':countryCode', $countryCode);
@@ -278,7 +278,7 @@ final class TournamentScopeHelper
 
         $query = $db->getQuery(true)
             ->select($db->quoteName('scope_type'))
-            ->from($db->quoteName('#__dcl_tournaments'))
+            ->from($db->quoteName('#__decarocompetitions_tournaments'))
             ->where($db->quoteName('id') . ' = :tournamentId')
             ->bind(':tournamentId', $tournamentId, ParameterType::INTEGER);
         $scopeType = (string) $db->setQuery($query, 0, 1)->loadResult();
@@ -300,7 +300,7 @@ final class TournamentScopeHelper
         if (in_array($scopeType, ['national', 'local'], true)) {
             $query = $db->getQuery(true)
                 ->select('COUNT(*)')
-                ->from($db->quoteName('#__dcl_tournament_countries'))
+                ->from($db->quoteName('#__decarocompetitions_tournament_countries'))
                 ->where($db->quoteName('tournament_id') . ' = :tournamentId')
                 ->where($db->quoteName('country_id') . ' = :countryId')
                 ->bind(':tournamentId', $tournamentId, ParameterType::INTEGER)
@@ -309,9 +309,9 @@ final class TournamentScopeHelper
         } elseif ($scopeType === 'zone') {
             $query = $db->getQuery(true)
                 ->select('COUNT(*)')
-                ->from($db->quoteName('#__dcl_tournament_zones', 'tz'))
+                ->from($db->quoteName('#__decarocompetitions_tournament_zones', 'tz'))
                 ->innerJoin(
-                    $db->quoteName('#__dcl_zone_countries', 'zc')
+                    $db->quoteName('#__decarocompetitions_zone_countries', 'zc')
                     . ' ON ' . $db->quoteName('zc.zone_id') . ' = ' . $db->quoteName('tz.zone_id')
                 )
                 ->where($db->quoteName('tz.tournament_id') . ' = :tournamentId')
@@ -337,7 +337,7 @@ final class TournamentScopeHelper
     {
         $query = $db->getQuery(true)
             ->select('COUNT(*)')
-            ->from($db->quoteName('#__dcl_countries'))
+            ->from($db->quoteName('#__decarocompetitions_countries'))
             ->where($db->quoteName('id') . ' = :countryId')
             ->where($db->quoteName('state') . ' <> -2')
             ->bind(':countryId', $countryId, ParameterType::INTEGER);
@@ -354,7 +354,7 @@ final class TournamentScopeHelper
         $placeholders = [];
         $query = $db->getQuery(true)
             ->select('COUNT(*)')
-            ->from($db->quoteName('#__dcl_zones'))
+            ->from($db->quoteName('#__decarocompetitions_zones'))
             ->where($db->quoteName('state') . ' <> -2');
 
         foreach ($zoneIds as $index => $zoneId) {

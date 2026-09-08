@@ -24,7 +24,7 @@ final class TournamentModel extends BaseAdminModel
 
             if (!empty($data->id)) {
                 $db = $this->getDatabase();
-                $assignments = OrganizationAssignmentHelper::load($db, '#__dcl_tournament_organizations', 'tournament_id', (int) $data->id);
+                $assignments = OrganizationAssignmentHelper::load($db, '#__decarocompetitions_tournament_organizations', 'tournament_id', (int) $data->id);
 
                 foreach (self::ORGANIZATION_FIELDS as $field => $role) {
                     $data->{$field} = $assignments[$role] ?? [];
@@ -85,7 +85,7 @@ final class TournamentModel extends BaseAdminModel
                 throw new \RuntimeException('Tournament ID not available after save.');
             }
 
-            OrganizationAssignmentHelper::sync($db, '#__dcl_tournament_organizations', 'tournament_id', $id, $roles);
+            OrganizationAssignmentHelper::sync($db, '#__decarocompetitions_tournament_organizations', 'tournament_id', $id, $roles);
             TournamentScopeHelper::sync(
                 $db,
                 $id,

@@ -14,7 +14,7 @@ final class SeasonTable extends Table
 {
     public function __construct(DatabaseDriver $db)
     {
-        parent::__construct('#__dcl_seasons', 'id', $db);
+        parent::__construct('#__decarocompetitions_seasons', 'id', $db);
     }
 
     public function check(): bool
@@ -65,7 +65,7 @@ final class SeasonTable extends Table
 
         $query = $db->getQuery(true)
             ->select('COUNT(*)')
-            ->from($db->quoteName('#__dcl_tournaments'))
+            ->from($db->quoteName('#__decarocompetitions_tournaments'))
             ->where($db->quoteName('id') . ' = :tournamentId')
             ->where($db->quoteName('state') . ' <> -2')
             ->bind(':tournamentId', $this->tournament_id, ParameterType::INTEGER);
@@ -78,7 +78,7 @@ final class SeasonTable extends Table
         if ($this->host_country_code !== null) {
             $query = $db->getQuery(true)
                 ->select('COUNT(*)')
-                ->from($db->quoteName('#__dcl_countries'))
+                ->from($db->quoteName('#__decarocompetitions_countries'))
                 ->where($db->quoteName('code') . ' = :countryCode')
                 ->where($db->quoteName('state') . ' <> -2')
                 ->bind(':countryCode', $this->host_country_code);

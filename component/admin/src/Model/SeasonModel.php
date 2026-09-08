@@ -20,7 +20,7 @@ final class SeasonModel extends BaseAdminModel
         if (!$data) {
             $data = $this->getItem();
             if (!empty($data->id)) {
-                $assignments = OrganizationAssignmentHelper::load($this->getDatabase(), '#__dcl_season_organizations', 'season_id', (int) $data->id);
+                $assignments = OrganizationAssignmentHelper::load($this->getDatabase(), '#__decarocompetitions_season_organizations', 'season_id', (int) $data->id);
                 foreach (self::ORGANIZATION_FIELDS as $field => $role) $data->{$field} = $assignments[$role] ?? [];
             }
         }
@@ -38,7 +38,7 @@ final class SeasonModel extends BaseAdminModel
             if (!parent::save($data)) { $db->transactionRollback(); return false; }
             $id = (int) $this->getState($this->getName() . '.id');
             if ($id <= 0) throw new \RuntimeException('Season ID not available after save.');
-            OrganizationAssignmentHelper::sync($db, '#__dcl_season_organizations', 'season_id', $id, $roles);
+            OrganizationAssignmentHelper::sync($db, '#__decarocompetitions_season_organizations', 'season_id', $id, $roles);
             $db->transactionCommit(); return true;
         } catch (\Throwable $e) {
             if ($started) { try { $db->transactionRollback(); } catch (\Throwable) {} }

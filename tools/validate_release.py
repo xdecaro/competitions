@@ -111,6 +111,7 @@ EXPECTED_COMPONENT_FILES = {
     "admin/sql/updates/mysql/0.7.0.sql",
     "admin/sql/updates/mysql/0.8.0.sql",
     "admin/sql/updates/mysql/0.10.0.sql",
+    "admin/sql/updates/mysql/0.13.0.sql",
     "admin/language/en-GB/com_decarodcl.070.ini",
     "admin/language/en-GB/com_decarodcl.071.ini",
     "admin/language/en-GB/com_decarodcl.080.ini",
@@ -157,6 +158,18 @@ def xml_version(path: Path) -> str:
     root = ET.parse(path).getroot()
     node = root.find("version")
     return (node.text or "").strip() if node is not None else ""
+
+
+def validate_no_legacy_table_prefix() -> None:
+    legacy = "#__" + "dcl_"
+    roots = [ROOT / "component", ROOT / "modules", ROOT / "plugins", ROOT / "package", ROOT / "docs", ROOT / "README.md"]
+    for root in roots:
+        paths = [root] if root.is_file() else root.rglob("*")
+        for candidate in paths:
+            if not candidate.is_file() or candidate.suffix.lower() not in {".php", ".sql", ".md", ".xml"}:
+                continue
+            if legacy in candidate.read_text(encoding="utf-8"):
+                fail(f"legacy Competitions table prefix remains in {candidate.relative_to(ROOT)}")
 
 
 def validate_versions() -> None:
@@ -275,14 +288,14 @@ def validate_versions() -> None:
         fail(f"component install SQL list mismatch: {sorted(install_sql)}")
 
     migration_070 = (ROOT / "component/admin/sql/updates/mysql/0.7.0.sql").read_text(encoding="utf-8")
-    for required in ("#__dcl_organizations", "#__dcl_tournament_organizations", "#__dcl_season_organizations", "#__dcl_matches", "match_id"):
+    for required in ("#__decarocompetitions_organizations", "#__decarocompetitions_tournament_organizations", "#__decarocompetitions_season_organizations", "#__decarocompetitions_matches", "match_id"):
         if required not in migration_070:
             fail(f"0.7.0 migration is missing {required}")
 
     migration_080 = (ROOT / "component/admin/sql/updates/mysql/0.8.0.sql").read_text(encoding="utf-8")
     for required in (
-        "#__dcl_zones",
-        "#__dcl_zone_countries",
+        "#__decarocompetitions_zones",
+        "#__decarocompetitions_zone_countries",
         "African zone",
         "Asian zone",
         "European zone",
@@ -298,10 +311,10 @@ def validate_versions() -> None:
         "scope_type",
         "participant_type",
         "team_type",
-        "#__dcl_tournament_countries",
-        "#__dcl_tournament_zones",
-        "#__dcl_changes",
-        "#__dcl_edit_sessions",
+        "#__decarocompetitions_tournament_countries",
+        "#__decarocompetitions_tournament_zones",
+        "#__decarocompetitions_changes",
+        "#__decarocompetitions_edit_sessions",
     ):
         if required not in migration_100:
             fail(f"0.10.0 migration is missing {required}")
@@ -337,8 +350,8 @@ def validate_versions() -> None:
 
     live_helper = (ROOT / "component/admin/src/Helper/LiveSyncHelper.php").read_text(encoding="utf-8")
     for required in (
-        "#__dcl_changes",
-        "#__dcl_edit_sessions",
+        "#__decarocompetitions_changes",
+        "#__decarocompetitions_edit_sessions",
         "touchModified",
         "COALESCE(",
         "__dcl_unmodified__",
@@ -352,7 +365,7 @@ def validate_versions() -> None:
             fail(f"SyncController is missing required protection/behaviour {required}")
 
     scope_controller = (ROOT / "component/admin/src/Controller/ScopeController.php").read_text(encoding="utf-8")
-    for required in ("Session::checkToken('post')", "core.manage", "team_type", "#__dcl_tournament_zones"):
+    for required in ("Session::checkToken('post')", "core.manage", "team_type", "#__decarocompetitions_tournament_zones"):
         if required not in scope_controller:
             fail(f"ScopeController is missing required protection/behaviour {required}")
 
@@ -508,6 +521,7 @@ def main() -> None:
     parser.add_argument("--dist", action="store_true")
     args = parser.parse_args()
 
+    validate_no_legacy_table_prefix()
     validate_versions()
 
     if args.dist:

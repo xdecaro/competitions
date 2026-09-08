@@ -14,7 +14,7 @@ final class ParticipationTable extends Table
 {
     public function __construct(DatabaseDriver $db)
     {
-        parent::__construct('#__dcl_participations', 'id', $db);
+        parent::__construct('#__decarocompetitions_participations', 'id', $db);
     }
 
     public function check(): bool
@@ -50,7 +50,7 @@ final class ParticipationTable extends Table
 
         $query = $db->getQuery(true)
             ->select([$db->quoteName('approval_status'), $db->quoteName('state')])
-            ->from($db->quoteName('#__dcl_teams'))
+            ->from($db->quoteName('#__decarocompetitions_teams'))
             ->where($db->quoteName('id') . ' = :teamId')
             ->where($db->quoteName('state') . ' <> -2')
             ->bind(':teamId', $this->team_id, ParameterType::INTEGER);
@@ -69,7 +69,7 @@ final class ParticipationTable extends Table
 
         $query = $db->getQuery(true)
             ->select($db->quoteName('tournament_id'))
-            ->from($db->quoteName('#__dcl_seasons'))
+            ->from($db->quoteName('#__decarocompetitions_seasons'))
             ->where($db->quoteName('id') . ' = :seasonId')
             ->where($db->quoteName('state') . ' <> -2')
             ->bind(':seasonId', $this->season_id, ParameterType::INTEGER);
@@ -89,7 +89,7 @@ final class ParticipationTable extends Table
 
         $query = $db->getQuery(true)
             ->select('COUNT(*)')
-            ->from($db->quoteName('#__dcl_participations'))
+            ->from($db->quoteName('#__decarocompetitions_participations'))
             ->where($db->quoteName('team_id') . ' = :teamId')
             ->where($db->quoteName('season_id') . ' = :seasonId')
             ->where($db->quoteName('id') . ' <> :id')
@@ -120,7 +120,7 @@ final class ParticipationTable extends Table
                     $db->quoteName('reviewed_at'),
                     $db->quoteName('reviewed_by'),
                 ])
-                ->from($db->quoteName('#__dcl_participations'))
+                ->from($db->quoteName('#__decarocompetitions_participations'))
                 ->where($db->quoteName('id') . ' = :id')
                 ->bind(':id', $this->id, ParameterType::INTEGER);
             $previous = $db->setQuery($query)->loadObject();
@@ -170,7 +170,7 @@ final class ParticipationTable extends Table
         $db = $this->getDbo();
         $query = $db->getQuery(true)
             ->select($db->quoteName('state'))
-            ->from($db->quoteName('#__dcl_participations'))
+            ->from($db->quoteName('#__decarocompetitions_participations'))
             ->where($db->quoteName('id') . ' = :stateId')
             ->bind(':stateId', $this->id, ParameterType::INTEGER);
 
@@ -196,7 +196,7 @@ final class ParticipationTable extends Table
         $db = $this->getDbo();
         $query = $db->getQuery(true)
             ->select($db->quoteName('status'))
-            ->from($db->quoteName('#__dcl_participations'))
+            ->from($db->quoteName('#__decarocompetitions_participations'))
             ->where($db->quoteName('id') . ' = :id')
             ->bind(':id', $this->id, ParameterType::INTEGER);
 

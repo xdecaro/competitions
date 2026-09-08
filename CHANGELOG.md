@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.13.0 - 2026-09-08
+
+- Rebased Competitions database storage from the legacy DCL table prefix to `#__decarocompetitions_*`.
+- Fresh installations create only `#__decarocompetitions_*` tables.
+- Existing installations are protected by a component preflight migration that renames legacy DCL-prefixed tables before normal Joomla schema updates.
+- Updated runtime queries, Table classes, modules, Live Sync helpers, SQL and release validation to the new table prefix.
+- Kept `com_decarodcl`, `pkg_decarodcl`, plugin/module identifiers and PHP namespace unchanged in this release to avoid coupling the database cleanup to a separate extension-identity migration.
+- No sports-domain behavior is intentionally changed.
+
 ## 0.12.2 - 2026-09-08
 
     - Renamed the public Competitions distribution archive to `pkg_competitions_<version>.zip`.

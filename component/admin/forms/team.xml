@@ -11,7 +11,7 @@
       type="sql"
       label="COM_DECARODCL_FIELD_FEDERATION"
       required="true"
-      query="SELECT f.id AS value, CONCAT(f.name, ' — ', c.name, ' (', c.code, ')') AS text FROM #__dcl_federations AS f INNER JOIN #__dcl_countries AS c ON c.id = f.country_id WHERE f.state &lt;&gt; -2 AND c.state &lt;&gt; -2 ORDER BY c.name ASC, f.name ASC"
+      query="SELECT f.id AS value, CONCAT(f.name, ' — ', c.name, ' (', c.code, ')') AS text FROM #__decarocompetitions_federations AS f INNER JOIN #__decarocompetitions_countries AS c ON c.id = f.country_id WHERE f.state &lt;&gt; -2 AND c.state &lt;&gt; -2 ORDER BY c.name ASC, f.name ASC"
       key_field="value"
       value_field="text"
     />

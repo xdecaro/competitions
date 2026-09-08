@@ -8,7 +8,7 @@
       type="sql"
       label="COM_DECARODCL_FIELD_COUNTRY"
       required="true"
-      query="SELECT id AS value, CONCAT(name, ' (', code, ')') AS text FROM #__dcl_countries WHERE state &lt;&gt; -2 ORDER BY name ASC"
+      query="SELECT id AS value, CONCAT(name, ' (', code, ')') AS text FROM #__decarocompetitions_countries WHERE state &lt;&gt; -2 ORDER BY name ASC"
       key_field="value"
       value_field="text"
     />

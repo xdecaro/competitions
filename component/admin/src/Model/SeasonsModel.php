@@ -36,13 +36,13 @@ final class SeasonsModel extends ListModel
             ->select($db->quoteName('t.name', 'tournament_name'))
             ->select($db->quoteName('t.code', 'tournament_code'))
             ->select($db->quoteName('c.name', 'host_country_name'))
-            ->from($db->quoteName('#__dcl_seasons', 'a'))
+            ->from($db->quoteName('#__decarocompetitions_seasons', 'a'))
             ->leftJoin(
-                $db->quoteName('#__dcl_tournaments', 't')
+                $db->quoteName('#__decarocompetitions_tournaments', 't')
                 . ' ON ' . $db->quoteName('t.id') . ' = ' . $db->quoteName('a.tournament_id')
             )
             ->leftJoin(
-                $db->quoteName('#__dcl_countries', 'c')
+                $db->quoteName('#__decarocompetitions_countries', 'c')
                 . ' ON ' . $db->quoteName('c.code') . ' = ' . $db->quoteName('a.host_country_code')
             );
 
@@ -109,7 +109,7 @@ final class SeasonsModel extends ListModel
         $db = $this->getDatabase();
         $query = $db->getQuery(true)
             ->select([$db->quoteName('id'), $db->quoteName('name'), $db->quoteName('code')])
-            ->from($db->quoteName('#__dcl_tournaments'))
+            ->from($db->quoteName('#__decarocompetitions_tournaments'))
             ->where($db->quoteName('state') . ' <> -2')
             ->order($db->quoteName('ordering') . ' ASC')
             ->order($db->quoteName('name') . ' ASC');
@@ -122,7 +122,7 @@ final class SeasonsModel extends ListModel
         $db = $this->getDatabase();
         $query = $db->getQuery(true)
             ->select('DISTINCT ' . $db->quoteName('season_year'))
-            ->from($db->quoteName('#__dcl_seasons'))
+            ->from($db->quoteName('#__decarocompetitions_seasons'))
             ->where($db->quoteName('state') . ' <> -2')
             ->where($db->quoteName('season_year') . ' IS NOT NULL')
             ->order($db->quoteName('season_year') . ' DESC');

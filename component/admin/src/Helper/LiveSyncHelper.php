@@ -13,17 +13,17 @@ final class LiveSyncHelper
     private const LEGACY_LOCK = '__dcl_unmodified__';
 
     private const ENTITY_TABLES = [
-        'organization' => '#__dcl_organizations',
-        'zone' => '#__dcl_zones',
-        'country' => '#__dcl_countries',
-        'federation' => '#__dcl_federations',
-        'tournament' => '#__dcl_tournaments',
-        'season' => '#__dcl_seasons',
-        'team' => '#__dcl_teams',
-        'participation' => '#__dcl_participations',
-        'player' => '#__dcl_players',
-        'roster' => '#__dcl_rosters',
-        'match' => '#__dcl_matches',
+        'organization' => '#__decarocompetitions_organizations',
+        'zone' => '#__decarocompetitions_zones',
+        'country' => '#__decarocompetitions_countries',
+        'federation' => '#__decarocompetitions_federations',
+        'tournament' => '#__decarocompetitions_tournaments',
+        'season' => '#__decarocompetitions_seasons',
+        'team' => '#__decarocompetitions_teams',
+        'participation' => '#__decarocompetitions_participations',
+        'player' => '#__decarocompetitions_players',
+        'roster' => '#__decarocompetitions_rosters',
+        'match' => '#__decarocompetitions_matches',
     ];
 
     private const VIEW_ENTITIES = [
@@ -146,7 +146,7 @@ final class LiveSyncHelper
             $changedBy = (int) $app->getIdentity()->id;
 
             $query = $db->getQuery(true)
-                ->insert($db->quoteName('#__dcl_changes'))
+                ->insert($db->quoteName('#__decarocompetitions_changes'))
                 ->columns([
                     $db->quoteName('entity_type'),
                     $db->quoteName('entity_id'),
@@ -174,7 +174,7 @@ final class LiveSyncHelper
         try {
             $query = $db->getQuery(true)
                 ->select('MAX(' . $db->quoteName('id') . ')')
-                ->from($db->quoteName('#__dcl_changes'));
+                ->from($db->quoteName('#__decarocompetitions_changes'));
 
             return (int) $db->setQuery($query)->loadResult();
         } catch (\Throwable) {
@@ -200,7 +200,7 @@ final class LiveSyncHelper
                 $db->quoteName('c.client_id'),
                 $db->quoteName('u.name', 'changed_by_name'),
             ])
-            ->from($db->quoteName('#__dcl_changes', 'c'))
+            ->from($db->quoteName('#__decarocompetitions_changes', 'c'))
             ->leftJoin(
                 $db->quoteName('#__users', 'u')
                 . ' ON ' . $db->quoteName('u.id') . ' = ' . $db->quoteName('c.changed_by')
@@ -243,7 +243,7 @@ final class LiveSyncHelper
         try {
             $query = $db->getQuery(true)
                 ->select($db->quoteName('id'))
-                ->from($db->quoteName('#__dcl_edit_sessions'))
+                ->from($db->quoteName('#__decarocompetitions_edit_sessions'))
                 ->where($db->quoteName('entity_type') . ' = :entity')
                 ->where($db->quoteName('entity_id') . ' = :entityId')
                 ->where($db->quoteName('client_id') . ' = :clientId')
@@ -254,7 +254,7 @@ final class LiveSyncHelper
 
             if ($sessionId > 0) {
                 $query = $db->getQuery(true)
-                    ->update($db->quoteName('#__dcl_edit_sessions'))
+                    ->update($db->quoteName('#__decarocompetitions_edit_sessions'))
                     ->set($db->quoteName('user_id') . ' = :userId')
                     ->set($db->quoteName('touched_at') . ' = :touchedAt')
                     ->where($db->quoteName('id') . ' = :sessionId')
@@ -267,7 +267,7 @@ final class LiveSyncHelper
             }
 
             $query = $db->getQuery(true)
-                ->insert($db->quoteName('#__dcl_edit_sessions'))
+                ->insert($db->quoteName('#__decarocompetitions_edit_sessions'))
                 ->columns([
                     $db->quoteName('entity_type'),
                     $db->quoteName('entity_id'),
@@ -303,7 +303,7 @@ final class LiveSyncHelper
                 $db->quoteName('s.touched_at'),
                 $db->quoteName('u.name', 'user_name'),
             ])
-            ->from($db->quoteName('#__dcl_edit_sessions', 's'))
+            ->from($db->quoteName('#__decarocompetitions_edit_sessions', 's'))
             ->leftJoin(
                 $db->quoteName('#__users', 'u')
                 . ' ON ' . $db->quoteName('u.id') . ' = ' . $db->quoteName('s.user_id')
@@ -333,14 +333,14 @@ final class LiveSyncHelper
         try {
             $presenceCutoff = Factory::getDate('-2 minutes')->toSql();
             $query = $db->getQuery(true)
-                ->delete($db->quoteName('#__dcl_edit_sessions'))
+                ->delete($db->quoteName('#__decarocompetitions_edit_sessions'))
                 ->where($db->quoteName('touched_at') . ' < :presenceCutoff')
                 ->bind(':presenceCutoff', $presenceCutoff);
             $db->setQuery($query)->execute();
 
             $changeCutoff = Factory::getDate('-30 days')->toSql();
             $query = $db->getQuery(true)
-                ->delete($db->quoteName('#__dcl_changes'))
+                ->delete($db->quoteName('#__decarocompetitions_changes'))
                 ->where($db->quoteName('changed_at') . ' < :changeCutoff')
                 ->bind(':changeCutoff', $changeCutoff);
             $db->setQuery($query)->execute();

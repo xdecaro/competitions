@@ -30,9 +30,9 @@ final class FederationsModel extends ListModel
             ->select('a.*')
             ->select($db->quoteName('c.name', 'country_name'))
             ->select($db->quoteName('c.code', 'country_code'))
-            ->from($db->quoteName('#__dcl_federations', 'a'))
+            ->from($db->quoteName('#__decarocompetitions_federations', 'a'))
             ->leftJoin(
-                $db->quoteName('#__dcl_countries', 'c')
+                $db->quoteName('#__decarocompetitions_countries', 'c')
                 . ' ON ' . $db->quoteName('c.id') . ' = ' . $db->quoteName('a.country_id')
             );
 
@@ -83,7 +83,7 @@ final class FederationsModel extends ListModel
         $db = $this->getDatabase();
         $query = $db->getQuery(true)
             ->select([$db->quoteName('id'), $db->quoteName('name'), $db->quoteName('code')])
-            ->from($db->quoteName('#__dcl_countries'))
+            ->from($db->quoteName('#__decarocompetitions_countries'))
             ->where($db->quoteName('state') . ' <> -2')
             ->order($db->quoteName('name') . ' ASC');
 

@@ -29,7 +29,7 @@ final class MatchTable extends Table
 
     public function __construct(DatabaseDriver $db)
     {
-        parent::__construct('#__dcl_matches', 'id', $db);
+        parent::__construct('#__decarocompetitions_matches', 'id', $db);
     }
 
     public function check(): bool
@@ -113,7 +113,7 @@ final class MatchTable extends Table
 
         $query = $db->getQuery(true)
             ->select('COUNT(*)')
-            ->from($db->quoteName('#__dcl_seasons'))
+            ->from($db->quoteName('#__decarocompetitions_seasons'))
             ->where($db->quoteName('id') . ' = :seasonId')
             ->where($db->quoteName('state') . ' <> -2')
             ->bind(':seasonId', $this->season_id, ParameterType::INTEGER);
@@ -134,7 +134,7 @@ final class MatchTable extends Table
         if ($this->venue_id > 0) {
             $query = $db->getQuery(true)
                 ->select('COUNT(*)')
-                ->from($db->quoteName('#__dcl_venues'))
+                ->from($db->quoteName('#__decarocompetitions_venues'))
                 ->where($db->quoteName('id') . ' = :venueId')
                 ->where($db->quoteName('state') . ' <> -2')
                 ->bind(':venueId', $this->venue_id, ParameterType::INTEGER);
@@ -160,7 +160,7 @@ final class MatchTable extends Table
 
             $query = $db->getQuery(true)
                 ->select('COUNT(*)')
-                ->from($db->quoteName('#__dcl_matches'))
+                ->from($db->quoteName('#__decarocompetitions_matches'))
                 ->where($db->quoteName('article_id') . ' = :articleId')
                 ->where($db->quoteName('id') . ' <> :matchId')
                 ->bind(':articleId', $this->article_id, ParameterType::INTEGER)
@@ -232,7 +232,7 @@ final class MatchTable extends Table
         try {
             $db = $this->getDbo();
             $query = $db->getQuery(true)
-                ->update($db->quoteName('#__dcl_match_events'))
+                ->update($db->quoteName('#__decarocompetitions_match_events'))
                 ->set($db->quoteName('match_id') . ' = :matchId')
                 ->where($db->quoteName('match_id') . ' = 0')
                 ->where($db->quoteName('article_id') . ' = :articleId')
@@ -254,9 +254,9 @@ final class MatchTable extends Table
         $db = $this->getDbo();
         $query = $db->getQuery(true)
             ->select('COUNT(*)')
-            ->from($db->quoteName('#__dcl_participations', 'p'))
+            ->from($db->quoteName('#__decarocompetitions_participations', 'p'))
             ->innerJoin(
-                $db->quoteName('#__dcl_teams', 'tm')
+                $db->quoteName('#__decarocompetitions_teams', 'tm')
                 . ' ON ' . $db->quoteName('tm.id') . ' = ' . $db->quoteName('p.team_id')
             )
             ->where($db->quoteName('p.team_id') . ' = :teamId')
@@ -370,7 +370,7 @@ final class MatchTable extends Table
         $db = $this->getDbo();
         $query = $db->getQuery(true)
             ->select($db->quoteName('state'))
-            ->from($db->quoteName('#__dcl_matches'))
+            ->from($db->quoteName('#__decarocompetitions_matches'))
             ->where($db->quoteName('id') . ' = :id')
             ->bind(':id', $this->id, ParameterType::INTEGER);
 

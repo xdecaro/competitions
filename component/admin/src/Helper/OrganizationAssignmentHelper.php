@@ -76,7 +76,7 @@ final class OrganizationAssignmentHelper
         foreach ($ids as $id) {
             $query = $db->getQuery(true)
                 ->select('COUNT(*)')
-                ->from($db->quoteName('#__dcl_organizations'))
+                ->from($db->quoteName('#__decarocompetitions_organizations'))
                 ->where($db->quoteName('id') . ' = :organizationId')
                 ->where($db->quoteName('state') . ' <> -2')
                 ->bind(':organizationId', $id, ParameterType::INTEGER);

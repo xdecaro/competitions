@@ -39,9 +39,9 @@ final class ScopeController extends BaseController
                 $db->quoteName('t.scope_type'),
                 $db->quoteName('t.participant_type'),
             ])
-            ->from($db->quoteName('#__dcl_seasons', 's'))
+            ->from($db->quoteName('#__decarocompetitions_seasons', 's'))
             ->innerJoin(
-                $db->quoteName('#__dcl_tournaments', 't')
+                $db->quoteName('#__decarocompetitions_tournaments', 't')
                 . ' ON ' . $db->quoteName('t.id') . ' = ' . $db->quoteName('s.tournament_id')
             )
             ->where($db->quoteName('s.id') . ' = :seasonId')
@@ -66,13 +66,13 @@ final class ScopeController extends BaseController
                 $db->quoteName('c.name', 'country_name'),
                 $db->quoteName('c.code', 'country_code'),
             ])
-            ->from($db->quoteName('#__dcl_teams', 'tm'))
+            ->from($db->quoteName('#__decarocompetitions_teams', 'tm'))
             ->innerJoin(
-                $db->quoteName('#__dcl_federations', 'f')
+                $db->quoteName('#__decarocompetitions_federations', 'f')
                 . ' ON ' . $db->quoteName('f.id') . ' = ' . $db->quoteName('tm.federation_id')
             )
             ->innerJoin(
-                $db->quoteName('#__dcl_countries', 'c')
+                $db->quoteName('#__decarocompetitions_countries', 'c')
                 . ' ON ' . $db->quoteName('c.id') . ' = ' . $db->quoteName('f.country_id')
             )
             ->where($db->quoteName('tm.state') . ' <> -2')
@@ -86,7 +86,7 @@ final class ScopeController extends BaseController
         if (in_array((string) $tournament->scope_type, ['national', 'local'], true)) {
             $countryScope = $db->getQuery(true)
                 ->select('1')
-                ->from($db->quoteName('#__dcl_tournament_countries', 'tc'))
+                ->from($db->quoteName('#__decarocompetitions_tournament_countries', 'tc'))
                 ->where($db->quoteName('tc.tournament_id') . ' = :scopeTournamentId')
                 ->where($db->quoteName('tc.country_id') . ' = ' . $db->quoteName('f.country_id'));
             $query->where('EXISTS (' . $countryScope . ')')
@@ -94,9 +94,9 @@ final class ScopeController extends BaseController
         } elseif ((string) $tournament->scope_type === 'zone') {
             $zoneScope = $db->getQuery(true)
                 ->select('1')
-                ->from($db->quoteName('#__dcl_tournament_zones', 'tz'))
+                ->from($db->quoteName('#__decarocompetitions_tournament_zones', 'tz'))
                 ->innerJoin(
-                    $db->quoteName('#__dcl_zone_countries', 'zc')
+                    $db->quoteName('#__decarocompetitions_zone_countries', 'zc')
                     . ' ON ' . $db->quoteName('zc.zone_id') . ' = ' . $db->quoteName('tz.zone_id')
                 )
                 ->where($db->quoteName('tz.tournament_id') . ' = :scopeTournamentId')

@@ -35,7 +35,7 @@ final class TeamsModel extends ListModel
 
         $participationsSubquery = $db->getQuery(true)
             ->select('COUNT(*)')
-            ->from($db->quoteName('#__dcl_participations', 'p'))
+            ->from($db->quoteName('#__decarocompetitions_participations', 'p'))
             ->where($db->quoteName('p.team_id') . ' = ' . $db->quoteName('a.id'))
             ->where($db->quoteName('p.state') . ' <> -2');
 
@@ -49,13 +49,13 @@ final class TeamsModel extends ListModel
             ->select($db->quoteName('u.name', 'manager_name'))
             ->select($db->quoteName('u.email', 'manager_email'))
             ->select('(' . $participationsSubquery . ') AS ' . $db->quoteName('participations_count'))
-            ->from($db->quoteName('#__dcl_teams', 'a'))
+            ->from($db->quoteName('#__decarocompetitions_teams', 'a'))
             ->leftJoin(
-                $db->quoteName('#__dcl_federations', 'f')
+                $db->quoteName('#__decarocompetitions_federations', 'f')
                 . ' ON ' . $db->quoteName('f.id') . ' = ' . $db->quoteName('a.federation_id')
             )
             ->leftJoin(
-                $db->quoteName('#__dcl_countries', 'c')
+                $db->quoteName('#__decarocompetitions_countries', 'c')
                 . ' ON ' . $db->quoteName('c.id') . ' = ' . $db->quoteName('f.country_id')
             )
             ->leftJoin(
@@ -152,9 +152,9 @@ final class TeamsModel extends ListModel
                 $db->quoteName('c.name', 'country_name'),
                 $db->quoteName('c.code', 'country_code'),
             ])
-            ->from($db->quoteName('#__dcl_federations', 'f'))
+            ->from($db->quoteName('#__decarocompetitions_federations', 'f'))
             ->leftJoin(
-                $db->quoteName('#__dcl_countries', 'c')
+                $db->quoteName('#__decarocompetitions_countries', 'c')
                 . ' ON ' . $db->quoteName('c.id') . ' = ' . $db->quoteName('f.country_id')
             )
             ->where($db->quoteName('f.state') . ' <> -2')
@@ -170,7 +170,7 @@ final class TeamsModel extends ListModel
 
         $query = $db->getQuery(true)
             ->select([$db->quoteName('id'), $db->quoteName('name'), $db->quoteName('code')])
-            ->from($db->quoteName('#__dcl_countries'))
+            ->from($db->quoteName('#__decarocompetitions_countries'))
             ->where($db->quoteName('state') . ' <> -2')
             ->order($db->quoteName('name') . ' ASC');
 
