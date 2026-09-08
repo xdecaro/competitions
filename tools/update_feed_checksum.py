@@ -20,7 +20,7 @@ def main() -> None:
     parser.add_argument(
         "--package",
         type=Path,
-        default=ROOT / "dist" / f"pkg_decarodcl_{VERSION}.zip",
+        default=ROOT / "dist" / f"pkg_competitions_{VERSION}.zip",
         help="Package ZIP whose SHA-256 must be published",
     )
     args = parser.parse_args()
@@ -38,7 +38,7 @@ def main() -> None:
     if feed_version != VERSION:
         fail(f"Update feed version {feed_version!r} does not match VERSION {VERSION!r}")
 
-    expected_name = f"pkg_decarodcl_{VERSION}.zip"
+    expected_name = f"pkg_competitions_{VERSION}.zip"
     download_url = (update.findtext("./downloads/downloadurl") or "").strip()
     if not download_url.endswith("/" + expected_name):
         fail(f"Update feed download URL does not target {expected_name}")
