@@ -10,7 +10,7 @@ use Throwable;
 
 final class InformationModel extends BaseDatabaseModel
 {
-    public const UPDATE_SITE_URL = 'https://raw.githubusercontent.com/xdecaro/dcl/main/updates/pkg_decarodcl.xml';
+    public const UPDATE_SITE_URL = 'https://raw.githubusercontent.com/xdecaro/competitions/main/updates/pkg_decarodcl.xml';
     public const MINIMUM_JOOMLA = '6.0.0';
     public const MINIMUM_PHP = '8.3.0';
 
@@ -101,7 +101,7 @@ final class InformationModel extends BaseDatabaseModel
         $updateAvailable = $latestVersion !== '' && version_compare($latestVersion, $installedVersion, 'gt');
         $lastCheckTimestamp = $updateSite !== null ? max(0, (int) $updateSite->last_check_timestamp) : 0;
         $updateSiteEnabled = $updateSite !== null && (int) $updateSite->enabled === 1;
-        $updateState = $updateAvailable ? 'available' : ($updateSiteEnabled && $lastCheckTimestamp > 0 ? 'current' : ($updateSiteEnabled ? 'current' : 'inactive'));
+        $updateState = $updateAvailable ? 'available' : ($updateSiteEnabled ? 'current' : 'inactive');
 
         $joomlaVersion = (new Version())->getShortVersion();
         $phpVersion = PHP_VERSION;
@@ -110,7 +110,9 @@ final class InformationModel extends BaseDatabaseModel
         $packageDetected = $package !== null && $versions['package'] !== '';
         $pluginEnabled = $plugin !== null && (int) ($plugin->enabled ?? 0) === 1;
 
+        $coreIntegration = $this->getCoreIntegration();
         $integrations = [
+            $coreIntegration,
             $this->getRelatedComponent('Forms by xdecaro', 'com_decaroforms', 'xdecaro/forms', '#__decaroforms_forms'),
             $this->getRelatedComponent('Courses by xdecaro', 'com_decarocourses', 'xdecaro/courses', '#__decarocourses_courses'),
         ];
@@ -139,6 +141,9 @@ final class InformationModel extends BaseDatabaseModel
         if ($updateAvailable) {
             $warnings[] = 'update_available';
         }
+        if (!empty($coreIntegration['installed']) && empty($coreIntegration['api_available'])) {
+            $warnings[] = 'core_api';
+        }
 
         return [
             'installed_version' => $installedVersion,
@@ -162,12 +167,13 @@ final class InformationModel extends BaseDatabaseModel
             'tables_present' => $tablesPresent,
             'database_aligned' => $databaseAligned,
             'environment_compatible' => $environmentCompatible,
+            'core' => $coreIntegration,
             'integrations' => $integrations,
             'critical_issues' => $criticalIssues,
             'warnings' => $warnings,
             'component_id' => 'com_decarodcl',
             'package_id' => 'pkg_decarodcl',
-            'repository' => 'xdecaro/dcl',
+            'repository' => 'xdecaro/competitions',
         ];
     }
 
@@ -233,6 +239,32 @@ final class InformationModel extends BaseDatabaseModel
         ];
     }
 
+    private function getCoreIntegration(): array
+    {
+        $package = $this->getExtension('package', 'pkg_xdecarocore');
+        $version = $this->getManifestVersion($package);
+        $versionClassAvailable = class_exists(\Xdecaro\Core\Version::class);
+
+        if ($version === '' && $versionClassAvailable) {
+            $version = trim((string) \Xdecaro\Core\Version::VERSION);
+        }
+
+        $apiAvailable = class_exists(\Xdecaro\Core\Integration\EntityReference::class)
+            && class_exists(\Xdecaro\Core\Integration\RelationReference::class);
+
+        return [
+            'name' => 'Core by xdecaro',
+            'element' => 'pkg_xdecarocore',
+            'repository' => 'xdecaro/core',
+            'installed' => $package !== null || $versionClassAvailable,
+            'version' => $version,
+            'available_count' => 0,
+            'required' => false,
+            'metric_type' => 'api',
+            'api_available' => $apiAvailable,
+        ];
+    }
+
     private function getRelatedComponent(string $name, string $element, string $repository, string $countTable): array
     {
         $extension = $this->getExtension('component', $element);
@@ -257,6 +289,7 @@ final class InformationModel extends BaseDatabaseModel
             'version' => $this->getManifestVersion($extension),
             'available_count' => $count,
             'required' => false,
+            'metric_type' => 'count',
         ];
     }
 }
