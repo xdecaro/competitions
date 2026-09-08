@@ -15,7 +15,7 @@ return new class implements ServiceProviderInterface
 {
     public function register(Container $container): void
     {
-        $container->registerServiceProvider(new ModuleDispatcherFactory('\\Xdecaro\\Module\\CompetitionsMatchTimeline'));
+        $container->registerServiceProvider(new ModuleDispatcherFactory('\\xdecaro\\Module\\CompetitionsMatchTimeline'));
         $container->registerServiceProvider(new Module());
     }
 };

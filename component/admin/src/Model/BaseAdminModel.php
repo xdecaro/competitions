@@ -1,13 +1,13 @@
 <?php
-namespace Xdecaro\Component\Competitions\Administrator\Model;
+namespace xdecaro\Component\Competitions\Administrator\Model;
 
 defined('_JEXEC') or die;
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\Model\AdminModel;
-use Xdecaro\Component\Competitions\Administrator\Helper\LanguageHelper;
-use Xdecaro\Component\Competitions\Administrator\Helper\LiveSyncHelper;
+use xdecaro\Component\Competitions\Administrator\Helper\LanguageHelper;
+use xdecaro\Component\Competitions\Administrator\Helper\LiveSyncHelper;
 
 abstract class BaseAdminModel extends AdminModel
 {

@@ -1,5 +1,5 @@
 <?php
-namespace Xdecaro\Component\Competitions\Administrator\Model;
+namespace xdecaro\Component\Competitions\Administrator\Model;
 
 defined('_JEXEC') or die;
 

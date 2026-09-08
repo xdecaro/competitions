@@ -1,5 +1,5 @@
 <?php
-namespace Xdecaro\Component\Competitions\Administrator\Service;
+namespace xdecaro\Component\Competitions\Administrator\Service;
 
 defined('_JEXEC') or die;
 
@@ -16,15 +16,15 @@ final class CoreIntegrationService
 
     public function isAvailable(): bool
     {
-        return class_exists(\Xdecaro\Core\Integration\EntityReference::class)
-            && class_exists(\Xdecaro\Core\Integration\RelationReference::class);
+        return class_exists(\xdecaro\Core\Integration\EntityReference::class)
+            && class_exists(\xdecaro\Core\Integration\RelationReference::class);
     }
 
     public function createEntityReference(string $entity, int|string $id): object
     {
         $this->assertAvailable();
 
-        return new \Xdecaro\Core\Integration\EntityReference(
+        return new \xdecaro\Core\Integration\EntityReference(
             self::COMPONENT,
             $entity,
             $id
@@ -41,19 +41,19 @@ final class CoreIntegrationService
     ): object {
         $this->assertAvailable();
 
-        $source = new \Xdecaro\Core\Integration\EntityReference(
+        $source = new \xdecaro\Core\Integration\EntityReference(
             self::COMPONENT,
             $sourceEntity,
             $sourceId
         );
 
-        $target = new \Xdecaro\Core\Integration\EntityReference(
+        $target = new \xdecaro\Core\Integration\EntityReference(
             $targetComponent,
             $targetEntity,
             $targetId
         );
 
-        return new \Xdecaro\Core\Integration\RelationReference(
+        return new \xdecaro\Core\Integration\RelationReference(
             $source,
             $target,
             $relationType

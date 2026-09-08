@@ -9,13 +9,13 @@ use Joomla\CMS\Extension\Service\Provider\MVCFactory;
 use Joomla\CMS\MVC\Factory\MVCFactoryInterface;
 use Joomla\DI\Container;
 use Joomla\DI\ServiceProviderInterface;
-use Xdecaro\Component\Competitions\Administrator\Service\CoreIntegrationService;
+use xdecaro\Component\Competitions\Administrator\Service\CoreIntegrationService;
 
 return new class () implements ServiceProviderInterface {
     public function register(Container $container): void
     {
-        $container->registerServiceProvider(new ComponentDispatcherFactory('\\Xdecaro\\Component\\Competitions'));
-        $container->registerServiceProvider(new MVCFactory('\\Xdecaro\\Component\\Competitions'));
+        $container->registerServiceProvider(new ComponentDispatcherFactory('\\xdecaro\\Component\\Competitions'));
+        $container->registerServiceProvider(new MVCFactory('\\xdecaro\\Component\\Competitions'));
 
         $container->share(
             CoreIntegrationService::class,

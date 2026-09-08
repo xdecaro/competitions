@@ -1,5 +1,5 @@
 <?php
-namespace Xdecaro\Component\Competitions\Administrator\View\Information;
+namespace xdecaro\Component\Competitions\Administrator\View\Information;
 
 defined('_JEXEC') or die;
 
@@ -8,7 +8,7 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\View\HtmlView as BaseHtmlView;
 use Joomla\CMS\Toolbar\ToolbarHelper;
 use Joomla\CMS\WebAsset\WebAssetManager;
-use Xdecaro\Component\Competitions\Administrator\Helper\UiHelper;
+use xdecaro\Component\Competitions\Administrator\Helper\UiHelper;
 
 final class HtmlView extends BaseHtmlView
 {
@@ -65,14 +65,14 @@ final class HtmlView extends BaseHtmlView
 
     private function enableCoreUi(WebAssetManager $webAssets): bool
     {
-        if (!class_exists(\Xdecaro\Core\Version::class)
-            || version_compare(\Xdecaro\Core\Version::VERSION, self::MINIMUM_CORE_UI_VERSION, '<')
-            || !class_exists(\Xdecaro\Core\Asset\AssetService::class)) {
+        if (!class_exists(\xdecaro\Core\Version::class)
+            || version_compare(\xdecaro\Core\Version::VERSION, self::MINIMUM_CORE_UI_VERSION, '<')
+            || !class_exists(\xdecaro\Core\Asset\AssetService::class)) {
             return false;
         }
 
         try {
-            $assetService = new \Xdecaro\Core\Asset\AssetService();
+            $assetService = new \xdecaro\Core\Asset\AssetService();
 
             return $assetService->useComponents($webAssets);
         } catch (\Throwable $exception) {

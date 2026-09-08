@@ -5,7 +5,7 @@
 - Established a clean Competitions by xdecaro technical identity.
 - Component: `com_xdecarocompetitions`.
 - Package: `pkg_xdecarocompetitions`.
-- PHP namespace: `Xdecaro\Component\Competitions`.
+- PHP namespace: `xdecaro\Component\Competitions`.
 - Database namespace: `#__xdecarocompetitions_*`.
 - Renamed the system plugin and site modules to the xdecaro Competitions namespace.
 - Consolidated administrator language files into one current file per language.

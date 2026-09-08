@@ -5,9 +5,9 @@
   <creationDate>2026-09-06</creationDate>
   <copyright>(C) 2026 xdecaro</copyright>
   <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
-  <version>1.0.0</version>
+  <version>1.1.0</version>
   <description>MOD_XDECAROCOMPETITIONS_MATCHTIMELINE_XML_DESCRIPTION</description>
-  <namespace path="src">Xdecaro\Module\CompetitionsMatchTimeline</namespace>
+  <namespace path="src">xdecaro\Module\CompetitionsMatchTimeline</namespace>
   <files>
     <folder module="mod_xdecarocompetitions_matchtimeline">services</folder>
     <folder>src</folder>

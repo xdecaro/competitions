@@ -1,5 +1,5 @@
 <?php
-namespace Xdecaro\Component\Competitions\Administrator\Model;
+namespace xdecaro\Component\Competitions\Administrator\Model;
 
 defined('_JEXEC') or die;
 
@@ -243,14 +243,14 @@ final class InformationModel extends BaseDatabaseModel
     {
         $package = $this->getExtension('package', 'pkg_xdecarocore');
         $version = $this->getManifestVersion($package);
-        $versionClassAvailable = class_exists(\Xdecaro\Core\Version::class);
+        $versionClassAvailable = class_exists(\xdecaro\Core\Version::class);
 
         if ($version === '' && $versionClassAvailable) {
-            $version = trim((string) \Xdecaro\Core\Version::VERSION);
+            $version = trim((string) \xdecaro\Core\Version::VERSION);
         }
 
-        $apiAvailable = class_exists(\Xdecaro\Core\Integration\EntityReference::class)
-            && class_exists(\Xdecaro\Core\Integration\RelationReference::class);
+        $apiAvailable = class_exists(\xdecaro\Core\Integration\EntityReference::class)
+            && class_exists(\xdecaro\Core\Integration\RelationReference::class);
 
         return [
             'name' => 'Core by xdecaro',

@@ -1,5 +1,5 @@
 <?php
-namespace Xdecaro\Component\Competitions\Site\Controller;
+namespace xdecaro\Component\Competitions\Site\Controller;
 
 defined('_JEXEC') or die;
 

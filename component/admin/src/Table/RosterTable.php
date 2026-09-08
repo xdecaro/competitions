@@ -1,5 +1,5 @@
 <?php
-namespace Xdecaro\Component\Competitions\Administrator\Table;
+namespace xdecaro\Component\Competitions\Administrator\Table;
 
 defined('_JEXEC') or die;
 

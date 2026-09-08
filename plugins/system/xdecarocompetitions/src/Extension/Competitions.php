@@ -1,5 +1,5 @@
 <?php
-namespace Xdecaro\Plugin\System\Competitions\Extension;
+namespace xdecaro\Plugin\System\Competitions\Extension;
 
 defined('_JEXEC') or die;
 

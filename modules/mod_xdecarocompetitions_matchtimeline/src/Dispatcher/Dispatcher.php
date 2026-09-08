@@ -4,7 +4,7 @@
  * @subpackage  mod_xdecarocompetitions_matchtimeline
  */
 
-namespace Xdecaro\Module\CompetitionsMatchTimeline\Site\Dispatcher;
+namespace xdecaro\Module\CompetitionsMatchTimeline\Site\Dispatcher;
 
 defined('_JEXEC') or die;
 

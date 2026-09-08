@@ -15,7 +15,7 @@ use Joomla\DI\ServiceProviderInterface;
 return new class implements ServiceProviderInterface {
     public function register(Container $container): void
     {
-        $container->registerServiceProvider(new ModuleDispatcherFactory('Xdecaro\\Module\\CompetitionsCountriesFederations'));
+        $container->registerServiceProvider(new ModuleDispatcherFactory('xdecaro\\Module\\CompetitionsCountriesFederations'));
         $container->registerServiceProvider(new Module());
     }
 };

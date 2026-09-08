@@ -1,17 +1,17 @@
-# Xdecaro Core integration
+# xdecaro Core integration
 
-Competitions uses the Xdecaro Core cross-product reference contract for relationships with other Xdecaro products.
+Competitions uses the xdecaro Core cross-product reference contract for relationships with other xdecaro products.
 
 The visible product/repository name is Competitions, but the installed Joomla component element remains **`com_xdecarocompetitions`** for upgrade compatibility. Cross-product `EntityReference` values must therefore use `com_xdecarocompetitions`; do not derive the component identifier from the repository name.
 
 Use:
 
-- `Xdecaro\Core\Integration\EntityReference` for `component/entity/id` references;
-- `Xdecaro\Core\Integration\RelationReference` for typed links between references.
+- `xdecaro\Core\Integration\EntityReference` for `component/entity/id` references;
+- `xdecaro\Core\Integration\RelationReference` for typed links between references.
 
 ## Optional runtime adapter
 
-From Competitions 0.11.0, `Xdecaro\Component\Competitions\Administrator\Service\CoreIntegrationService` is registered in the Joomla DI container.
+From Competitions 0.11.0, `xdecaro\Component\Competitions\Administrator\Service\CoreIntegrationService` is registered in the Joomla DI container.
 
 Core remains optional:
 

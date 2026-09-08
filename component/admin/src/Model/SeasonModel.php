@@ -1,11 +1,11 @@
 <?php
-namespace Xdecaro\Component\Competitions\Administrator\Model;
+namespace xdecaro\Component\Competitions\Administrator\Model;
 
 defined('_JEXEC') or die;
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Table\Table;
-use Xdecaro\Component\Competitions\Administrator\Helper\OrganizationAssignmentHelper;
+use xdecaro\Component\Competitions\Administrator\Helper\OrganizationAssignmentHelper;
 
 final class SeasonModel extends BaseAdminModel
 {

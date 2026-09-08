@@ -9,7 +9,7 @@ Competitions by xdecaro is the competition-management component in the xdecaro J
 - System plugin: `plg_system_xdecarocompetitions`
 - Match Timeline module: `mod_xdecarocompetitions_matchtimeline`
 - Countries/Federations module: `mod_xdecarocompetitions_countriesfederations`
-- PHP component namespace: `Xdecaro\Component\Competitions`
+- PHP component namespace: `xdecaro\Component\Competitions`
 - Database tables: `#__xdecarocompetitions_*`
 - Repository: `xdecaro/competitions`
 
@@ -23,7 +23,7 @@ Version 1.0.0 is a clean technical baseline. It intentionally does not provide a
 
 Competitions owns competition-domain data: countries and sporting territories, federations, organizations used in competition roles, zones, tournaments, seasons, teams, participations, players, rosters, matches, match events, rankings/coefficient data and synchronization state.
 
-Cross-product integration must use Xdecaro Core public contracts. Other xdecaro components must not read or write Competitions private tables directly.
+Cross-product integration must use xdecaro Core public contracts. Other xdecaro components must not read or write Competitions private tables directly.
 
 Core integration remains infrastructure-only: public references, shared administrator design assets, diagnostics and reusable technical services. Competition rules and sports-domain behavior remain in this repository.
 

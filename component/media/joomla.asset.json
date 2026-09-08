@@ -1,7 +1,7 @@
 {
   "$schema": "https://developer.joomla.org/schemas/json-schema/web_assets.json",
   "name": "com_xdecarocompetitions",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Competitions administrator assets",
   "license": "GPL-2.0-or-later",
   "assets": [
@@ -9,13 +9,13 @@
       "name": "com_xdecarocompetitions.admin",
       "type": "style",
       "uri": "com_xdecarocompetitions/admin.css",
-      "version": "1.0.0"
+      "version": "1.1.0"
     },
     {
       "name": "com_xdecarocompetitions.filterbar-style",
       "type": "style",
       "uri": "com_xdecarocompetitions/filterbar.css",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "dependencies": [
         "com_xdecarocompetitions.admin"
       ]
@@ -24,7 +24,7 @@
       "name": "com_xdecarocompetitions.filterbar",
       "type": "script",
       "uri": "com_xdecarocompetitions/filterbar.js",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "attributes": {
         "defer": true
       }
@@ -33,13 +33,13 @@
       "name": "com_xdecarocompetitions.live-sync-style",
       "type": "style",
       "uri": "com_xdecarocompetitions/live-sync.css",
-      "version": "1.0.0"
+      "version": "1.1.0"
     },
     {
       "name": "com_xdecarocompetitions.live-sync",
       "type": "script",
       "uri": "com_xdecarocompetitions/live-sync.js",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "attributes": {
         "defer": true
       }
@@ -48,7 +48,7 @@
       "name": "com_xdecarocompetitions.scope",
       "type": "script",
       "uri": "com_xdecarocompetitions/scope.js",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "attributes": {
         "defer": true
       }
@@ -57,7 +57,7 @@
       "name": "com_xdecarocompetitions.core-bridge",
       "type": "style",
       "uri": "com_xdecarocompetitions/core-bridge.css",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "dependencies": [
         "com_xdecarocompetitions.admin"
       ]
@@ -66,7 +66,7 @@
       "name": "com_xdecarocompetitions.information",
       "type": "style",
       "uri": "com_xdecarocompetitions/information.css",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "dependencies": [
         "com_xdecarocompetitions.admin"
       ]
@@ -75,7 +75,7 @@
       "name": "com_xdecarocompetitions.information",
       "type": "script",
       "uri": "com_xdecarocompetitions/information.js",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "attributes": {
         "defer": true
       }
