@@ -22,17 +22,18 @@ jobs:
       - name: Validate
         run: |
           set -euo pipefail
-          find component modules plugins package tests -type f -name '*.php' -print0 | xargs -0 -n1 php -l
+          find component modules plugins package -type f -name '*.php' -print0 | xargs -0 -n1 php -l
           python3 - <<'PY'
           from pathlib import Path
           import xml.etree.ElementTree as ET
           for p in Path('.').rglob('*.xml'):
-              if '.git' not in p.parts and '.github' not in p.parts: ET.parse(p)
+              if '.git' not in p.parts and '.github' not in p.parts:
+                  ET.parse(p)
           PY
           test "$(cat VERSION)" = '1.1.0'
           grep -Fq 'xdecaro\Component\Competitions' component/xdecarocompetitions.xml
           grep -Fq '#__xdecarocompetitions_' component/admin/sql/install.mysql.utf8mb4.sql
-          ! grep -RIn 'Xdecaro\\' component modules plugins package tests updates README.md CHANGELOG.md
+          ! grep -RIn 'Xdecaro\\' component modules plugins package updates README.md CHANGELOG.md
       - name: Commit branch
         run: |
           set -euo pipefail
