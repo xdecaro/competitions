@@ -51,6 +51,7 @@ final class PkgDecarodclInstallerScript
             $this->enableCurrentPlugin($db);
             $this->disableLegacyPlugin($db);
             $this->ensureUpdateSite($db, $canonicalPackageId);
+            $this->removeLegacyUpdateSiteAssociations($db, $canonicalPackageId);
             $this->removeUnusedLegacyUpdateSites($db);
         } catch (Throwable $e) {
             Log::add('Competitions package postflight warning: ' . $e->getMessage(), Log::WARNING, 'dcl');
@@ -273,6 +274,35 @@ final class PkgDecarodclInstallerScript
                 ->columns([$db->quoteName('update_site_id'), $db->quoteName('extension_id')])
                 ->values(':updateSiteId, :extensionId')
                 ->bind(':updateSiteId', $updateSiteId, ParameterType::INTEGER)
+                ->bind(':extensionId', $extensionId, ParameterType::INTEGER);
+            $db->setQuery($query)->execute();
+        }
+    }
+
+    private function removeLegacyUpdateSiteAssociations(DatabaseInterface $db, int $extensionId): void
+    {
+        if ($extensionId <= 0) {
+            return;
+        }
+
+        $legacyLocation = self::LEGACY_UPDATE_SITE_URL;
+        $query = $db->getQuery(true)
+            ->select($db->quoteName('update_site_id'))
+            ->from($db->quoteName('#__update_sites'))
+            ->where($db->quoteName('location') . ' = :legacyLocation')
+            ->bind(':legacyLocation', $legacyLocation);
+        $legacyIds = array_map('intval', (array) $db->setQuery($query)->loadColumn());
+
+        foreach ($legacyIds as $legacyId) {
+            if ($legacyId <= 0) {
+                continue;
+            }
+
+            $query = $db->getQuery(true)
+                ->delete($db->quoteName('#__update_sites_extensions'))
+                ->where($db->quoteName('update_site_id') . ' = :legacyId')
+                ->where($db->quoteName('extension_id') . ' = :extensionId')
+                ->bind(':legacyId', $legacyId, ParameterType::INTEGER)
                 ->bind(':extensionId', $extensionId, ParameterType::INTEGER);
             $db->setQuery($query)->execute();
         }
