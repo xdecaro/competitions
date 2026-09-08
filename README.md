@@ -17,7 +17,7 @@ The repository keeps the historical/internal `dcl` technical identifiers for upg
 
 ## Current version
 
-**0.11.0**
+**0.12.1**
 
 ## Architecture
 

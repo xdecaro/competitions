@@ -1,6 +1,17 @@
 # Changelog
 
-## 0.12.0 - 2026-09-08
+## 0.12.1 - 2026-09-08
+
+    - Renamed the visible system plugin from **Competitions Core** to **Competitions - System Plugin / Competitions - Plugin di sistema** without changing `plg_system_decarodcl`.
+    - Added **Core by xdecaro** to Information → Connected components with installed version and public-API status.
+    - Added Core status to diagnostics and technical details while keeping Core optional.
+    - Moved public repository/update URLs from the renamed `xdecaro/dcl` location to `xdecaro/competitions`; historical Joomla identifiers remain unchanged.
+    - Added safe package-metadata repair: current Competitions children are reassociated with the canonical package record, and only orphan legacy `PKG_DCL` / duplicate package metadata is removed.
+    - The current lightweight `plg_system_decarodcl` plugin is enabled during package postflight; obsolete `dclcore` remains disabled.
+    - No `#__dcl_*` table, sports record, configuration or user data is deleted.
+    - Bumped component, package, plugin, modules, Web Asset registry and Joomla update feed to 0.12.1.
+
+    ## 0.12.0 - 2026-09-08
 
 - Added optional Core by xdecaro 1.1+ Web Asset Manager integration to the administrator Information/Diagnostics view.
 - Added an isolated `.xdecaro-scope` layout and a small token bridge from `--dcl-*` to the public `--xdecaro-*` design tokens.
