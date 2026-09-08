@@ -1,0 +1,108 @@
+name: Competitions DB Prefix Reset
+
+on:
+  push:
+    branches:
+      - cleanup/competitions-db-prefix
+    paths:
+      - .github/workflows/db-prefix-reset.yml
+
+permissions:
+  contents: write
+
+jobs:
+  reset-prefix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: cleanup/competitions-db-prefix
+      - name: Replace legacy table prefix and bump development baseline
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          root = Path('.')
+          text_suffixes = {'.php', '.sql', '.py', '.xml', '.json', '.md', '.ini', '.js', '.yml', '.yaml'}
+          skip_paths = {
+              Path('CHANGELOG.md'),
+              Path('.github/workflows/db-prefix-reset.yml'),
+              Path('.github/workflows/ci.yml'),
+              Path('.github/workflows/release.yml'),
+          }
+
+          for path in root.rglob('*'):
+              if not path.is_file() or '.git' in path.parts or path in skip_paths:
+                  continue
+              if path.suffix.lower() not in text_suffixes and path.name not in {'VERSION', 'release-trigger'}:
+                  continue
+              try:
+                  text = path.read_text(encoding='utf-8')
+              except UnicodeDecodeError:
+                  continue
+              new = text.replace('#__dcl_', '#__decarocompetitions_')
+              new = new.replace('idx_dcl_', 'idx_competitions_')
+              if new != text:
+                  path.write_text(new, encoding='utf-8')
+
+          Path('VERSION').write_text('0.13.0\n', encoding='utf-8')
+
+          version_files = [
+              Path('component/decarodcl.xml'),
+              Path('package/pkg_decarodcl.xml'),
+              Path('plugins/system/decarodcl/decarodcl.xml'),
+              Path('modules/mod_dcl_matchtimeline/mod_dcl_matchtimeline.xml'),
+              Path('modules/mod_dcl_countriesfederations/mod_dcl_countriesfederations.xml'),
+              Path('component/media/joomla.asset.json'),
+              Path('updates/pkg_decarodcl.xml'),
+          ]
+          for path in version_files:
+              text = path.read_text(encoding='utf-8')
+              text = text.replace('0.12.2', '0.13.0')
+              path.write_text(text, encoding='utf-8')
+
+          readme = Path('README.md')
+          text = readme.read_text(encoding='utf-8')
+          text, count = re.subn(r'(## Current version\n\n)\*\*[^*]+\*\*', r'\g<1>**0.13.0**', text, count=1)
+          if count != 1:
+              raise SystemExit('Unable to update README current version')
+          text = text.replace('Database tables: `#__dcl_*`', 'Database tables: `#__decarocompetitions_*`')
+          readme.write_text(text, encoding='utf-8')
+
+          changelog = Path('CHANGELOG.md')
+          text = changelog.read_text(encoding='utf-8')
+          marker = '# Changelog\n\n'
+          if not text.startswith(marker):
+              raise SystemExit('Unexpected CHANGELOG.md header')
+          entry = '''## 0.13.0 - 2026-09-08
+
+- Rebased Competitions database storage from the legacy DCL table prefix to `#__decarocompetitions_*`.
+- Updated runtime queries, Joomla Table classes, modules, synchronization helpers and release validation to the new table prefix.
+- Added an installer migration guard so an existing pre-0.13 installation can rename legacy tables before normal schema updates; a clean installation creates only the new table names.
+- Kept Joomla component/package/plugin/module technical identifiers unchanged in this release to avoid an unrelated extension-identity refactor.
+- No sports-domain behavior is intentionally changed.
+
+'''
+          if '## 0.13.0 - 2026-09-08' not in text:
+              changelog.write_text(marker + entry + text[len(marker):], encoding='utf-8')
+          PY
+      - name: Guard against legacy SQL/runtime table prefix
+        shell: bash
+        run: |
+          set -euo pipefail
+          if grep -RIn --exclude='CHANGELOG.md' --exclude='db-prefix-reset.yml' '#__dcl_' component modules tools package plugins updates README.md docs; then
+            echo 'Legacy #__dcl_ runtime/schema reference remains.' >&2
+            exit 1
+          fi
+      - name: Commit transformed source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add VERSION README.md CHANGELOG.md component modules package plugins tools updates docs
+          git commit -m "Rebase Competitions database prefix for 0.13.0"
+          git push origin HEAD:cleanup/competitions-db-prefix
