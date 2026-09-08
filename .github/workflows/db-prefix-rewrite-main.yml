@@ -18,7 +18,9 @@ jobs:
           ref: cleanup/competitions-db-prefix
           fetch-depth: 0
       - name: Transform branch
-        run: python3 tools/db_prefix_reset.py
+        run: |
+          python3 tools/db_prefix_reset.py
+          python3 tools/db_prefix_reset_fix.py
       - name: Validate transformed branch
         shell: bash
         run: |
