@@ -33,4 +33,4 @@ The 1.0.0 release targets Joomla 6 and PHP 8.3+. Compatibility with earlier Joom
 
 ## Data policy
 
-Fresh installations create only `#__xdecarocompetitions_*` tables. The 1.0.0 source tree contains no legacy table-prefix migration. Normal future updates must preserve 1.x data and configuration using additive or otherwise safe migrations.
+Fresh installations create only `#__xdecarocompetitions_*` tables. The canonical `admin/sql/install.mysql.utf8mb4.sql` contains the complete final 1.0 schema, including organizations, matches, zones, tournament scope and Live Sync tables; it does not replay pre-1.0 `ALTER TABLE` migrations. The 1.0.0 source tree contains no legacy table-prefix migration. Normal future updates must preserve 1.x data and configuration using additive or otherwise safe migrations.
