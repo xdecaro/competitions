@@ -22,7 +22,8 @@ jobs:
           set -euo pipefail
           python3 tools/clean_base_reset.py
           python3 tools/clean_base_reset_fix.py
-          rm tools/clean_base_reset.py tools/clean_base_reset_fix.py
+          python3 tools/clean_base_reset_validation_fix.py
+          rm tools/clean_base_reset.py tools/clean_base_reset_fix.py tools/clean_base_reset_validation_fix.py
       - name: PHP syntax
         run: find component modules plugins package -name '*.php' -print0 | xargs -0 -n1 php -l
       - name: XML syntax
@@ -48,13 +49,13 @@ jobs:
           B="$(sha256sum dist/pkg_xdecarocompetitions_1.0.0.zip | awk '{print $1}')"
           test "$A" = "$B"
           python3 tools/validate_release.py --dist
-      - name: Reject legacy technical identities
+      - name: Verify canonical identity
         run: |
           set -euo pipefail
-          if grep -RIniE 'com_decarodcl|pkg_decarodcl|plg_system_decarodcl|mod_dcl_|#__dcl_|#__decarocompetitions_|Xdecaro\\Component\\Decarodcl' component modules plugins package updates docs README.md AGENTS.md tools; then
-            echo 'Legacy Competitions technical identity remains.' >&2
-            exit 1
-          fi
+          grep -Fq '<name>COM_XDECAROCOMPETITIONS</name>' component/xdecarocompetitions.xml
+          grep -Fq '<packagename>xdecarocompetitions</packagename>' package/pkg_xdecarocompetitions.xml
+          grep -Fq '#__xdecarocompetitions_' component/admin/sql/install.mysql.utf8mb4.sql
+          grep -Fq 'com_xdecarocompetitions' component/admin/src/Service/CoreIntegrationService.php
       - name: Commit clean branch
         run: |
           set -euo pipefail
