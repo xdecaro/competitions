@@ -5,9 +5,9 @@
   <creationDate>2026-09-06</creationDate>
   <copyright>(C) 2026 xdecaro</copyright>
   <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
-  <version>1.0.0</version>
+  <version>1.1.0</version>
   <description>MOD_XDECAROCOMPETITIONS_COUNTRIESFEDERATIONS_XML_DESCRIPTION</description>
-  <namespace path="src">Xdecaro\Module\CompetitionsCountriesFederations</namespace>
+  <namespace path="src">xdecaro\Module\CompetitionsCountriesFederations</namespace>
   <files>
     <folder module="mod_xdecarocompetitions_countriesfederations">services</folder>
     <folder>src</folder>

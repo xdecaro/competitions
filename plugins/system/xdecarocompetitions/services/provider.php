@@ -6,7 +6,7 @@ use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\DI\Container;
 use Joomla\DI\ServiceProviderInterface;
 use Joomla\Event\DispatcherInterface;
-use Xdecaro\Plugin\System\Competitions\Extension\Competitions;
+use xdecaro\Plugin\System\Competitions\Extension\Competitions;
 
 return new class implements ServiceProviderInterface
 {

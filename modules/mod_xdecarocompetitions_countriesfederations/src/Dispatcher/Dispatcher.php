@@ -4,7 +4,7 @@
  * @subpackage  mod_xdecarocompetitions_countriesfederations
  */
 
-namespace Xdecaro\Module\CompetitionsCountriesFederations\Site\Dispatcher;
+namespace xdecaro\Module\CompetitionsCountriesFederations\Site\Dispatcher;
 
 defined('_JEXEC') or die;
 

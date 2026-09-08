@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Draw is a separate optional Xdecaro component responsible for controlled draws, group composition, pairings and bracket-slot assignments.
+Draw is a separate optional xdecaro component responsible for controlled draws, group composition, pairings and bracket-slot assignments.
 
 Competitions remains the authoritative owner of competitions, participants, phases, groups, brackets, fixtures, matches, standings and sports rules.
 
@@ -42,7 +42,7 @@ Neither product may use the other product's private tables as its integration AP
 
 ## Core references
 
-Use Xdecaro Core `EntityReference` for stable cross-product identity where available.
+Use xdecaro Core `EntityReference` for stable cross-product identity where available.
 
 Current Competitions technical element is retained for compatibility as `com_xdecarocompetitions`.
 
@@ -181,7 +181,7 @@ State-changing requests require Joomla CSRF protection and server-side validatio
 
 Draw is optional for Competitions.
 
-Xdecaro Core may be used by both products through its public APIs, but no circular dependency is allowed.
+xdecaro Core may be used by both products through its public APIs, but no circular dependency is allowed.
 
 Correct:
 

@@ -1,5 +1,5 @@
 <?php
-namespace Xdecaro\Component\Competitions\Administrator\Model;
+namespace xdecaro\Component\Competitions\Administrator\Model;
 
 defined('_JEXEC') or die;
 
@@ -8,8 +8,8 @@ use Joomla\CMS\Form\Form;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Table\Table;
 use Joomla\Database\ParameterType;
-use Xdecaro\Component\Competitions\Administrator\Helper\LanguageHelper;
-use Xdecaro\Component\Competitions\Administrator\Helper\TournamentScopeHelper;
+use xdecaro\Component\Competitions\Administrator\Helper\LanguageHelper;
+use xdecaro\Component\Competitions\Administrator\Helper\TournamentScopeHelper;
 
 final class ZoneModel extends BaseAdminModel
 {

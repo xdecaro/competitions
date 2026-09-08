@@ -1,8 +1,8 @@
 <?php
-namespace Xdecaro\Component\Competitions\Administrator\View\Match;
+namespace xdecaro\Component\Competitions\Administrator\View\Match;
 
 defined('_JEXEC') or die;
-use Joomla\CMS\Factory;use Joomla\CMS\Language\Text;use Joomla\CMS\MVC\View\HtmlView as BaseHtmlView;use Joomla\CMS\Toolbar\ToolbarHelper;use Xdecaro\Component\Competitions\Administrator\Helper\UiHelper;
+use Joomla\CMS\Factory;use Joomla\CMS\Language\Text;use Joomla\CMS\MVC\View\HtmlView as BaseHtmlView;use Joomla\CMS\Toolbar\ToolbarHelper;use xdecaro\Component\Competitions\Administrator\Helper\UiHelper;
 final class HtmlView extends BaseHtmlView
 {
     public $form;public $item;public $state;

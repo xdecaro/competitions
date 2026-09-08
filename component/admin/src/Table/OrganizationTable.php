@@ -1,5 +1,5 @@
 <?php
-namespace Xdecaro\Component\Competitions\Administrator\Table;
+namespace xdecaro\Component\Competitions\Administrator\Table;
 
 defined('_JEXEC') or die;
 
@@ -8,7 +8,7 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Table\Table;
 use Joomla\Database\DatabaseDriver;
 use Joomla\Database\ParameterType;
-use Xdecaro\Component\Competitions\Administrator\Helper\LanguageHelper;
+use xdecaro\Component\Competitions\Administrator\Helper\LanguageHelper;
 
 final class OrganizationTable extends Table
 {

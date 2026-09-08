@@ -1,8 +1,8 @@
 # Competitions — Codex Repository Rules
 
-## Xdecaro Core integration
+## xdecaro Core integration
 
-Competitions is part of the Xdecaro Joomla ecosystem and should use **Xdecaro Core** for infrastructure that is genuinely shared across multiple Xdecaro extensions.
+Competitions is part of the xdecaro Joomla ecosystem and should use **xdecaro Core** for infrastructure that is genuinely shared across multiple xdecaro extensions.
 
 Core is infrastructure, not Competitions business logic.
 
@@ -19,7 +19,7 @@ Good Core candidates include:
 - Joomla-compliant AJAX/CSRF helpers;
 - dependency/version checks;
 - common diagnostics;
-- Xdecaro extension registry;
+- xdecaro extension registry;
 - shared information/update UI.
 
 Keep all Competitions-specific business logic in this repository, including:
@@ -44,7 +44,7 @@ Keep all Competitions-specific business logic in this repository, including:
 
 Do not move these domain concepts into Core.
 
-Do not move code into Core merely because it could technically be reused. A Core abstraction must be domain-neutral and useful to more than one Xdecaro product.
+Do not move code into Core merely because it could technically be reused. A Core abstraction must be domain-neutral and useful to more than one xdecaro product.
 
 ## Migration and implementation rule
 

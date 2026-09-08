@@ -6,10 +6,10 @@
   <copyright>Copyright (C) 2026 Luca De Caro. All rights reserved.</copyright>
   <license>GNU General Public License version 2 or later</license>
   <authorUrl>https://github.com/xdecaro/competitions</authorUrl>
-  <version>1.0.0</version>
+  <version>1.1.0</version>
   <description>COM_XDECAROCOMPETITIONS_XML_DESCRIPTION</description>
   <targetplatform name="joomla" version="6.*" />
-  <namespace path="src">Xdecaro\Component\Competitions</namespace>
+  <namespace path="src">xdecaro\Component\Competitions</namespace>
 
   <files folder="site">
     <folder>src</folder>

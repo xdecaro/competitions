@@ -1,12 +1,12 @@
 <?php
-namespace Xdecaro\Component\Competitions\Administrator\Model;
+namespace xdecaro\Component\Competitions\Administrator\Model;
 
 defined('_JEXEC') or die;
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Table\Table;
-use Xdecaro\Component\Competitions\Administrator\Helper\OrganizationAssignmentHelper;
-use Xdecaro\Component\Competitions\Administrator\Helper\TournamentScopeHelper;
+use xdecaro\Component\Competitions\Administrator\Helper\OrganizationAssignmentHelper;
+use xdecaro\Component\Competitions\Administrator\Helper\TournamentScopeHelper;
 
 final class TournamentModel extends BaseAdminModel
 {

@@ -1,5 +1,5 @@
 <?php
-namespace Xdecaro\Component\Competitions\Administrator\View\Matches;
+namespace xdecaro\Component\Competitions\Administrator\View\Matches;
 
 defined('_JEXEC') or die;
 
@@ -7,7 +7,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\View\HtmlView as BaseHtmlView;
 use Joomla\CMS\Toolbar\ToolbarHelper;
-use Xdecaro\Component\Competitions\Administrator\Helper\UiHelper;
+use xdecaro\Component\Competitions\Administrator\Helper\UiHelper;
 
 final class HtmlView extends BaseHtmlView
 {

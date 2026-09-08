@@ -1,0 +1,2 @@
+-- Competitions 1.1.0
+-- No database schema changes. This release normalizes the PHP vendor namespace to lowercase xdecaro.
