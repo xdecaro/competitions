@@ -9,6 +9,8 @@ import xml.etree.ElementTree as ET
 
 ROOT = Path(__file__).resolve().parents[1]
 VERSION = (ROOT / "VERSION").read_text(encoding="utf-8").strip()
+CURRENT_VERSION = "1.1.0"
+CANONICAL_NAMESPACE = "xdecaro\\Component\\Competitions"
 
 
 def fail(message: str) -> None:
@@ -39,8 +41,8 @@ def validate_database_namespace(sql: str, label: str) -> None:
 
 
 def validate_source() -> None:
-    if VERSION != "1.0.0":
-        fail(f"expected clean baseline 1.0.0, got {VERSION}")
+    if VERSION != CURRENT_VERSION:
+        fail(f"expected {CURRENT_VERSION}, got {VERSION}")
 
     manifests = [
         ROOT / "component/xdecarocompetitions.xml",
@@ -56,8 +58,8 @@ def validate_source() -> None:
             fail(f"version mismatch in {path.relative_to(ROOT)}")
 
     component = ET.parse(ROOT / "component/xdecarocompetitions.xml").getroot()
-    if (component.findtext("namespace") or "").strip() != "Xdecaro\\Component\\Competitions":
-        fail("component namespace is not Xdecaro\\Component\\Competitions")
+    if (component.findtext("namespace") or "").strip() != CANONICAL_NAMESPACE:
+        fail(f"component namespace is not {CANONICAL_NAMESPACE}")
     if component.find("scriptfile") is not None:
         fail("clean component baseline must not carry a migration script")
     install_files = [(node.text or "").strip() for node in component.findall("./install/sql/file")]
@@ -99,12 +101,16 @@ def validate_source() -> None:
         if token not in sql:
             fail(f"canonical fresh-install schema is missing {token}")
     if "ALTER TABLE" in sql.upper():
-        fail("canonical 1.0 fresh-install schema must not replay migration ALTER statements")
+        fail("canonical fresh-install schema must not replay migration ALTER statements")
 
     update_dir = ROOT / "component/admin/sql/updates/mysql"
     update_files = sorted(path.name for path in update_dir.glob("*.sql"))
-    if update_files != ["1.0.0.sql"]:
-        fail(f"clean schema history must contain only 1.0.0.sql, got {update_files}")
+    if update_files != ["1.0.0.sql", "1.1.0.sql"]:
+        fail(f"schema history must contain 1.0.0 and 1.1.0 markers, got {update_files}")
+
+    marker = (update_dir / "1.1.0.sql").read_text(encoding="utf-8")
+    if "ALTER TABLE" in marker.upper() or "DROP TABLE" in marker.upper() or "TRUNCATE TABLE" in marker.upper():
+        fail("1.1.0 namespace-only schema marker must not mutate database data or structure")
 
     asset = json.loads((ROOT / "component/media/joomla.asset.json").read_text(encoding="utf-8"))
     if str(asset.get("version")) != VERSION:
@@ -132,6 +138,11 @@ def validate_source() -> None:
     if "com_xdecarocompetitions" not in core_text:
         fail("Core public references do not use com_xdecarocompetitions")
 
+    for path in list((ROOT / "component").rglob("*.php")) + list((ROOT / "modules").rglob("*.php")) + list((ROOT / "plugins").rglob("*.php")):
+        text = path.read_text(encoding="utf-8")
+        if "namespace Xdecaro\\" in text or "use Xdecaro\\" in text:
+            fail(f"uppercase vendor namespace remains in {path.relative_to(ROOT)}")
+
 
 def validate_dist() -> None:
     expected = [
@@ -157,6 +168,9 @@ def validate_dist() -> None:
                 fail(f"component ZIP is missing {required}")
         sql = archive.read("admin/sql/install.mysql.utf8mb4.sql").decode("utf-8")
         validate_database_namespace(sql, "component ZIP install SQL")
+        manifest = ET.fromstring(archive.read("xdecarocompetitions.xml"))
+        if (manifest.findtext("namespace") or "").strip() != CANONICAL_NAMESPACE:
+            fail("component ZIP namespace is not canonical lowercase xdecaro")
 
     package = expected[-1]
     with zipfile.ZipFile(package) as archive:
@@ -178,4 +192,4 @@ args = parser.parse_args()
 validate_source()
 if args.dist:
     validate_dist()
-print(f"Competitions {VERSION} clean-base validation OK")
+print(f"Competitions {VERSION} validation OK")
