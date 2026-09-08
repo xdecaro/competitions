@@ -15,19 +15,19 @@ final class InformationModel extends BaseDatabaseModel
     public const MINIMUM_PHP = '8.3.0';
 
     private const EXPECTED_TABLES = [
-        '#__dcl_countries',
-        '#__dcl_federations',
-        '#__dcl_organizations',
-        '#__dcl_zones',
-        '#__dcl_tournaments',
-        '#__dcl_seasons',
-        '#__dcl_teams',
-        '#__dcl_participations',
-        '#__dcl_players',
-        '#__dcl_rosters',
-        '#__dcl_matches',
-        '#__dcl_changes',
-        '#__dcl_edit_sessions',
+        '#__decarocompetitions_countries',
+        '#__decarocompetitions_federations',
+        '#__decarocompetitions_organizations',
+        '#__decarocompetitions_zones',
+        '#__decarocompetitions_tournaments',
+        '#__decarocompetitions_seasons',
+        '#__decarocompetitions_teams',
+        '#__decarocompetitions_participations',
+        '#__decarocompetitions_players',
+        '#__decarocompetitions_rosters',
+        '#__decarocompetitions_matches',
+        '#__decarocompetitions_changes',
+        '#__decarocompetitions_edit_sessions',
     ];
 
     public function getInfo(): array

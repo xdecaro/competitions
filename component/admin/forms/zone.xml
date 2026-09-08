@@ -5,7 +5,7 @@
     <field name="modified" type="hidden" />
     <field name="name" type="text" label="COM_DECARODCL_FIELD_NAME" required="true" maxlength="190" />
     <field name="code" type="text" label="COM_DECARODCL_FIELD_CODE" description="COM_DECARODCL_ZONE_CODE_DESC" required="true" maxlength="50" filter="cmd" />
-    <field name="organization_id" type="sql" label="COM_DECARODCL_FIELD_ORGANIZATION" description="COM_DECARODCL_ZONE_ORGANIZATION_DESC" query="SELECT id AS value, CONCAT(name, IF(short_name IS NULL OR short_name = '', '', CONCAT(' (', short_name, ')'))) AS text FROM #__dcl_organizations WHERE state &lt;&gt; -2 ORDER BY ordering ASC, name ASC" key_field="value" value_field="text" header="JNONE" filter="uint" />
+    <field name="organization_id" type="sql" label="COM_DECARODCL_FIELD_ORGANIZATION" description="COM_DECARODCL_ZONE_ORGANIZATION_DESC" query="SELECT id AS value, CONCAT(name, IF(short_name IS NULL OR short_name = '', '', CONCAT(' (', short_name, ')'))) AS text FROM #__decarocompetitions_organizations WHERE state &lt;&gt; -2 ORDER BY ordering ASC, name ASC" key_field="value" value_field="text" header="JNONE" filter="uint" />
     <field name="state" type="list" label="JSTATUS" default="1">
       <option value="1">JPUBLISHED</option>
       <option value="0">JUNPUBLISHED</option>
@@ -13,6 +13,6 @@
     <field name="ordering" type="number" label="JFIELD_ORDERING_LABEL" default="0" min="0" />
   </fieldset>
   <fieldset name="countries" label="COM_DECARODCL_ZONE_COUNTRIES">
-    <field name="country_ids" type="sql" label="COM_DECARODCL_COUNTRIES" description="COM_DECARODCL_ZONE_COUNTRIES_DESC" multiple="true" size="16" filter="array" query="SELECT id AS value, CONCAT(name, ' (', code, ')') AS text FROM #__dcl_countries WHERE state &lt;&gt; -2 ORDER BY name ASC" key_field="value" value_field="text" />
+    <field name="country_ids" type="sql" label="COM_DECARODCL_COUNTRIES" description="COM_DECARODCL_ZONE_COUNTRIES_DESC" multiple="true" size="16" filter="array" query="SELECT id AS value, CONCAT(name, ' (', code, ')') AS text FROM #__decarocompetitions_countries WHERE state &lt;&gt; -2 ORDER BY name ASC" key_field="value" value_field="text" />
   </fieldset>
 </form>

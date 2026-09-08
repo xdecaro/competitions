@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS `#__dcl_countries` (
+CREATE TABLE IF NOT EXISTS `#__decarocompetitions_countries` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(190) NOT NULL,
   `code` VARCHAR(10) NOT NULL,
@@ -13,12 +13,12 @@ CREATE TABLE IF NOT EXISTS `#__dcl_countries` (
   `modified` DATETIME DEFAULT NULL,
   `modified_by` INT UNSIGNED NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `idx_dcl_countries_code` (`code`),
-  KEY `idx_dcl_countries_name` (`name`),
-  KEY `idx_dcl_countries_state` (`state`, `ordering`)
+  UNIQUE KEY `idx_competitions_countries_code` (`code`),
+  KEY `idx_competitions_countries_name` (`name`),
+  KEY `idx_competitions_countries_state` (`state`, `ordering`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-INSERT IGNORE INTO `#__dcl_countries` (`name`, `code`, `iso2`, `iso3`, `entity_type`, `state`, `ordering`) VALUES
+INSERT IGNORE INTO `#__decarocompetitions_countries` (`name`, `code`, `iso2`, `iso3`, `entity_type`, `state`, `ordering`) VALUES
 ('Azerbaijan', 'AZE', 'AZ', 'AZE', 'country', 1, 1),
 ('Belgium', 'BEL', 'BE', 'BEL', 'country', 1, 2),
 ('Czech Republic', 'CZE', 'CZ', 'CZE', 'country', 1, 3),
@@ -39,7 +39,7 @@ INSERT IGNORE INTO `#__dcl_countries` (`name`, `code`, `iso2`, `iso3`, `entity_t
 ('Sweden', 'SWE', 'SE', 'SWE', 'country', 1, 18),
 ('Turkey', 'TUR', 'TR', 'TUR', 'country', 1, 19);
 
-CREATE TABLE IF NOT EXISTS `#__dcl_federations` (
+CREATE TABLE IF NOT EXISTS `#__decarocompetitions_federations` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `country_id` INT UNSIGNED NOT NULL DEFAULT 0,
   `name` VARCHAR(190) NOT NULL,
@@ -54,11 +54,11 @@ CREATE TABLE IF NOT EXISTS `#__dcl_federations` (
   `modified` DATETIME DEFAULT NULL,
   `modified_by` INT UNSIGNED NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
-  KEY `idx_dcl_federations_country_id` (`country_id`),
-  KEY `idx_dcl_federations_state` (`state`, `ordering`)
+  KEY `idx_competitions_federations_country_id` (`country_id`),
+  KEY `idx_competitions_federations_state` (`state`, `ordering`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS `#__dcl_teams` (
+CREATE TABLE IF NOT EXISTS `#__decarocompetitions_teams` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `owner_user_id` INT UNSIGNED NOT NULL DEFAULT 0,
   `federation_id` INT UNSIGNED NOT NULL DEFAULT 0,
@@ -82,13 +82,13 @@ CREATE TABLE IF NOT EXISTS `#__dcl_teams` (
   `modified` DATETIME DEFAULT NULL,
   `modified_by` INT UNSIGNED NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `idx_dcl_teams_alias` (`alias`),
-  KEY `idx_dcl_teams_owner` (`owner_user_id`),
-  KEY `idx_dcl_teams_federation` (`federation_id`),
-  KEY `idx_dcl_teams_status` (`approval_status`, `state`)
+  UNIQUE KEY `idx_competitions_teams_alias` (`alias`),
+  KEY `idx_competitions_teams_owner` (`owner_user_id`),
+  KEY `idx_competitions_teams_federation` (`federation_id`),
+  KEY `idx_competitions_teams_status` (`approval_status`, `state`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS `#__dcl_players` (
+CREATE TABLE IF NOT EXISTS `#__decarocompetitions_players` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `external_ref` VARCHAR(100) DEFAULT NULL,
   `first_name` VARCHAR(190) NOT NULL,
@@ -103,12 +103,12 @@ CREATE TABLE IF NOT EXISTS `#__dcl_players` (
   `modified` DATETIME DEFAULT NULL,
   `modified_by` INT UNSIGNED NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `idx_dcl_players_external_ref` (`external_ref`),
-  KEY `idx_dcl_players_name` (`last_name`, `first_name`),
-  KEY `idx_dcl_players_status` (`approval_status`, `state`)
+  UNIQUE KEY `idx_competitions_players_external_ref` (`external_ref`),
+  KEY `idx_competitions_players_name` (`last_name`, `first_name`),
+  KEY `idx_competitions_players_status` (`approval_status`, `state`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS `#__dcl_tournaments` (
+CREATE TABLE IF NOT EXISTS `#__decarocompetitions_tournaments` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(190) NOT NULL,
   `code` VARCHAR(50) DEFAULT NULL,
@@ -121,11 +121,11 @@ CREATE TABLE IF NOT EXISTS `#__dcl_tournaments` (
   `modified` DATETIME DEFAULT NULL,
   `modified_by` INT UNSIGNED NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `idx_dcl_tournaments_code` (`code`),
-  KEY `idx_dcl_tournaments_state` (`state`)
+  UNIQUE KEY `idx_competitions_tournaments_code` (`code`),
+  KEY `idx_competitions_tournaments_state` (`state`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS `#__dcl_seasons` (
+CREATE TABLE IF NOT EXISTS `#__decarocompetitions_seasons` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `tournament_id` INT UNSIGNED NOT NULL,
   `name` VARCHAR(190) NOT NULL,
@@ -141,12 +141,12 @@ CREATE TABLE IF NOT EXISTS `#__dcl_seasons` (
   `modified` DATETIME DEFAULT NULL,
   `modified_by` INT UNSIGNED NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
-  KEY `idx_dcl_seasons_tournament` (`tournament_id`),
-  KEY `idx_dcl_seasons_year` (`season_year`),
-  KEY `idx_dcl_seasons_state` (`state`)
+  KEY `idx_competitions_seasons_tournament` (`tournament_id`),
+  KEY `idx_competitions_seasons_year` (`season_year`),
+  KEY `idx_competitions_seasons_state` (`state`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS `#__dcl_participations` (
+CREATE TABLE IF NOT EXISTS `#__decarocompetitions_participations` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `team_id` INT UNSIGNED NOT NULL,
   `season_id` INT UNSIGNED NOT NULL,
@@ -161,12 +161,12 @@ CREATE TABLE IF NOT EXISTS `#__dcl_participations` (
   `modified` DATETIME DEFAULT NULL,
   `modified_by` INT UNSIGNED NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `idx_dcl_participation_team_season` (`team_id`, `season_id`),
-  KEY `idx_dcl_participation_status` (`status`, `state`),
-  KEY `idx_dcl_participation_season` (`season_id`)
+  UNIQUE KEY `idx_competitions_participation_team_season` (`team_id`, `season_id`),
+  KEY `idx_competitions_participation_status` (`status`, `state`),
+  KEY `idx_competitions_participation_season` (`season_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS `#__dcl_rosters` (
+CREATE TABLE IF NOT EXISTS `#__decarocompetitions_rosters` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `participation_id` BIGINT UNSIGNED NOT NULL,
   `team_id` INT UNSIGNED NOT NULL,
@@ -182,13 +182,13 @@ CREATE TABLE IF NOT EXISTS `#__dcl_rosters` (
   `modified` DATETIME DEFAULT NULL,
   `modified_by` INT UNSIGNED NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `idx_dcl_roster_participation_player` (`participation_id`, `player_id`),
-  KEY `idx_dcl_roster_team` (`team_id`),
-  KEY `idx_dcl_roster_player` (`player_id`),
-  KEY `idx_dcl_roster_status` (`status`, `state`)
+  UNIQUE KEY `idx_competitions_roster_participation_player` (`participation_id`, `player_id`),
+  KEY `idx_competitions_roster_team` (`team_id`),
+  KEY `idx_competitions_roster_player` (`player_id`),
+  KEY `idx_competitions_roster_status` (`status`, `state`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS `#__dcl_venues` (
+CREATE TABLE IF NOT EXISTS `#__decarocompetitions_venues` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(190) NOT NULL,
   `address` VARCHAR(255) DEFAULT NULL,
@@ -202,10 +202,10 @@ CREATE TABLE IF NOT EXISTS `#__dcl_venues` (
   `modified` DATETIME DEFAULT NULL,
   `modified_by` INT UNSIGNED NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
-  KEY `idx_dcl_venues_state` (`state`)
+  KEY `idx_competitions_venues_state` (`state`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS `#__dcl_match_events` (
+CREATE TABLE IF NOT EXISTS `#__decarocompetitions_match_events` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `article_id` INT UNSIGNED NOT NULL,
   `team_id` INT UNSIGNED NOT NULL DEFAULT 0,
@@ -224,14 +224,14 @@ CREATE TABLE IF NOT EXISTS `#__dcl_match_events` (
   `modified` DATETIME DEFAULT NULL,
   `modified_by` INT UNSIGNED NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
-  KEY `idx_dcl_events_article` (`article_id`, `state`),
-  KEY `idx_dcl_events_player` (`player_id`),
-  KEY `idx_dcl_events_team` (`team_id`),
-  KEY `idx_dcl_events_type` (`event_type`),
-  KEY `idx_dcl_events_timeline` (`article_id`, `minute`, `extra_minute`, `ordering`)
+  KEY `idx_competitions_events_article` (`article_id`, `state`),
+  KEY `idx_competitions_events_player` (`player_id`),
+  KEY `idx_competitions_events_team` (`team_id`),
+  KEY `idx_competitions_events_type` (`event_type`),
+  KEY `idx_competitions_events_timeline` (`article_id`, `minute`, `extra_minute`, `ordering`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS `#__dcl_coefficient_rules` (
+CREATE TABLE IF NOT EXISTS `#__decarocompetitions_coefficient_rules` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(190) NOT NULL,
   `tournament_id` INT UNSIGNED NOT NULL DEFAULT 0,
@@ -250,10 +250,10 @@ CREATE TABLE IF NOT EXISTS `#__dcl_coefficient_rules` (
   `modified` DATETIME DEFAULT NULL,
   `modified_by` INT UNSIGNED NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
-  KEY `idx_dcl_coef_rules_scope` (`tournament_id`, `season_id`, `state`)
+  KEY `idx_competitions_coef_rules_scope` (`tournament_id`, `season_id`, `state`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS `#__dcl_country_coefficients` (
+CREATE TABLE IF NOT EXISTS `#__decarocompetitions_country_coefficients` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `season_id` INT UNSIGNED NOT NULL,
   `federation_id` INT UNSIGNED NOT NULL,
@@ -265,11 +265,11 @@ CREATE TABLE IF NOT EXISTS `#__dcl_country_coefficients` (
   `rule_id` INT UNSIGNED NOT NULL DEFAULT 0,
   `calculated_at` DATETIME DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `idx_dcl_country_coef_unique` (`season_id`, `federation_id`),
-  KEY `idx_dcl_country_coef_value` (`season_id`, `coefficient`)
+  UNIQUE KEY `idx_competitions_country_coef_unique` (`season_id`, `federation_id`),
+  KEY `idx_competitions_country_coef_value` (`season_id`, `coefficient`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS `#__dcl_club_coefficients` (
+CREATE TABLE IF NOT EXISTS `#__decarocompetitions_club_coefficients` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `season_id` INT UNSIGNED NOT NULL,
   `team_id` INT UNSIGNED NOT NULL,
@@ -283,11 +283,11 @@ CREATE TABLE IF NOT EXISTS `#__dcl_club_coefficients` (
   `rule_id` INT UNSIGNED NOT NULL DEFAULT 0,
   `calculated_at` DATETIME DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `idx_dcl_club_coef_unique` (`season_id`, `team_id`),
-  KEY `idx_dcl_club_coef_value` (`season_id`, `coefficient`)
+  UNIQUE KEY `idx_competitions_club_coef_unique` (`season_id`, `team_id`),
+  KEY `idx_competitions_club_coef_value` (`season_id`, `coefficient`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS `#__dcl_rankings` (
+CREATE TABLE IF NOT EXISTS `#__decarocompetitions_rankings` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `tournament_id` INT UNSIGNED NOT NULL,
   `ranking_type` VARCHAR(16) NOT NULL,
@@ -298,12 +298,12 @@ CREATE TABLE IF NOT EXISTS `#__dcl_rankings` (
   `position` INT UNSIGNED DEFAULT NULL,
   `calculated_at` DATETIME DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `idx_dcl_rankings_unique` (`tournament_id`, `ranking_type`, `entity_id`, `season_end_id`),
-  KEY `idx_dcl_rankings_order` (`tournament_id`, `ranking_type`, `season_end_id`, `position`)
+  UNIQUE KEY `idx_competitions_rankings_unique` (`tournament_id`, `ranking_type`, `entity_id`, `season_end_id`),
+  KEY `idx_competitions_rankings_order` (`tournament_id`, `ranking_type`, `season_end_id`, `position`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
-CREATE TABLE IF NOT EXISTS `#__dcl_audit_log` (
+CREATE TABLE IF NOT EXISTS `#__decarocompetitions_audit_log` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `user_id` INT UNSIGNED NOT NULL DEFAULT 0,
   `action` VARCHAR(64) NOT NULL,
@@ -313,7 +313,7 @@ CREATE TABLE IF NOT EXISTS `#__dcl_audit_log` (
   `ip_hash` CHAR(64) DEFAULT NULL,
   `created` DATETIME NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `idx_dcl_audit_entity` (`entity_type`, `entity_id`),
-  KEY `idx_dcl_audit_user` (`user_id`, `created`),
-  KEY `idx_dcl_audit_created` (`created`)
+  KEY `idx_competitions_audit_entity` (`entity_type`, `entity_id`),
+  KEY `idx_competitions_audit_user` (`user_id`, `created`),
+  KEY `idx_competitions_audit_created` (`created`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

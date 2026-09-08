@@ -11,7 +11,7 @@
       name="nationality_code"
       type="sql"
       label="COM_DECARODCL_FIELD_NATIONALITY"
-      query="SELECT code AS value, CONCAT(name, ' (', code, ')') AS text FROM #__dcl_countries WHERE state &lt;&gt; -2 AND CHAR_LENGTH(code) &lt;= 3 ORDER BY name ASC"
+      query="SELECT code AS value, CONCAT(name, ' (', code, ')') AS text FROM #__decarocompetitions_countries WHERE state &lt;&gt; -2 AND CHAR_LENGTH(code) &lt;= 3 ORDER BY name ASC"
       key_field="value"
       value_field="text"
       default=""

@@ -34,7 +34,7 @@ final class ZoneModel extends BaseAdminModel
                 $db = $this->getDatabase();
                 $query = $db->getQuery(true)
                     ->select($db->quoteName('country_id'))
-                    ->from($db->quoteName('#__dcl_zone_countries'))
+                    ->from($db->quoteName('#__decarocompetitions_zone_countries'))
                     ->where($db->quoteName('zone_id') . ' = :zoneId')
                     ->order($db->quoteName('ordering') . ' ASC')
                     ->bind(':zoneId', $data->id, ParameterType::INTEGER);
@@ -82,14 +82,14 @@ final class ZoneModel extends BaseAdminModel
             }
 
             $query = $db->getQuery(true)
-                ->delete($db->quoteName('#__dcl_zone_countries'))
+                ->delete($db->quoteName('#__decarocompetitions_zone_countries'))
                 ->where($db->quoteName('zone_id') . ' = :zoneId')
                 ->bind(':zoneId', $zoneId, ParameterType::INTEGER);
             $db->setQuery($query)->execute();
 
             if ($countryIds) {
                 $query = $db->getQuery(true)
-                    ->insert($db->quoteName('#__dcl_zone_countries'))
+                    ->insert($db->quoteName('#__decarocompetitions_zone_countries'))
                     ->columns([
                         $db->quoteName('zone_id'),
                         $db->quoteName('country_id'),
@@ -113,7 +113,7 @@ final class ZoneModel extends BaseAdminModel
             // transaction rolls both the Zone and mapping changes back on failure.
             $query = $db->getQuery(true)
                 ->select('DISTINCT ' . $db->quoteName('tournament_id'))
-                ->from($db->quoteName('#__dcl_tournament_zones'))
+                ->from($db->quoteName('#__decarocompetitions_tournament_zones'))
                 ->where($db->quoteName('zone_id') . ' = :zoneId')
                 ->bind(':zoneId', $zoneId, ParameterType::INTEGER);
 
@@ -171,7 +171,7 @@ final class ZoneModel extends BaseAdminModel
         $placeholders = [];
         $query = $db->getQuery(true)
             ->select('COUNT(*)')
-            ->from($db->quoteName('#__dcl_countries'))
+            ->from($db->quoteName('#__decarocompetitions_countries'))
             ->where($db->quoteName('state') . ' <> -2');
 
         foreach ($countryIds as $index => $countryId) {

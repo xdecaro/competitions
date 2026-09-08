@@ -13,7 +13,7 @@ final class CountryTable extends Table
 {
     public function __construct(DatabaseDriver $db)
     {
-        parent::__construct('#__dcl_countries', 'id', $db);
+        parent::__construct('#__decarocompetitions_countries', 'id', $db);
     }
 
     public function check(): bool
@@ -49,7 +49,7 @@ final class CountryTable extends Table
         $db = $this->getDbo();
         $query = $db->getQuery(true)
             ->select('COUNT(*)')
-            ->from($db->quoteName('#__dcl_countries'))
+            ->from($db->quoteName('#__decarocompetitions_countries'))
             ->where($db->quoteName('code') . ' = :code')
             ->where($db->quoteName('id') . ' <> :id')
             ->bind(':code', $this->code)

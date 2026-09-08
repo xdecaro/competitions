@@ -13,7 +13,7 @@ final class RosterTable extends Table
 {
     public function __construct(DatabaseDriver $db)
     {
-        parent::__construct('#__dcl_rosters', 'id', $db);
+        parent::__construct('#__decarocompetitions_rosters', 'id', $db);
     }
 
     public function check(): bool
@@ -61,9 +61,9 @@ final class RosterTable extends Table
                 $db->quoteName('p.state'),
                 $db->quoteName('tm.approval_status', 'team_approval_status'),
             ])
-            ->from($db->quoteName('#__dcl_participations', 'p'))
+            ->from($db->quoteName('#__decarocompetitions_participations', 'p'))
             ->innerJoin(
-                $db->quoteName('#__dcl_teams', 'tm')
+                $db->quoteName('#__decarocompetitions_teams', 'tm')
                 . ' ON ' . $db->quoteName('tm.id') . ' = ' . $db->quoteName('p.team_id')
             )
             ->where($db->quoteName('p.id') . ' = :participationId')
@@ -87,7 +87,7 @@ final class RosterTable extends Table
                 $db->quoteName('approval_status'),
                 $db->quoteName('state'),
             ])
-            ->from($db->quoteName('#__dcl_players'))
+            ->from($db->quoteName('#__decarocompetitions_players'))
             ->where($db->quoteName('id') . ' = :playerId')
             ->where($db->quoteName('state') . ' <> -2')
             ->bind(':playerId', $this->player_id, ParameterType::INTEGER);
@@ -116,7 +116,7 @@ final class RosterTable extends Table
 
         $query = $db->getQuery(true)
             ->select('COUNT(*)')
-            ->from($db->quoteName('#__dcl_rosters'))
+            ->from($db->quoteName('#__decarocompetitions_rosters'))
             ->where($db->quoteName('participation_id') . ' = :participationId')
             ->where($db->quoteName('player_id') . ' = :playerId')
             ->where($db->quoteName('id') . ' <> :id')
@@ -163,7 +163,7 @@ final class RosterTable extends Table
         $db = $this->getDbo();
         $query = $db->getQuery(true)
             ->select($db->quoteName('status'))
-            ->from($db->quoteName('#__dcl_rosters'))
+            ->from($db->quoteName('#__decarocompetitions_rosters'))
             ->where($db->quoteName('id') . ' = :id')
             ->bind(':id', $this->id, ParameterType::INTEGER);
 
@@ -186,7 +186,7 @@ final class RosterTable extends Table
         $db = $this->getDbo();
         $query = $db->getQuery(true)
             ->select($db->quoteName('state'))
-            ->from($db->quoteName('#__dcl_rosters'))
+            ->from($db->quoteName('#__decarocompetitions_rosters'))
             ->where($db->quoteName('id') . ' = :stateId')
             ->bind(':stateId', $this->id, ParameterType::INTEGER);
 

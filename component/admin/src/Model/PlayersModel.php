@@ -33,7 +33,7 @@ final class PlayersModel extends ListModel
 
         $rostersSubquery = $db->getQuery(true)
             ->select('COUNT(*)')
-            ->from($db->quoteName('#__dcl_rosters', 'r'))
+            ->from($db->quoteName('#__decarocompetitions_rosters', 'r'))
             ->where($db->quoteName('r.player_id') . ' = ' . $db->quoteName('a.id'))
             ->where($db->quoteName('r.state') . ' <> -2');
 
@@ -42,9 +42,9 @@ final class PlayersModel extends ListModel
             ->select($db->quoteName('c.name', 'nationality_name'))
             ->select($db->quoteName('c.code', 'resolved_nationality_code'))
             ->select('(' . $rostersSubquery . ') AS ' . $db->quoteName('rosters_count'))
-            ->from($db->quoteName('#__dcl_players', 'a'))
+            ->from($db->quoteName('#__decarocompetitions_players', 'a'))
             ->leftJoin(
-                $db->quoteName('#__dcl_countries', 'c')
+                $db->quoteName('#__decarocompetitions_countries', 'c')
                 . ' ON ' . $db->quoteName('c.code') . ' = ' . $db->quoteName('a.nationality_code')
             );
 
@@ -111,7 +111,7 @@ final class PlayersModel extends ListModel
         $db = $this->getDatabase();
         $query = $db->getQuery(true)
             ->select([$db->quoteName('code'), $db->quoteName('name')])
-            ->from($db->quoteName('#__dcl_countries'))
+            ->from($db->quoteName('#__decarocompetitions_countries'))
             ->where($db->quoteName('state') . ' <> -2')
             ->where('CHAR_LENGTH(' . $db->quoteName('code') . ') <= 3')
             ->order($db->quoteName('name') . ' ASC');

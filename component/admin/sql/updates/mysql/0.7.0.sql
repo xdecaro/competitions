@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS `#__dcl_organizations` (
+CREATE TABLE IF NOT EXISTS `#__decarocompetitions_organizations` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(190) NOT NULL,
   `short_name` VARCHAR(100) DEFAULT NULL,
@@ -13,36 +13,36 @@ CREATE TABLE IF NOT EXISTS `#__dcl_organizations` (
   `modified` DATETIME DEFAULT NULL,
   `modified_by` INT UNSIGNED NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
-  KEY `idx_dcl_organizations_country` (`country_id`),
-  KEY `idx_dcl_organizations_name` (`name`),
-  KEY `idx_dcl_organizations_state` (`state`, `ordering`)
+  KEY `idx_competitions_organizations_country` (`country_id`),
+  KEY `idx_competitions_organizations_name` (`name`),
+  KEY `idx_competitions_organizations_state` (`state`, `ordering`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS `#__dcl_tournament_organizations` (
+CREATE TABLE IF NOT EXISTS `#__decarocompetitions_tournament_organizations` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `tournament_id` INT UNSIGNED NOT NULL,
   `organization_id` INT UNSIGNED NOT NULL,
   `role` VARCHAR(32) NOT NULL,
   `ordering` INT NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `idx_dcl_tournament_org_unique` (`tournament_id`, `organization_id`, `role`),
-  KEY `idx_dcl_tournament_org_role` (`tournament_id`, `role`, `ordering`),
-  KEY `idx_dcl_tournament_org_organization` (`organization_id`)
+  UNIQUE KEY `idx_competitions_tournament_org_unique` (`tournament_id`, `organization_id`, `role`),
+  KEY `idx_competitions_tournament_org_role` (`tournament_id`, `role`, `ordering`),
+  KEY `idx_competitions_tournament_org_organization` (`organization_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS `#__dcl_season_organizations` (
+CREATE TABLE IF NOT EXISTS `#__decarocompetitions_season_organizations` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `season_id` INT UNSIGNED NOT NULL,
   `organization_id` INT UNSIGNED NOT NULL,
   `role` VARCHAR(32) NOT NULL,
   `ordering` INT NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `idx_dcl_season_org_unique` (`season_id`, `organization_id`, `role`),
-  KEY `idx_dcl_season_org_role` (`season_id`, `role`, `ordering`),
-  KEY `idx_dcl_season_org_organization` (`organization_id`)
+  UNIQUE KEY `idx_competitions_season_org_unique` (`season_id`, `organization_id`, `role`),
+  KEY `idx_competitions_season_org_role` (`season_id`, `role`, `ordering`),
+  KEY `idx_competitions_season_org_organization` (`organization_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS `#__dcl_matches` (
+CREATE TABLE IF NOT EXISTS `#__decarocompetitions_matches` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `season_id` INT UNSIGNED NOT NULL,
   `home_team_id` INT UNSIGNED NOT NULL,
@@ -72,21 +72,21 @@ CREATE TABLE IF NOT EXISTS `#__dcl_matches` (
   `modified` DATETIME DEFAULT NULL,
   `modified_by` INT UNSIGNED NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
-  KEY `idx_dcl_matches_season_status` (`season_id`, `status`, `state`),
-  KEY `idx_dcl_matches_date` (`match_date`, `kickoff_time`),
-  KEY `idx_dcl_matches_home_team` (`home_team_id`, `season_id`),
-  KEY `idx_dcl_matches_away_team` (`away_team_id`, `season_id`),
-  KEY `idx_dcl_matches_venue` (`venue_id`),
-  KEY `idx_dcl_matches_article` (`article_id`)
+  KEY `idx_competitions_matches_season_status` (`season_id`, `status`, `state`),
+  KEY `idx_competitions_matches_date` (`match_date`, `kickoff_time`),
+  KEY `idx_competitions_matches_home_team` (`home_team_id`, `season_id`),
+  KEY `idx_competitions_matches_away_team` (`away_team_id`, `season_id`),
+  KEY `idx_competitions_matches_venue` (`venue_id`),
+  KEY `idx_competitions_matches_article` (`article_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-ALTER TABLE `#__dcl_match_events`
+ALTER TABLE `#__decarocompetitions_match_events`
   ADD COLUMN `match_id` BIGINT UNSIGNED NOT NULL DEFAULT 0 AFTER `id`,
   MODIFY COLUMN `article_id` INT UNSIGNED NOT NULL DEFAULT 0,
-  ADD KEY `idx_dcl_events_match` (`match_id`, `state`),
-  ADD KEY `idx_dcl_events_match_timeline` (`match_id`, `minute`, `extra_minute`, `ordering`);
+  ADD KEY `idx_competitions_events_match` (`match_id`, `state`),
+  ADD KEY `idx_competitions_events_match_timeline` (`match_id`, `minute`, `extra_minute`, `ordering`);
 
-UPDATE `#__dcl_match_events` AS e
-INNER JOIN `#__dcl_matches` AS m ON m.`article_id` = e.`article_id`
+UPDATE `#__decarocompetitions_match_events` AS e
+INNER JOIN `#__decarocompetitions_matches` AS m ON m.`article_id` = e.`article_id`
 SET e.`match_id` = m.`id`
 WHERE e.`match_id` = 0 AND e.`article_id` > 0;

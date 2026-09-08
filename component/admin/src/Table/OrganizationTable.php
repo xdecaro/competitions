@@ -14,7 +14,7 @@ final class OrganizationTable extends Table
 {
     public function __construct(DatabaseDriver $db)
     {
-        parent::__construct('#__dcl_organizations', 'id', $db);
+        parent::__construct('#__decarocompetitions_organizations', 'id', $db);
     }
 
     public function check(): bool
@@ -41,7 +41,7 @@ final class OrganizationTable extends Table
         }
         if ($this->country_id > 0) {
             $db = $this->getDbo();
-            $query = $db->getQuery(true)->select('COUNT(*)')->from($db->quoteName('#__dcl_countries'))->where($db->quoteName('id') . ' = :countryId')->where($db->quoteName('state') . ' <> -2')->bind(':countryId', $this->country_id, ParameterType::INTEGER);
+            $query = $db->getQuery(true)->select('COUNT(*)')->from($db->quoteName('#__decarocompetitions_countries'))->where($db->quoteName('id') . ' = :countryId')->where($db->quoteName('state') . ' <> -2')->bind(':countryId', $this->country_id, ParameterType::INTEGER);
             if ((int) $db->setQuery($query)->loadResult() === 0) {
                 $this->setError(Text::_('COM_DECARODCL_ERROR_ORGANIZATION_COUNTRY_INVALID'));
                 return false;
@@ -75,7 +75,7 @@ final class OrganizationTable extends Table
             return;
         }
         $db = $this->getDbo();
-        $query = $db->getQuery(true)->select($db->quoteName('state'))->from($db->quoteName('#__dcl_organizations'))->where($db->quoteName('id') . ' = :id')->bind(':id', $this->id, ParameterType::INTEGER);
+        $query = $db->getQuery(true)->select($db->quoteName('state'))->from($db->quoteName('#__decarocompetitions_organizations'))->where($db->quoteName('id') . ' = :id')->bind(':id', $this->id, ParameterType::INTEGER);
         $currentState = $db->setQuery($query)->loadResult();
         if ($currentState !== null) {
             $this->state = (int) $currentState;

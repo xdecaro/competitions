@@ -40,9 +40,9 @@ final class Dispatcher extends AbstractModuleDispatcher
                 $db->quoteName('f.email', 'federation_email'),
                 $db->quoteName('f.state', 'federation_state'),
             ])
-            ->from($db->quoteName('#__dcl_countries', 'c'))
+            ->from($db->quoteName('#__decarocompetitions_countries', 'c'))
             ->leftJoin(
-                $db->quoteName('#__dcl_federations', 'f')
+                $db->quoteName('#__decarocompetitions_federations', 'f')
                 . ' ON ' . $db->quoteName('f.country_id') . ' = ' . $db->quoteName('c.id')
                 . ($showInactive ? '' : ' AND ' . $db->quoteName('f.state') . ' = 1')
             )

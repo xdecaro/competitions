@@ -76,9 +76,9 @@ final class Dispatcher extends AbstractModuleDispatcher
                 $db->quoteName('p.first_name'),
                 $db->quoteName('p.last_name'),
             ])
-            ->from($db->quoteName('#__dcl_match_events', 'e'))
+            ->from($db->quoteName('#__decarocompetitions_match_events', 'e'))
             ->leftJoin(
-                $db->quoteName('#__dcl_players', 'p')
+                $db->quoteName('#__decarocompetitions_players', 'p')
                 . ' ON ' . $db->quoteName('p.id') . ' = ' . $db->quoteName('e.player_id')
             )
             ->where($db->quoteName('e.' . $referenceColumn) . ' = :referenceId')

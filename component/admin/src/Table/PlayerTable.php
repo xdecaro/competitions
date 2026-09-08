@@ -13,7 +13,7 @@ final class PlayerTable extends Table
 {
     public function __construct(DatabaseDriver $db)
     {
-        parent::__construct('#__dcl_players', 'id', $db);
+        parent::__construct('#__decarocompetitions_players', 'id', $db);
     }
 
     public function check(): bool
@@ -64,7 +64,7 @@ final class PlayerTable extends Table
 
             $query = $db->getQuery(true)
                 ->select('COUNT(*)')
-                ->from($db->quoteName('#__dcl_countries'))
+                ->from($db->quoteName('#__decarocompetitions_countries'))
                 ->where($db->quoteName('code') . ' = :nationalityCode')
                 ->where($db->quoteName('state') . ' <> -2')
                 ->bind(':nationalityCode', $this->nationality_code);
@@ -78,7 +78,7 @@ final class PlayerTable extends Table
         if ($this->external_ref !== null) {
             $query = $db->getQuery(true)
                 ->select('COUNT(*)')
-                ->from($db->quoteName('#__dcl_players'))
+                ->from($db->quoteName('#__decarocompetitions_players'))
                 ->where($db->quoteName('external_ref') . ' = :externalRef')
                 ->where($db->quoteName('id') . ' <> :id')
                 ->bind(':externalRef', $this->external_ref)
@@ -131,7 +131,7 @@ final class PlayerTable extends Table
         $db = $this->getDbo();
         $query = $db->getQuery(true)
             ->select($db->quoteName('approval_status'))
-            ->from($db->quoteName('#__dcl_players'))
+            ->from($db->quoteName('#__decarocompetitions_players'))
             ->where($db->quoteName('id') . ' = :id')
             ->bind(':id', $this->id, ParameterType::INTEGER);
 
@@ -154,7 +154,7 @@ final class PlayerTable extends Table
         $db = $this->getDbo();
         $query = $db->getQuery(true)
             ->select($db->quoteName('state'))
-            ->from($db->quoteName('#__dcl_players'))
+            ->from($db->quoteName('#__decarocompetitions_players'))
             ->where($db->quoteName('id') . ' = :stateId')
             ->bind(':stateId', $this->id, ParameterType::INTEGER);
 

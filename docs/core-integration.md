@@ -29,7 +29,7 @@ Typical integrations include:
 - Documents document -> participant, team, season, match or other published Competitions entity;
 - Events event -> tournament, season, match or competition-related event.
 
-Do not expose `#__dcl_*` tables as the integration API and do not rename the historical Joomla identifiers merely to match the visible product name.
+Do not expose `#__decarocompetitions_*` tables as the integration API and do not rename the historical Joomla identifiers merely to match the visible product name.
 
 Entity type names become stable public API only when Competitions explicitly publishes them. Preserve compatibility for any entity type once published.
 

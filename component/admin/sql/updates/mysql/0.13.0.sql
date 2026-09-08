@@ -1,0 +1,2 @@
+-- Competitions 0.13.0 table-prefix migration is performed by component/script.php preflight.
+-- Joomla records this schema version after any legacy tables have been renamed.

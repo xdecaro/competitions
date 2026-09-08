@@ -15,7 +15,7 @@ final class TeamTable extends Table
 {
     public function __construct(DatabaseDriver $db)
     {
-        parent::__construct('#__dcl_teams', 'id', $db);
+        parent::__construct('#__decarocompetitions_teams', 'id', $db);
     }
 
     public function check(): bool
@@ -70,9 +70,9 @@ final class TeamTable extends Table
                 $db->quoteName('c.code'),
                 $db->quoteName('c.iso3'),
             ])
-            ->from($db->quoteName('#__dcl_federations', 'f'))
+            ->from($db->quoteName('#__decarocompetitions_federations', 'f'))
             ->innerJoin(
-                $db->quoteName('#__dcl_countries', 'c')
+                $db->quoteName('#__decarocompetitions_countries', 'c')
                 . ' ON ' . $db->quoteName('c.id') . ' = ' . $db->quoteName('f.country_id')
             )
             ->where($db->quoteName('f.id') . ' = :federationId')
@@ -93,9 +93,9 @@ final class TeamTable extends Table
         if ($this->id) {
             $query = $db->getQuery(true)
                 ->select('DISTINCT ' . $db->quoteName('s.tournament_id'))
-                ->from($db->quoteName('#__dcl_participations', 'p'))
+                ->from($db->quoteName('#__decarocompetitions_participations', 'p'))
                 ->innerJoin(
-                    $db->quoteName('#__dcl_seasons', 's')
+                    $db->quoteName('#__decarocompetitions_seasons', 's')
                     . ' ON ' . $db->quoteName('s.id') . ' = ' . $db->quoteName('p.season_id')
                 )
                 ->where($db->quoteName('p.team_id') . ' = :teamId')
@@ -183,7 +183,7 @@ final class TeamTable extends Table
             $db = $this->getDbo();
             $query = $db->getQuery(true)
                 ->select($db->quoteName('approval_status'))
-                ->from($db->quoteName('#__dcl_teams'))
+                ->from($db->quoteName('#__decarocompetitions_teams'))
                 ->where($db->quoteName('id') . ' = :id')
                 ->bind(':id', $this->id, ParameterType::INTEGER);
             $previousStatus = $db->setQuery($query)->loadResult();
@@ -225,7 +225,7 @@ final class TeamTable extends Table
         $db = $this->getDbo();
         $query = $db->getQuery(true)
             ->select($db->quoteName('approval_status'))
-            ->from($db->quoteName('#__dcl_teams'))
+            ->from($db->quoteName('#__decarocompetitions_teams'))
             ->where($db->quoteName('id') . ' = :id')
             ->bind(':id', $this->id, ParameterType::INTEGER);
 
@@ -247,7 +247,7 @@ final class TeamTable extends Table
         $db = $this->getDbo();
         $query = $db->getQuery(true)
             ->select($db->quoteName('owner_user_id'))
-            ->from($db->quoteName('#__dcl_teams'))
+            ->from($db->quoteName('#__decarocompetitions_teams'))
             ->where($db->quoteName('id') . ' = :ownerId')
             ->bind(':ownerId', $this->id, ParameterType::INTEGER);
 
@@ -270,7 +270,7 @@ final class TeamTable extends Table
         $db = $this->getDbo();
         $query = $db->getQuery(true)
             ->select($db->quoteName('state'))
-            ->from($db->quoteName('#__dcl_teams'))
+            ->from($db->quoteName('#__decarocompetitions_teams'))
             ->where($db->quoteName('id') . ' = :stateId')
             ->bind(':stateId', $this->id, ParameterType::INTEGER);
 
@@ -287,7 +287,7 @@ final class TeamTable extends Table
 
         $query = $db->getQuery(true)
             ->select('COUNT(*)')
-            ->from($db->quoteName('#__dcl_teams'))
+            ->from($db->quoteName('#__decarocompetitions_teams'))
             ->where($db->quoteName('alias') . ' = :alias')
             ->where($db->quoteName('id') . ' <> :id')
             ->bind(':alias', $alias)

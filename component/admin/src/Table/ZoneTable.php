@@ -14,7 +14,7 @@ final class ZoneTable extends Table
 {
     public function __construct(DatabaseDriver $db)
     {
-        parent::__construct('#__dcl_zones', 'id', $db);
+        parent::__construct('#__decarocompetitions_zones', 'id', $db);
     }
 
     public function check(): bool
@@ -41,7 +41,7 @@ final class ZoneTable extends Table
         if ($this->organization_id > 0) {
             $query = $db->getQuery(true)
                 ->select('COUNT(*)')
-                ->from($db->quoteName('#__dcl_organizations'))
+                ->from($db->quoteName('#__decarocompetitions_organizations'))
                 ->where($db->quoteName('id') . ' = :organizationId')
                 ->where($db->quoteName('state') . ' <> -2')
                 ->bind(':organizationId', $this->organization_id, ParameterType::INTEGER);
@@ -54,7 +54,7 @@ final class ZoneTable extends Table
 
         $query = $db->getQuery(true)
             ->select('COUNT(*)')
-            ->from($db->quoteName('#__dcl_zones'))
+            ->from($db->quoteName('#__decarocompetitions_zones'))
             ->where($db->quoteName('organization_id') . ' = :organizationId')
             ->where($db->quoteName('code') . ' = :code')
             ->bind(':organizationId', $this->organization_id, ParameterType::INTEGER)
@@ -107,7 +107,7 @@ final class ZoneTable extends Table
         $db = $this->getDbo();
         $query = $db->getQuery(true)
             ->select($db->quoteName('state'))
-            ->from($db->quoteName('#__dcl_zones'))
+            ->from($db->quoteName('#__decarocompetitions_zones'))
             ->where($db->quoteName('id') . ' = :id')
             ->bind(':id', $this->id, ParameterType::INTEGER);
         $currentState = $db->setQuery($query)->loadResult();

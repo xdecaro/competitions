@@ -14,7 +14,7 @@ final class FederationTable extends Table
 {
     public function __construct(DatabaseDriver $db)
     {
-        parent::__construct('#__dcl_federations', 'id', $db);
+        parent::__construct('#__decarocompetitions_federations', 'id', $db);
     }
 
     public function check(): bool
@@ -48,7 +48,7 @@ final class FederationTable extends Table
         $db = $this->getDbo();
         $query = $db->getQuery(true)
             ->select('COUNT(*)')
-            ->from($db->quoteName('#__dcl_countries'))
+            ->from($db->quoteName('#__decarocompetitions_countries'))
             ->where($db->quoteName('id') . ' = :countryId')
             ->where($db->quoteName('state') . ' <> -2')
             ->bind(':countryId', $this->country_id, ParameterType::INTEGER);
@@ -65,13 +65,13 @@ final class FederationTable extends Table
                     $db->quoteName('tm.team_type'),
                     $db->quoteName('s.tournament_id'),
                 ])
-                ->from($db->quoteName('#__dcl_teams', 'tm'))
+                ->from($db->quoteName('#__decarocompetitions_teams', 'tm'))
                 ->innerJoin(
-                    $db->quoteName('#__dcl_participations', 'p')
+                    $db->quoteName('#__decarocompetitions_participations', 'p')
                     . ' ON ' . $db->quoteName('p.team_id') . ' = ' . $db->quoteName('tm.id')
                 )
                 ->innerJoin(
-                    $db->quoteName('#__dcl_seasons', 's')
+                    $db->quoteName('#__decarocompetitions_seasons', 's')
                     . ' ON ' . $db->quoteName('s.id') . ' = ' . $db->quoteName('p.season_id')
                 )
                 ->where($db->quoteName('tm.federation_id') . ' = :federationId')

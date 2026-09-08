@@ -9,7 +9,7 @@
       label="COM_DECARODCL_FIELD_SEASON"
       required="true"
       filter="uint"
-      query="SELECT s.id AS value, CONCAT(t.name, ' — ', s.name, IF(s.season_year IS NULL, '', CONCAT(' (', s.season_year, ')'))) AS text FROM #__dcl_seasons AS s INNER JOIN #__dcl_tournaments AS t ON t.id = s.tournament_id WHERE s.state &lt;&gt; -2 AND t.state &lt;&gt; -2 ORDER BY s.season_year DESC, t.name ASC, s.name ASC"
+      query="SELECT s.id AS value, CONCAT(t.name, ' — ', s.name, IF(s.season_year IS NULL, '', CONCAT(' (', s.season_year, ')'))) AS text FROM #__decarocompetitions_seasons AS s INNER JOIN #__decarocompetitions_tournaments AS t ON t.id = s.tournament_id WHERE s.state &lt;&gt; -2 AND t.state &lt;&gt; -2 ORDER BY s.season_year DESC, t.name ASC, s.name ASC"
       key_field="value"
       value_field="text"
     />
@@ -20,7 +20,7 @@
       description="COM_DECARODCL_MATCH_TEAMS_DESC"
       required="true"
       filter="uint"
-      query="SELECT tm.id AS value, CONCAT(tm.name, IF(tm.short_name IS NULL OR tm.short_name = '', '', CONCAT(' (', tm.short_name, ')'))) AS text FROM #__dcl_teams AS tm WHERE tm.state &lt;&gt; -2 AND tm.approval_status = 'approved' ORDER BY tm.name ASC"
+      query="SELECT tm.id AS value, CONCAT(tm.name, IF(tm.short_name IS NULL OR tm.short_name = '', '', CONCAT(' (', tm.short_name, ')'))) AS text FROM #__decarocompetitions_teams AS tm WHERE tm.state &lt;&gt; -2 AND tm.approval_status = 'approved' ORDER BY tm.name ASC"
       key_field="value"
       value_field="text"
     />
@@ -31,7 +31,7 @@
       description="COM_DECARODCL_MATCH_TEAMS_DESC"
       required="true"
       filter="uint"
-      query="SELECT tm.id AS value, CONCAT(tm.name, IF(tm.short_name IS NULL OR tm.short_name = '', '', CONCAT(' (', tm.short_name, ')'))) AS text FROM #__dcl_teams AS tm WHERE tm.state &lt;&gt; -2 AND tm.approval_status = 'approved' ORDER BY tm.name ASC"
+      query="SELECT tm.id AS value, CONCAT(tm.name, IF(tm.short_name IS NULL OR tm.short_name = '', '', CONCAT(' (', tm.short_name, ')'))) AS text FROM #__decarocompetitions_teams AS tm WHERE tm.state &lt;&gt; -2 AND tm.approval_status = 'approved' ORDER BY tm.name ASC"
       key_field="value"
       value_field="text"
     />
@@ -41,7 +41,7 @@
       label="COM_DECARODCL_FIELD_VENUE"
       filter="uint"
       header="JNONE"
-      query="SELECT id AS value, CONCAT(name, IF(city IS NULL OR city = '', '', CONCAT(' — ', city))) AS text FROM #__dcl_venues WHERE state &lt;&gt; -2 ORDER BY name ASC"
+      query="SELECT id AS value, CONCAT(name, IF(city IS NULL OR city = '', '', CONCAT(' — ', city))) AS text FROM #__decarocompetitions_venues WHERE state &lt;&gt; -2 ORDER BY name ASC"
       key_field="value"
       value_field="text"
     />

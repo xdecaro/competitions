@@ -36,7 +36,7 @@
       label="COM_DECARODCL_FIELD_SCOPE_COUNTRY"
       description="COM_DECARODCL_FIELD_SCOPE_COUNTRY_DESC"
       showon="scope_type:national[OR]scope_type:local"
-      query="SELECT id AS value, CONCAT(name, ' (', code, ')') AS text FROM #__dcl_countries WHERE state &lt;&gt; -2 ORDER BY name ASC"
+      query="SELECT id AS value, CONCAT(name, ' (', code, ')') AS text FROM #__decarocompetitions_countries WHERE state &lt;&gt; -2 ORDER BY name ASC"
       key_field="value"
       value_field="text"
     >
@@ -51,7 +51,7 @@
       size="8"
       filter="array"
       showon="scope_type:zone"
-      query="SELECT z.id AS value, CONCAT(z.name, IF(o.name IS NULL, '', CONCAT(' — ', o.name))) AS text FROM #__dcl_zones AS z LEFT JOIN #__dcl_organizations AS o ON o.id = z.organization_id WHERE z.state &lt;&gt; -2 ORDER BY z.ordering ASC, z.name ASC"
+      query="SELECT z.id AS value, CONCAT(z.name, IF(o.name IS NULL, '', CONCAT(' — ', o.name))) AS text FROM #__decarocompetitions_zones AS z LEFT JOIN #__decarocompetitions_organizations AS o ON o.id = z.organization_id WHERE z.state &lt;&gt; -2 ORDER BY z.ordering ASC, z.name ASC"
       key_field="value"
       value_field="text"
     />
@@ -66,9 +66,9 @@
   </fieldset>
 
   <fieldset name="organizations" label="COM_DECARODCL_ORGANIZATION_ASSIGNMENTS" description="COM_DECARODCL_ORGANIZATION_ASSIGNMENTS_DESC">
-    <field name="organizer_ids" type="sql" label="COM_DECARODCL_FIELD_ORGANIZER" multiple="true" size="6" filter="array" query="SELECT id AS value, CONCAT(name, IF(short_name IS NULL OR short_name = '', '', CONCAT(' (', short_name, ')'))) AS text FROM #__dcl_organizations WHERE state &lt;&gt; -2 ORDER BY ordering ASC, name ASC" key_field="value" value_field="text" />
-    <field name="governing_body_ids" type="sql" label="COM_DECARODCL_FIELD_GOVERNING_BODY" multiple="true" size="6" filter="array" query="SELECT id AS value, CONCAT(name, IF(short_name IS NULL OR short_name = '', '', CONCAT(' (', short_name, ')'))) AS text FROM #__dcl_organizations WHERE state &lt;&gt; -2 ORDER BY ordering ASC, name ASC" key_field="value" value_field="text" />
-    <field name="co_organizer_ids" type="sql" label="COM_DECARODCL_FIELD_CO_ORGANIZER" multiple="true" size="6" filter="array" query="SELECT id AS value, CONCAT(name, IF(short_name IS NULL OR short_name = '', '', CONCAT(' (', short_name, ')'))) AS text FROM #__dcl_organizations WHERE state &lt;&gt; -2 ORDER BY ordering ASC, name ASC" key_field="value" value_field="text" />
-    <field name="partner_ids" type="sql" label="COM_DECARODCL_FIELD_PARTNER" multiple="true" size="6" filter="array" query="SELECT id AS value, CONCAT(name, IF(short_name IS NULL OR short_name = '', '', CONCAT(' (', short_name, ')'))) AS text FROM #__dcl_organizations WHERE state &lt;&gt; -2 ORDER BY ordering ASC, name ASC" key_field="value" value_field="text" />
+    <field name="organizer_ids" type="sql" label="COM_DECARODCL_FIELD_ORGANIZER" multiple="true" size="6" filter="array" query="SELECT id AS value, CONCAT(name, IF(short_name IS NULL OR short_name = '', '', CONCAT(' (', short_name, ')'))) AS text FROM #__decarocompetitions_organizations WHERE state &lt;&gt; -2 ORDER BY ordering ASC, name ASC" key_field="value" value_field="text" />
+    <field name="governing_body_ids" type="sql" label="COM_DECARODCL_FIELD_GOVERNING_BODY" multiple="true" size="6" filter="array" query="SELECT id AS value, CONCAT(name, IF(short_name IS NULL OR short_name = '', '', CONCAT(' (', short_name, ')'))) AS text FROM #__decarocompetitions_organizations WHERE state &lt;&gt; -2 ORDER BY ordering ASC, name ASC" key_field="value" value_field="text" />
+    <field name="co_organizer_ids" type="sql" label="COM_DECARODCL_FIELD_CO_ORGANIZER" multiple="true" size="6" filter="array" query="SELECT id AS value, CONCAT(name, IF(short_name IS NULL OR short_name = '', '', CONCAT(' (', short_name, ')'))) AS text FROM #__decarocompetitions_organizations WHERE state &lt;&gt; -2 ORDER BY ordering ASC, name ASC" key_field="value" value_field="text" />
+    <field name="partner_ids" type="sql" label="COM_DECARODCL_FIELD_PARTNER" multiple="true" size="6" filter="array" query="SELECT id AS value, CONCAT(name, IF(short_name IS NULL OR short_name = '', '', CONCAT(' (', short_name, ')'))) AS text FROM #__decarocompetitions_organizations WHERE state &lt;&gt; -2 ORDER BY ordering ASC, name ASC" key_field="value" value_field="text" />
   </fieldset>
 </form>

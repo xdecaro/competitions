@@ -6,13 +6,22 @@ use Joomla\CMS\Log\Log;
 use Joomla\Database\DatabaseInterface;
 
 /**
- * DCL component migration helper.
+ * Competitions component schema migration helper.
  *
- * This protects the upgrade path from the early 0.1.x schema where
- * #__dcl_federations could still use country_code without country_id.
+ * Fresh installations use #__decarocompetitions_* tables. During an update,
+ * older DCL-prefixed tables are renamed before Joomla applies schema updates.
  */
 final class ComDecarodclInstallerScript
 {
+    public function preflight(string $type, $parent): bool
+    {
+        if ($type !== 'update') {
+            return true;
+        }
+
+        return $this->migrateLegacyTablePrefix();
+    }
+
     public function install($parent): bool
     {
         return $this->migrateLegacySchema();
@@ -28,12 +37,57 @@ final class ComDecarodclInstallerScript
         return true;
     }
 
+    private function migrateLegacyTablePrefix(): bool
+    {
+        try {
+            /** @var DatabaseInterface $db */
+            $db = Factory::getContainer()->get(DatabaseInterface::class);
+            $sitePrefix = $db->getPrefix();
+            $legacyPrefix = $sitePrefix . 'dcl_';
+            $currentPrefix = $sitePrefix . 'decarocompetitions_';
+            $tables = $db->getTableList();
+            $existing = array_fill_keys($tables, true);
+            $renames = [];
+
+            foreach ($tables as $table) {
+                if (!str_starts_with($table, $legacyPrefix)) {
+                    continue;
+                }
+
+                $suffix = substr($table, strlen($legacyPrefix));
+                $target = $currentPrefix . $suffix;
+
+                if (isset($existing[$target])) {
+                    Log::add(
+                        'Competitions database migration stopped because both legacy and current tables exist for ' . $suffix,
+                        Log::ERROR,
+                        'competitions'
+                    );
+
+                    return false;
+                }
+
+                $renames[] = $db->quoteName($table) . ' TO ' . $db->quoteName($target);
+            }
+
+            if ($renames !== []) {
+                $db->setQuery('RENAME TABLE ' . implode(', ', $renames))->execute();
+            }
+
+            return true;
+        } catch (Throwable $e) {
+            Log::add('Competitions table-prefix migration failed: ' . $e->getMessage(), Log::ERROR, 'competitions');
+
+            return false;
+        }
+    }
+
     private function migrateLegacySchema(): bool
     {
         try {
             /** @var DatabaseInterface $db */
             $db = Factory::getContainer()->get(DatabaseInterface::class);
-            $table = $db->replacePrefix('#__dcl_federations');
+            $table = $db->replacePrefix('#__decarocompetitions_federations');
             $columns = $db->getTableColumns($table, false);
 
             if (!isset($columns['country_id'])) {
@@ -45,9 +99,12 @@ final class ComDecarodclInstallerScript
 
             $keys = $db->getTableKeys($table);
             $hasIndex = false;
+            $legacyIndex = 'idx_' . 'dcl_' . 'federations_country_id';
 
             foreach ($keys as $key) {
-                if (($key->Key_name ?? '') === 'idx_dcl_federations_country_id') {
+                $keyName = (string) ($key->Key_name ?? '');
+
+                if ($keyName === 'idx_competitions_federations_country_id' || $keyName === $legacyIndex) {
                     $hasIndex = true;
                     break;
                 }
@@ -55,7 +112,7 @@ final class ComDecarodclInstallerScript
 
             if (!$hasIndex) {
                 $query = 'ALTER TABLE ' . $db->quoteName($table)
-                    . ' ADD INDEX ' . $db->quoteName('idx_dcl_federations_country_id')
+                    . ' ADD INDEX ' . $db->quoteName('idx_competitions_federations_country_id')
                     . ' (' . $db->quoteName('country_id') . ')';
                 $db->setQuery($query)->execute();
             }
@@ -63,7 +120,7 @@ final class ComDecarodclInstallerScript
             $columns = $db->getTableColumns($table, false);
 
             if (isset($columns['country_code'])) {
-                $countries = $db->replacePrefix('#__dcl_countries');
+                $countries = $db->replacePrefix('#__decarocompetitions_countries');
                 $query = 'UPDATE ' . $db->quoteName($table) . ' AS f'
                     . ' INNER JOIN ' . $db->quoteName($countries) . ' AS c'
                     . ' ON (UPPER(c.' . $db->quoteName('code') . ') = UPPER(f.' . $db->quoteName('country_code') . ')'
@@ -77,7 +134,8 @@ final class ComDecarodclInstallerScript
 
             return true;
         } catch (Throwable $e) {
-            Log::add('DCL component migration failed: ' . $e->getMessage(), Log::ERROR, 'dcl');
+            Log::add('Competitions component migration failed: ' . $e->getMessage(), Log::ERROR, 'competitions');
+
             return false;
         }
     }
