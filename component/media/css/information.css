@@ -71,6 +71,7 @@
 .dcl-information-check.is-ok > span { background: var(--dcl-success-soft); color: var(--dcl-success); }
 .dcl-information-check.is-warning > span { background: var(--dcl-warning-soft); color: var(--dcl-warning); }
 .dcl-information-check.is-error > span { background: var(--dcl-danger-soft); color: var(--dcl-danger); }
+.dcl-information-check.is-muted > span { background: var(--dcl-muted-soft); color: var(--dcl-muted); }
 .dcl-information-details { margin-top: 17px; margin-bottom: 32px; padding: 11px 16px; border: 1px solid var(--dcl-border); border-radius: 7px; background: var(--dcl-surface-soft); }
 .dcl-information-details summary { padding: 0; color: var(--dcl-text); font-size: 12px; font-weight: 700; line-height: 18px; cursor: pointer; }
 .dcl-information-details[open] summary { padding-bottom: 10px; border-bottom: 1px solid var(--dcl-border); }
