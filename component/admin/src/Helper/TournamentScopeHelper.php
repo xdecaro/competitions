@@ -1,5 +1,5 @@
 <?php
-namespace Xdecaro\Component\Decarodcl\Administrator\Helper;
+namespace Xdecaro\Component\Competitions\Administrator\Helper;
 
 defined('_JEXEC') or die;
 
@@ -36,7 +36,7 @@ final class TournamentScopeHelper
 
         $query = $db->getQuery(true)
             ->select($db->quoteName('country_id'))
-            ->from($db->quoteName('#__decarocompetitions_tournament_countries'))
+            ->from($db->quoteName('#__xdecarocompetitions_tournament_countries'))
             ->where($db->quoteName('tournament_id') . ' = :tournamentId')
             ->order($db->quoteName('ordering') . ' ASC')
             ->bind(':tournamentId', $tournamentId, ParameterType::INTEGER);
@@ -44,7 +44,7 @@ final class TournamentScopeHelper
 
         $query = $db->getQuery(true)
             ->select($db->quoteName('zone_id'))
-            ->from($db->quoteName('#__decarocompetitions_tournament_zones'))
+            ->from($db->quoteName('#__xdecarocompetitions_tournament_zones'))
             ->where($db->quoteName('tournament_id') . ' = :tournamentId')
             ->order($db->quoteName('ordering') . ' ASC')
             ->bind(':tournamentId', $tournamentId, ParameterType::INTEGER);
@@ -66,16 +66,16 @@ final class TournamentScopeHelper
         $zoneIds = self::normalizeIds($zoneIds);
 
         if (!in_array($scopeType, self::SCOPES, true)) {
-            throw new \RuntimeException(Text::_('COM_DECARODCL_ERROR_SCOPE_INVALID'));
+            throw new \RuntimeException(Text::_('COM_XDECAROCOMPETITIONS_ERROR_SCOPE_INVALID'));
         }
 
         if (!in_array($participantType, self::PARTICIPANT_TYPES, true)) {
-            throw new \RuntimeException(Text::_('COM_DECARODCL_ERROR_PARTICIPANT_TYPE_INVALID'));
+            throw new \RuntimeException(Text::_('COM_XDECAROCOMPETITIONS_ERROR_PARTICIPANT_TYPE_INVALID'));
         }
 
         if (in_array($scopeType, ['national', 'local'], true)) {
             if ($countryId <= 0 || !self::countryExists($db, $countryId)) {
-                throw new \RuntimeException(Text::_('COM_DECARODCL_ERROR_SCOPE_COUNTRY_REQUIRED'));
+                throw new \RuntimeException(Text::_('COM_XDECAROCOMPETITIONS_ERROR_SCOPE_COUNTRY_REQUIRED'));
             }
 
             $zoneIds = [];
@@ -83,11 +83,11 @@ final class TournamentScopeHelper
             $countryId = 0;
 
             if (!$zoneIds) {
-                throw new \RuntimeException(Text::_('COM_DECARODCL_ERROR_SCOPE_ZONE_REQUIRED'));
+                throw new \RuntimeException(Text::_('COM_XDECAROCOMPETITIONS_ERROR_SCOPE_ZONE_REQUIRED'));
             }
 
             if (!self::zonesExist($db, $zoneIds)) {
-                throw new \RuntimeException(Text::_('COM_DECARODCL_ERROR_SCOPE_ZONE_INVALID'));
+                throw new \RuntimeException(Text::_('COM_XDECAROCOMPETITIONS_ERROR_SCOPE_ZONE_INVALID'));
             }
         } else {
             $countryId = 0;
@@ -110,20 +110,20 @@ final class TournamentScopeHelper
         array $zoneIds
     ): void {
         $query = $db->getQuery(true)
-            ->delete($db->quoteName('#__decarocompetitions_tournament_countries'))
+            ->delete($db->quoteName('#__xdecarocompetitions_tournament_countries'))
             ->where($db->quoteName('tournament_id') . ' = :tournamentId')
             ->bind(':tournamentId', $tournamentId, ParameterType::INTEGER);
         $db->setQuery($query)->execute();
 
         $query = $db->getQuery(true)
-            ->delete($db->quoteName('#__decarocompetitions_tournament_zones'))
+            ->delete($db->quoteName('#__xdecarocompetitions_tournament_zones'))
             ->where($db->quoteName('tournament_id') . ' = :tournamentId')
             ->bind(':tournamentId', $tournamentId, ParameterType::INTEGER);
         $db->setQuery($query)->execute();
 
         if (in_array($scopeType, ['national', 'local'], true) && $countryId > 0) {
             $query = $db->getQuery(true)
-                ->insert($db->quoteName('#__decarocompetitions_tournament_countries'))
+                ->insert($db->quoteName('#__xdecarocompetitions_tournament_countries'))
                 ->columns([
                     $db->quoteName('tournament_id'),
                     $db->quoteName('country_id'),
@@ -137,7 +137,7 @@ final class TournamentScopeHelper
 
         if ($scopeType === 'zone' && $zoneIds) {
             $query = $db->getQuery(true)
-                ->insert($db->quoteName('#__decarocompetitions_tournament_zones'))
+                ->insert($db->quoteName('#__xdecarocompetitions_tournament_zones'))
                 ->columns([
                     $db->quoteName('tournament_id'),
                     $db->quoteName('zone_id'),
@@ -161,9 +161,9 @@ final class TournamentScopeHelper
                 $db->quoteName('tm.team_type'),
                 $db->quoteName('f.country_id'),
             ])
-            ->from($db->quoteName('#__decarocompetitions_teams', 'tm'))
+            ->from($db->quoteName('#__xdecarocompetitions_teams', 'tm'))
             ->innerJoin(
-                $db->quoteName('#__decarocompetitions_federations', 'f')
+                $db->quoteName('#__xdecarocompetitions_federations', 'f')
                 . ' ON ' . $db->quoteName('f.id') . ' = ' . $db->quoteName('tm.federation_id')
             )
             ->where($db->quoteName('tm.id') . ' = :teamId')
@@ -173,7 +173,7 @@ final class TournamentScopeHelper
         $team = $db->setQuery($query, 0, 1)->loadObject();
 
         if (!$team) {
-            throw new \RuntimeException(Text::_('COM_DECARODCL_ERROR_PARTICIPATION_TEAM_INVALID'));
+            throw new \RuntimeException(Text::_('COM_XDECAROCOMPETITIONS_ERROR_PARTICIPATION_TEAM_INVALID'));
         }
 
         self::assertTeamAttributesEligible(
@@ -198,18 +198,18 @@ final class TournamentScopeHelper
                 $db->quoteName('scope_type'),
                 $db->quoteName('participant_type'),
             ])
-            ->from($db->quoteName('#__decarocompetitions_tournaments'))
+            ->from($db->quoteName('#__xdecarocompetitions_tournaments'))
             ->where($db->quoteName('id') . ' = :tournamentId')
             ->where($db->quoteName('state') . ' <> -2')
             ->bind(':tournamentId', $tournamentId, ParameterType::INTEGER);
         $tournament = $db->setQuery($query, 0, 1)->loadObject();
 
         if (!$tournament) {
-            throw new \RuntimeException(Text::_('COM_DECARODCL_ERROR_PARTICIPATION_SCOPE_INVALID'));
+            throw new \RuntimeException(Text::_('COM_XDECAROCOMPETITIONS_ERROR_PARTICIPATION_SCOPE_INVALID'));
         }
 
         if ((string) $tournament->participant_type !== $teamType) {
-            throw new \RuntimeException(Text::_('COM_DECARODCL_ERROR_PARTICIPATION_TEAM_TYPE_MISMATCH'));
+            throw new \RuntimeException(Text::_('COM_XDECAROCOMPETITIONS_ERROR_PARTICIPATION_TEAM_TYPE_MISMATCH'));
         }
 
         self::assertCountryAllowed($db, $tournamentId, (string) $tournament->scope_type, $countryId);
@@ -219,9 +219,9 @@ final class TournamentScopeHelper
     {
         $query = $db->getQuery(true)
             ->select('DISTINCT ' . $db->quoteName('p.team_id'))
-            ->from($db->quoteName('#__decarocompetitions_participations', 'p'))
+            ->from($db->quoteName('#__xdecarocompetitions_participations', 'p'))
             ->innerJoin(
-                $db->quoteName('#__decarocompetitions_seasons', 's')
+                $db->quoteName('#__xdecarocompetitions_seasons', 's')
                 . ' ON ' . $db->quoteName('s.id') . ' = ' . $db->quoteName('p.season_id')
             )
             ->where($db->quoteName('s.tournament_id') . ' = :tournamentId')
@@ -234,7 +234,7 @@ final class TournamentScopeHelper
             } catch (\RuntimeException $e) {
                 LanguageHelper::load();
                 throw new \RuntimeException(
-                    Text::_('COM_DECARODCL_ERROR_SCOPE_EXISTING_PARTICIPATIONS') . ' ' . $e->getMessage()
+                    Text::_('COM_XDECAROCOMPETITIONS_ERROR_SCOPE_EXISTING_PARTICIPATIONS') . ' ' . $e->getMessage()
                 );
             }
         }
@@ -244,7 +244,7 @@ final class TournamentScopeHelper
     {
         $query = $db->getQuery(true)
             ->select($db->quoteName('host_country_code'))
-            ->from($db->quoteName('#__decarocompetitions_seasons'))
+            ->from($db->quoteName('#__xdecarocompetitions_seasons'))
             ->where($db->quoteName('tournament_id') . ' = :tournamentId')
             ->where($db->quoteName('state') . ' <> -2')
             ->where($db->quoteName('host_country_code') . ' IS NOT NULL')
@@ -266,7 +266,7 @@ final class TournamentScopeHelper
 
         $query = $db->getQuery(true)
             ->select($db->quoteName('id'))
-            ->from($db->quoteName('#__decarocompetitions_countries'))
+            ->from($db->quoteName('#__xdecarocompetitions_countries'))
             ->where($db->quoteName('code') . ' = :countryCode')
             ->where($db->quoteName('state') . ' <> -2')
             ->bind(':countryCode', $countryCode);
@@ -278,7 +278,7 @@ final class TournamentScopeHelper
 
         $query = $db->getQuery(true)
             ->select($db->quoteName('scope_type'))
-            ->from($db->quoteName('#__decarocompetitions_tournaments'))
+            ->from($db->quoteName('#__xdecarocompetitions_tournaments'))
             ->where($db->quoteName('id') . ' = :tournamentId')
             ->bind(':tournamentId', $tournamentId, ParameterType::INTEGER);
         $scopeType = (string) $db->setQuery($query, 0, 1)->loadResult();
@@ -300,7 +300,7 @@ final class TournamentScopeHelper
         if (in_array($scopeType, ['national', 'local'], true)) {
             $query = $db->getQuery(true)
                 ->select('COUNT(*)')
-                ->from($db->quoteName('#__decarocompetitions_tournament_countries'))
+                ->from($db->quoteName('#__xdecarocompetitions_tournament_countries'))
                 ->where($db->quoteName('tournament_id') . ' = :tournamentId')
                 ->where($db->quoteName('country_id') . ' = :countryId')
                 ->bind(':tournamentId', $tournamentId, ParameterType::INTEGER)
@@ -309,9 +309,9 @@ final class TournamentScopeHelper
         } elseif ($scopeType === 'zone') {
             $query = $db->getQuery(true)
                 ->select('COUNT(*)')
-                ->from($db->quoteName('#__decarocompetitions_tournament_zones', 'tz'))
+                ->from($db->quoteName('#__xdecarocompetitions_tournament_zones', 'tz'))
                 ->innerJoin(
-                    $db->quoteName('#__decarocompetitions_zone_countries', 'zc')
+                    $db->quoteName('#__xdecarocompetitions_zone_countries', 'zc')
                     . ' ON ' . $db->quoteName('zc.zone_id') . ' = ' . $db->quoteName('tz.zone_id')
                 )
                 ->where($db->quoteName('tz.tournament_id') . ' = :tournamentId')
@@ -327,8 +327,8 @@ final class TournamentScopeHelper
             LanguageHelper::load();
             throw new \RuntimeException(
                 Text::_($hostContext
-                    ? 'COM_DECARODCL_ERROR_SEASON_HOST_OUTSIDE_SCOPE'
-                    : 'COM_DECARODCL_ERROR_PARTICIPATION_COUNTRY_OUTSIDE_SCOPE')
+                    ? 'COM_XDECAROCOMPETITIONS_ERROR_SEASON_HOST_OUTSIDE_SCOPE'
+                    : 'COM_XDECAROCOMPETITIONS_ERROR_PARTICIPATION_COUNTRY_OUTSIDE_SCOPE')
             );
         }
     }
@@ -337,7 +337,7 @@ final class TournamentScopeHelper
     {
         $query = $db->getQuery(true)
             ->select('COUNT(*)')
-            ->from($db->quoteName('#__decarocompetitions_countries'))
+            ->from($db->quoteName('#__xdecarocompetitions_countries'))
             ->where($db->quoteName('id') . ' = :countryId')
             ->where($db->quoteName('state') . ' <> -2')
             ->bind(':countryId', $countryId, ParameterType::INTEGER);
@@ -354,7 +354,7 @@ final class TournamentScopeHelper
         $placeholders = [];
         $query = $db->getQuery(true)
             ->select('COUNT(*)')
-            ->from($db->quoteName('#__decarocompetitions_zones'))
+            ->from($db->quoteName('#__xdecarocompetitions_zones'))
             ->where($db->quoteName('state') . ' <> -2');
 
         foreach ($zoneIds as $index => $zoneId) {

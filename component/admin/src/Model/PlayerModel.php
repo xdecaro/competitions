@@ -1,5 +1,5 @@
 <?php
-namespace Xdecaro\Component\Decarodcl\Administrator\Model;
+namespace Xdecaro\Component\Competitions\Administrator\Model;
 
 defined('_JEXEC') or die;
 
@@ -17,7 +17,7 @@ final class PlayerModel extends BaseAdminModel
     public function getForm($data = [], $loadData = true)
     {
         return $this->loadForm(
-            'com_decarodcl.player',
+            'com_xdecarocompetitions.player',
             'player',
             ['control' => 'jform', 'load_data' => $loadData]
         );
@@ -25,7 +25,7 @@ final class PlayerModel extends BaseAdminModel
 
     protected function loadFormData()
     {
-        $data = Factory::getApplication()->getUserState('com_decarodcl.edit.player.data', []);
+        $data = Factory::getApplication()->getUserState('com_xdecarocompetitions.edit.player.data', []);
 
         if (!$data) {
             $data = $this->getItem();
@@ -38,7 +38,7 @@ final class PlayerModel extends BaseAdminModel
     {
         parent::preprocessForm($form, $data, $group);
 
-        if (!Factory::getApplication()->getIdentity()->authorise('core.edit.state', 'com_decarodcl')) {
+        if (!Factory::getApplication()->getIdentity()->authorise('core.edit.state', 'com_xdecarocompetitions')) {
             $form->setFieldAttribute('state', 'disabled', 'true');
             $form->setFieldAttribute('state', 'readonly', 'true');
             $form->setFieldAttribute('approval_status', 'disabled', 'true');

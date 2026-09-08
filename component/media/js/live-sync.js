@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const options = window.Joomla?.getOptions?.('com_decarodcl.liveSync') || {};
+  const options = window.Joomla?.getOptions?.('com_xdecarocompetitions.liveSync') || {};
 
   if (!options.endpoint || !options.token) {
     return;
@@ -28,8 +28,8 @@
   const rawView = bodyViewClass ? bodyViewClass.slice(5) : (params.get('view') || (params.get('task') || '').split('.')[0]);
   const entity = entityMap[rawView] || '';
   const isDashboard = rawView === 'dashboard';
-  const root = document.querySelector('.dcl-admin');
-  const form = document.querySelector('form.form-validate.dcl-admin');
+  const root = document.querySelector('.competitions-admin');
+  const form = document.querySelector('form.form-validate.competitions-admin');
   const idField = document.querySelector('[name="jform[id]"]');
   const modifiedField = document.querySelector('[name="jform[modified]"]');
   const entityId = Math.max(0, Number(params.get('id') || idField?.value || 0));
@@ -42,9 +42,9 @@
   let reloadTimer = null;
   let pollTimer = null;
   const processed = new Set();
-  const channel = 'BroadcastChannel' in window ? new BroadcastChannel('com_decarodcl.liveSync') : null;
+  const channel = 'BroadcastChannel' in window ? new BroadcastChannel('com_xdecarocompetitions.liveSync') : null;
 
-  injectHidden(document.querySelector('form.dcl-admin'), 'dcl_client_id', clientId);
+  injectHidden(document.querySelector('form.competitions-admin'), 'competitions_client_id', clientId);
 
   if (form) {
     form.addEventListener('input', markDirty, { passive: true });
@@ -79,7 +79,7 @@
   poll();
 
   function createClientId() {
-    return window.crypto?.randomUUID?.() || `dcl-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    return window.crypto?.randomUUID?.() || `competitions-${Date.now()}-${Math.random().toString(36).slice(2)}`;
   }
 
   function injectHidden(targetForm, name, value) {
@@ -152,7 +152,7 @@
         bootstrapped = true;
 
         if (isEditing && payload.current_modified) {
-          const renderedModified = String(modifiedField?.value || '__dcl_unmodified__');
+          const renderedModified = String(modifiedField?.value || '__competitions_unmodified__');
           const serverModified = String(payload.current_modified);
 
           if (renderedModified !== serverModified) {
@@ -261,12 +261,12 @@
       return;
     }
 
-    let notice = root.querySelector(`[data-dcl-live-sync="${key}"]`);
+    let notice = root.querySelector(`[data-competitions-live-sync="${key}"]`);
 
     if (!notice) {
       notice = document.createElement('div');
-      notice.dataset.dclLiveSync = key;
-      notice.className = `dcl-live-sync dcl-live-sync--${tone}`;
+      notice.dataset.competitionsLiveSync = key;
+      notice.className = `competitions-live-sync competitions-live-sync--${tone}`;
       notice.setAttribute('role', tone === 'warning' ? 'alert' : 'status');
       root.prepend(notice);
     }
@@ -274,7 +274,7 @@
     notice.replaceChildren();
 
     const text = document.createElement('div');
-    text.className = 'dcl-live-sync__text';
+    text.className = 'competitions-live-sync__text';
     text.textContent = message;
     notice.append(text);
 
@@ -289,6 +289,6 @@
   }
 
   function removeNotice(key) {
-    root?.querySelector(`[data-dcl-live-sync="${key}"]`)?.remove();
+    root?.querySelector(`[data-competitions-live-sync="${key}"]`)?.remove();
   }
 })();

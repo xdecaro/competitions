@@ -1,5 +1,5 @@
 <?php
-namespace Xdecaro\Component\Decarodcl\Administrator\Table;
+namespace Xdecaro\Component\Competitions\Administrator\Table;
 
 defined('_JEXEC') or die;
 
@@ -8,13 +8,13 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Table\Table;
 use Joomla\Database\DatabaseDriver;
 use Joomla\Database\ParameterType;
-use Xdecaro\Component\Decarodcl\Administrator\Helper\TournamentScopeHelper;
+use Xdecaro\Component\Competitions\Administrator\Helper\TournamentScopeHelper;
 
 final class TournamentTable extends Table
 {
     public function __construct(DatabaseDriver $db)
     {
-        parent::__construct('#__decarocompetitions_tournaments', 'id', $db);
+        parent::__construct('#__xdecarocompetitions_tournaments', 'id', $db);
     }
 
     public function check(): bool
@@ -28,34 +28,34 @@ final class TournamentTable extends Table
         $this->local_area = trim((string) $this->local_area) ?: null;
 
         if ($this->name === '') {
-            $this->setError(Text::_('COM_DECARODCL_ERROR_TOURNAMENT_NAME_REQUIRED'));
+            $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_TOURNAMENT_NAME_REQUIRED'));
             return false;
         }
 
         if (!preg_match('/^[A-Z0-9_-]{2,50}$/', $this->code)) {
-            $this->setError(Text::_('COM_DECARODCL_ERROR_TOURNAMENT_CODE_INVALID'));
+            $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_TOURNAMENT_CODE_INVALID'));
             return false;
         }
 
         if ($this->discipline === null) {
-            $this->setError(Text::_('COM_DECARODCL_ERROR_TOURNAMENT_DISCIPLINE_REQUIRED'));
+            $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_TOURNAMENT_DISCIPLINE_REQUIRED'));
             return false;
         }
 
         $allowedGenders = [null, 'men', 'women', 'mixed', 'open'];
 
         if (!in_array($this->gender, $allowedGenders, true)) {
-            $this->setError(Text::_('COM_DECARODCL_ERROR_TOURNAMENT_GENDER_INVALID'));
+            $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_TOURNAMENT_GENDER_INVALID'));
             return false;
         }
 
         if (!in_array($this->scope_type, TournamentScopeHelper::SCOPES, true)) {
-            $this->setError(Text::_('COM_DECARODCL_ERROR_SCOPE_INVALID'));
+            $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_SCOPE_INVALID'));
             return false;
         }
 
         if (!in_array($this->participant_type, TournamentScopeHelper::PARTICIPANT_TYPES, true)) {
-            $this->setError(Text::_('COM_DECARODCL_ERROR_PARTICIPANT_TYPE_INVALID'));
+            $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_PARTICIPANT_TYPE_INVALID'));
             return false;
         }
 
@@ -66,14 +66,14 @@ final class TournamentTable extends Table
         $db = $this->getDbo();
         $query = $db->getQuery(true)
             ->select('COUNT(*)')
-            ->from($db->quoteName('#__decarocompetitions_tournaments'))
+            ->from($db->quoteName('#__xdecarocompetitions_tournaments'))
             ->where($db->quoteName('code') . ' = :code')
             ->where($db->quoteName('id') . ' <> :id')
             ->bind(':code', $this->code)
             ->bind(':id', $this->id, ParameterType::INTEGER);
 
         if ((int) $db->setQuery($query)->loadResult() > 0) {
-            $this->setError(Text::_('COM_DECARODCL_ERROR_TOURNAMENT_CODE_DUPLICATE'));
+            $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_TOURNAMENT_CODE_DUPLICATE'));
             return false;
         }
 

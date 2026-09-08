@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const options = window.Joomla?.getOptions?.('com_decarodcl.filterbar') || {};
+  const options = window.Joomla?.getOptions?.('com_xdecarocompetitions.filterbar') || {};
   const strings = {
     filters: 'Filters',
     clear: 'Clear',
@@ -11,15 +11,15 @@
     ...options.strings,
   };
 
-  document.querySelectorAll('.dcl-filterbar').forEach((bar, index) => enhance(bar, index));
+  document.querySelectorAll('.competitions-filterbar').forEach((bar, index) => enhance(bar, index));
 
   function enhance(bar, index) {
-    if (bar.dataset.dclFilterbarEnhanced === '1') {
+    if (bar.dataset.competitionsFilterbarEnhanced === '1') {
       return;
     }
 
     const form = bar.closest('form');
-    const searchWrap = bar.querySelector('.dcl-filterbar__search');
+    const searchWrap = bar.querySelector('.competitions-filterbar__search');
     const search = searchWrap?.querySelector('input[type="search"]') || null;
     const children = Array.from(bar.children);
     const selects = children.filter((node) => node instanceof HTMLSelectElement);
@@ -30,39 +30,39 @@
       return;
     }
 
-    const drawerId = `dcl-filterbar-filters-${index + 1}`;
-    const storageKey = `com_decarodcl.filterbar.${window.location.pathname}.${new URLSearchParams(window.location.search).get('view') || 'list'}`;
+    const drawerId = `competitions-filterbar-filters-${index + 1}`;
+    const storageKey = `com_xdecarocompetitions.filterbar.${window.location.pathname}.${new URLSearchParams(window.location.search).get('view') || 'list'}`;
 
-    bar.dataset.dclFilterbarEnhanced = '1';
-    bar.classList.add('dcl-filterbar--enhanced');
+    bar.dataset.competitionsFilterbarEnhanced = '1';
+    bar.classList.add('competitions-filterbar--enhanced');
 
     if (searchWrap && search) {
       search.setAttribute('autocomplete', 'off');
       search.setAttribute('enterkeyhint', 'search');
-      searchWrap.prepend(icon('search', 'dcl-filterbar__search-icon'));
+      searchWrap.prepend(icon('search', 'competitions-filterbar__search-icon'));
     }
 
     const top = document.createElement('div');
-    top.className = 'dcl-filterbar__top';
+    top.className = 'competitions-filterbar__top';
 
     if (searchWrap) {
       top.append(searchWrap);
     }
 
     const actions = document.createElement('div');
-    actions.className = 'dcl-filterbar__actions';
+    actions.className = 'competitions-filterbar__actions';
 
     if (submitButton) {
       submitButton.hidden = false;
-      submitButton.className = 'dcl-filterbar__submit';
+      submitButton.className = 'competitions-filterbar__submit';
       actions.append(submitButton);
     }
 
     if (clearLink) {
       clearLink.hidden = false;
-      clearLink.className = 'dcl-filterbar__clear';
+      clearLink.className = 'competitions-filterbar__clear';
       clearLink.replaceChildren(
-        icon('clear', 'dcl-filterbar__button-icon'),
+        icon('clear', 'competitions-filterbar__button-icon'),
         document.createTextNode(strings.clear)
       );
       actions.append(clearLink);
@@ -76,29 +76,29 @@
     if (selects.length > 0) {
       toggle = document.createElement('button');
       toggle.type = 'button';
-      toggle.className = 'dcl-filterbar__toggle';
+      toggle.className = 'competitions-filterbar__toggle';
       toggle.setAttribute('aria-controls', drawerId);
-      toggle.append(icon('filter', 'dcl-filterbar__button-icon'));
+      toggle.append(icon('filter', 'competitions-filterbar__button-icon'));
 
       const toggleText = document.createElement('span');
       toggleText.textContent = strings.filters;
       toggle.append(toggleText);
 
       count = document.createElement('span');
-      count.className = 'dcl-filterbar__count';
+      count.className = 'competitions-filterbar__count';
       count.setAttribute('aria-hidden', 'true');
       toggle.append(count);
       actions.append(toggle);
 
       drawer = document.createElement('div');
       drawer.id = drawerId;
-      drawer.className = 'dcl-filterbar__drawer';
+      drawer.className = 'competitions-filterbar__drawer';
       drawer.setAttribute('role', 'group');
       drawer.setAttribute('aria-label', strings.filters);
 
       const drawerInner = document.createElement('div');
-      drawerInner.className = 'dcl-filterbar__drawer-inner';
-      drawerInner.style.setProperty('--dcl-filter-count', String(selects.length));
+      drawerInner.className = 'competitions-filterbar__drawer-inner';
+      drawerInner.style.setProperty('--competitions-filter-count', String(selects.length));
 
       selects.forEach((select, selectIndex) => {
         select.removeAttribute('onchange');
@@ -109,7 +109,7 @@
         }
 
         const field = document.createElement('div');
-        field.className = 'dcl-filterbar__field';
+        field.className = 'competitions-filterbar__field';
 
         const label = document.createElement('label');
         label.className = 'visually-hidden';
@@ -131,10 +131,10 @@
 
       closeFilters = document.createElement('button');
       closeFilters.type = 'button';
-      closeFilters.className = 'dcl-filterbar__close';
+      closeFilters.className = 'competitions-filterbar__close';
       closeFilters.setAttribute('aria-controls', drawerId);
       closeFilters.replaceChildren(
-        icon('clear', 'dcl-filterbar__button-icon'),
+        icon('clear', 'competitions-filterbar__button-icon'),
         document.createTextNode(strings.hide)
       );
       drawerInner.append(closeFilters);
@@ -181,7 +181,7 @@
         drawer.inert = !filtersOpen;
       }
 
-      bar.dataset.dclFiltersOpen = filtersOpen ? '1' : '0';
+      bar.dataset.competitionsFiltersOpen = filtersOpen ? '1' : '0';
       storeOpen(storageKey, filtersOpen);
 
       if (moveFocus && !filtersOpen) {

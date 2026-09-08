@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS `#__decarocompetitions_countries` (
+CREATE TABLE IF NOT EXISTS `#__xdecarocompetitions_countries` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(190) NOT NULL,
   `code` VARCHAR(10) NOT NULL,
@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS `#__decarocompetitions_countries` (
   KEY `idx_competitions_countries_state` (`state`, `ordering`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-INSERT IGNORE INTO `#__decarocompetitions_countries` (`name`, `code`, `iso2`, `iso3`, `entity_type`, `state`, `ordering`) VALUES
+INSERT IGNORE INTO `#__xdecarocompetitions_countries` (`name`, `code`, `iso2`, `iso3`, `entity_type`, `state`, `ordering`) VALUES
 ('Azerbaijan', 'AZE', 'AZ', 'AZE', 'country', 1, 1),
 ('Belgium', 'BEL', 'BE', 'BEL', 'country', 1, 2),
 ('Czech Republic', 'CZE', 'CZ', 'CZE', 'country', 1, 3),
@@ -39,7 +39,7 @@ INSERT IGNORE INTO `#__decarocompetitions_countries` (`name`, `code`, `iso2`, `i
 ('Sweden', 'SWE', 'SE', 'SWE', 'country', 1, 18),
 ('Turkey', 'TUR', 'TR', 'TUR', 'country', 1, 19);
 
-CREATE TABLE IF NOT EXISTS `#__decarocompetitions_federations` (
+CREATE TABLE IF NOT EXISTS `#__xdecarocompetitions_federations` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `country_id` INT UNSIGNED NOT NULL DEFAULT 0,
   `name` VARCHAR(190) NOT NULL,
@@ -58,7 +58,7 @@ CREATE TABLE IF NOT EXISTS `#__decarocompetitions_federations` (
   KEY `idx_competitions_federations_state` (`state`, `ordering`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS `#__decarocompetitions_teams` (
+CREATE TABLE IF NOT EXISTS `#__xdecarocompetitions_teams` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `owner_user_id` INT UNSIGNED NOT NULL DEFAULT 0,
   `federation_id` INT UNSIGNED NOT NULL DEFAULT 0,
@@ -88,7 +88,7 @@ CREATE TABLE IF NOT EXISTS `#__decarocompetitions_teams` (
   KEY `idx_competitions_teams_status` (`approval_status`, `state`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS `#__decarocompetitions_players` (
+CREATE TABLE IF NOT EXISTS `#__xdecarocompetitions_players` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `external_ref` VARCHAR(100) DEFAULT NULL,
   `first_name` VARCHAR(190) NOT NULL,
@@ -108,7 +108,7 @@ CREATE TABLE IF NOT EXISTS `#__decarocompetitions_players` (
   KEY `idx_competitions_players_status` (`approval_status`, `state`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS `#__decarocompetitions_tournaments` (
+CREATE TABLE IF NOT EXISTS `#__xdecarocompetitions_tournaments` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(190) NOT NULL,
   `code` VARCHAR(50) DEFAULT NULL,
@@ -125,7 +125,7 @@ CREATE TABLE IF NOT EXISTS `#__decarocompetitions_tournaments` (
   KEY `idx_competitions_tournaments_state` (`state`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS `#__decarocompetitions_seasons` (
+CREATE TABLE IF NOT EXISTS `#__xdecarocompetitions_seasons` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `tournament_id` INT UNSIGNED NOT NULL,
   `name` VARCHAR(190) NOT NULL,
@@ -146,7 +146,7 @@ CREATE TABLE IF NOT EXISTS `#__decarocompetitions_seasons` (
   KEY `idx_competitions_seasons_state` (`state`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS `#__decarocompetitions_participations` (
+CREATE TABLE IF NOT EXISTS `#__xdecarocompetitions_participations` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `team_id` INT UNSIGNED NOT NULL,
   `season_id` INT UNSIGNED NOT NULL,
@@ -166,7 +166,7 @@ CREATE TABLE IF NOT EXISTS `#__decarocompetitions_participations` (
   KEY `idx_competitions_participation_season` (`season_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS `#__decarocompetitions_rosters` (
+CREATE TABLE IF NOT EXISTS `#__xdecarocompetitions_rosters` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `participation_id` BIGINT UNSIGNED NOT NULL,
   `team_id` INT UNSIGNED NOT NULL,
@@ -188,7 +188,7 @@ CREATE TABLE IF NOT EXISTS `#__decarocompetitions_rosters` (
   KEY `idx_competitions_roster_status` (`status`, `state`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS `#__decarocompetitions_venues` (
+CREATE TABLE IF NOT EXISTS `#__xdecarocompetitions_venues` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(190) NOT NULL,
   `address` VARCHAR(255) DEFAULT NULL,
@@ -205,7 +205,7 @@ CREATE TABLE IF NOT EXISTS `#__decarocompetitions_venues` (
   KEY `idx_competitions_venues_state` (`state`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS `#__decarocompetitions_match_events` (
+CREATE TABLE IF NOT EXISTS `#__xdecarocompetitions_match_events` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `article_id` INT UNSIGNED NOT NULL,
   `team_id` INT UNSIGNED NOT NULL DEFAULT 0,
@@ -231,7 +231,7 @@ CREATE TABLE IF NOT EXISTS `#__decarocompetitions_match_events` (
   KEY `idx_competitions_events_timeline` (`article_id`, `minute`, `extra_minute`, `ordering`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS `#__decarocompetitions_coefficient_rules` (
+CREATE TABLE IF NOT EXISTS `#__xdecarocompetitions_coefficient_rules` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(190) NOT NULL,
   `tournament_id` INT UNSIGNED NOT NULL DEFAULT 0,
@@ -253,7 +253,7 @@ CREATE TABLE IF NOT EXISTS `#__decarocompetitions_coefficient_rules` (
   KEY `idx_competitions_coef_rules_scope` (`tournament_id`, `season_id`, `state`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS `#__decarocompetitions_country_coefficients` (
+CREATE TABLE IF NOT EXISTS `#__xdecarocompetitions_country_coefficients` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `season_id` INT UNSIGNED NOT NULL,
   `federation_id` INT UNSIGNED NOT NULL,
@@ -269,7 +269,7 @@ CREATE TABLE IF NOT EXISTS `#__decarocompetitions_country_coefficients` (
   KEY `idx_competitions_country_coef_value` (`season_id`, `coefficient`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS `#__decarocompetitions_club_coefficients` (
+CREATE TABLE IF NOT EXISTS `#__xdecarocompetitions_club_coefficients` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `season_id` INT UNSIGNED NOT NULL,
   `team_id` INT UNSIGNED NOT NULL,
@@ -287,7 +287,7 @@ CREATE TABLE IF NOT EXISTS `#__decarocompetitions_club_coefficients` (
   KEY `idx_competitions_club_coef_value` (`season_id`, `coefficient`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS `#__decarocompetitions_rankings` (
+CREATE TABLE IF NOT EXISTS `#__xdecarocompetitions_rankings` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `tournament_id` INT UNSIGNED NOT NULL,
   `ranking_type` VARCHAR(16) NOT NULL,
@@ -303,7 +303,7 @@ CREATE TABLE IF NOT EXISTS `#__decarocompetitions_rankings` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
-CREATE TABLE IF NOT EXISTS `#__decarocompetitions_audit_log` (
+CREATE TABLE IF NOT EXISTS `#__xdecarocompetitions_audit_log` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `user_id` INT UNSIGNED NOT NULL DEFAULT 0,
   `action` VARCHAR(64) NOT NULL,

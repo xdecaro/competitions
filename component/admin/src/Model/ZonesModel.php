@@ -1,5 +1,5 @@
 <?php
-namespace Xdecaro\Component\Decarodcl\Administrator\Model;
+namespace Xdecaro\Component\Competitions\Administrator\Model;
 
 defined('_JEXEC') or die;
 
@@ -33,10 +33,10 @@ final class ZonesModel extends ListModel
             ->select($db->quoteName('o.short_name', 'organization_short_name'))
             ->select('COUNT(DISTINCT zc.country_id) AS ' . $db->quoteName('countries_count'))
             ->select("GROUP_CONCAT(DISTINCT c.name ORDER BY c.name ASC SEPARATOR ' • ') AS " . $db->quoteName('country_names'))
-            ->from($db->quoteName('#__decarocompetitions_zones', 'a'))
-            ->leftJoin($db->quoteName('#__decarocompetitions_organizations', 'o') . ' ON ' . $db->quoteName('o.id') . ' = ' . $db->quoteName('a.organization_id'))
-            ->leftJoin($db->quoteName('#__decarocompetitions_zone_countries', 'zc') . ' ON ' . $db->quoteName('zc.zone_id') . ' = ' . $db->quoteName('a.id'))
-            ->leftJoin($db->quoteName('#__decarocompetitions_countries', 'c') . ' ON ' . $db->quoteName('c.id') . ' = ' . $db->quoteName('zc.country_id') . ' AND ' . $db->quoteName('c.state') . ' <> -2')
+            ->from($db->quoteName('#__xdecarocompetitions_zones', 'a'))
+            ->leftJoin($db->quoteName('#__xdecarocompetitions_organizations', 'o') . ' ON ' . $db->quoteName('o.id') . ' = ' . $db->quoteName('a.organization_id'))
+            ->leftJoin($db->quoteName('#__xdecarocompetitions_zone_countries', 'zc') . ' ON ' . $db->quoteName('zc.zone_id') . ' = ' . $db->quoteName('a.id'))
+            ->leftJoin($db->quoteName('#__xdecarocompetitions_countries', 'c') . ' ON ' . $db->quoteName('c.id') . ' = ' . $db->quoteName('zc.country_id') . ' AND ' . $db->quoteName('c.state') . ' <> -2')
             ->group($db->quoteName('a.id'));
 
         $search = trim((string) $this->getState('filter.search'));
@@ -95,7 +95,7 @@ final class ZonesModel extends ListModel
                 $db->quoteName('name'),
                 $db->quoteName('short_name'),
             ])
-            ->from($db->quoteName('#__decarocompetitions_organizations'))
+            ->from($db->quoteName('#__xdecarocompetitions_organizations'))
             ->where($db->quoteName('state') . ' <> -2')
             ->order($db->quoteName('ordering') . ' ASC')
             ->order($db->quoteName('name') . ' ASC');

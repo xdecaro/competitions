@@ -1,28 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <form>
-  <fieldset name="details" label="COM_DECARODCL_PLAYER_DETAILS">
+  <fieldset name="details" label="COM_XDECAROCOMPETITIONS_PLAYER_DETAILS">
     <field name="id" type="hidden" />
     <field name="modified" type="hidden" />
-    <field name="first_name" type="text" label="COM_DECARODCL_FIELD_FIRST_NAME" required="true" maxlength="190" />
-    <field name="last_name" type="text" label="COM_DECARODCL_FIELD_LAST_NAME" required="true" maxlength="190" />
-    <field name="external_ref" type="text" label="COM_DECARODCL_FIELD_EXTERNAL_REF" description="COM_DECARODCL_FIELD_EXTERNAL_REF_DESC" maxlength="100" />
-    <field name="birth_date" type="calendar" label="COM_DECARODCL_FIELD_BIRTH_DATE" format="%Y-%m-%d" filter="raw" showtime="false" todaybutton="true" filltable="false" />
+    <field name="first_name" type="text" label="COM_XDECAROCOMPETITIONS_FIELD_FIRST_NAME" required="true" maxlength="190" />
+    <field name="last_name" type="text" label="COM_XDECAROCOMPETITIONS_FIELD_LAST_NAME" required="true" maxlength="190" />
+    <field name="external_ref" type="text" label="COM_XDECAROCOMPETITIONS_FIELD_EXTERNAL_REF" description="COM_XDECAROCOMPETITIONS_FIELD_EXTERNAL_REF_DESC" maxlength="100" />
+    <field name="birth_date" type="calendar" label="COM_XDECAROCOMPETITIONS_FIELD_BIRTH_DATE" format="%Y-%m-%d" filter="raw" showtime="false" todaybutton="true" filltable="false" />
     <field
       name="nationality_code"
       type="sql"
-      label="COM_DECARODCL_FIELD_NATIONALITY"
-      query="SELECT code AS value, CONCAT(name, ' (', code, ')') AS text FROM #__decarocompetitions_countries WHERE state &lt;&gt; -2 AND CHAR_LENGTH(code) &lt;= 3 ORDER BY name ASC"
+      label="COM_XDECAROCOMPETITIONS_FIELD_NATIONALITY"
+      query="SELECT code AS value, CONCAT(name, ' (', code, ')') AS text FROM #__xdecarocompetitions_countries WHERE state &lt;&gt; -2 AND CHAR_LENGTH(code) &lt;= 3 ORDER BY name ASC"
       key_field="value"
       value_field="text"
       default=""
     >
-      <option value="">COM_DECARODCL_SELECT_NATIONALITY</option>
+      <option value="">COM_XDECAROCOMPETITIONS_SELECT_NATIONALITY</option>
     </field>
-    <field name="photo" type="media" label="COM_DECARODCL_FIELD_PHOTO" types="images" />
-    <field name="approval_status" type="list" label="COM_DECARODCL_FIELD_APPROVAL_STATUS" default="pending">
-      <option value="pending">COM_DECARODCL_PLAYER_PENDING</option>
-      <option value="approved">COM_DECARODCL_PLAYER_APPROVED</option>
-      <option value="rejected">COM_DECARODCL_PLAYER_REJECTED</option>
+    <field name="photo" type="media" label="COM_XDECAROCOMPETITIONS_FIELD_PHOTO" types="images" />
+    <field name="approval_status" type="list" label="COM_XDECAROCOMPETITIONS_FIELD_APPROVAL_STATUS" default="pending">
+      <option value="pending">COM_XDECAROCOMPETITIONS_PLAYER_PENDING</option>
+      <option value="approved">COM_XDECAROCOMPETITIONS_PLAYER_APPROVED</option>
+      <option value="rejected">COM_XDECAROCOMPETITIONS_PLAYER_REJECTED</option>
     </field>
     <field name="state" type="list" label="JSTATUS" default="1">
       <option value="1">JPUBLISHED</option>

@@ -44,13 +44,13 @@ Neither product may use the other product's private tables as its integration AP
 
 Use Xdecaro Core `EntityReference` for stable cross-product identity where available.
 
-Current Competitions technical element is retained for compatibility as `com_decarodcl`.
+Current Competitions technical element is retained for compatibility as `com_xdecarocompetitions`.
 
 Examples:
 
 ```json
 {
-  "component": "com_decarodcl",
+  "component": "com_xdecarocompetitions",
   "entity": "competition",
   "id": "42"
 }
@@ -58,7 +58,7 @@ Examples:
 
 ```json
 {
-  "component": "com_decarodcl",
+  "component": "com_xdecarocompetitions",
   "entity": "participant",
   "id": "10"
 }

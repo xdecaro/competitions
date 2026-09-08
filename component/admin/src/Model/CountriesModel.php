@@ -1,5 +1,5 @@
 <?php
-namespace Xdecaro\Component\Decarodcl\Administrator\Model;
+namespace Xdecaro\Component\Competitions\Administrator\Model;
 
 defined('_JEXEC') or die;
 
@@ -33,18 +33,18 @@ final class CountriesModel extends ListModel
             ->select('COUNT(DISTINCT f.id) AS ' . $db->quoteName('federations_count'))
             ->select('COUNT(DISTINCT z.id) AS ' . $db->quoteName('zones_count'))
             ->select("GROUP_CONCAT(DISTINCT z.name ORDER BY z.name ASC SEPARATOR ' • ') AS " . $db->quoteName('zone_names'))
-            ->from($db->quoteName('#__decarocompetitions_countries', 'a'))
+            ->from($db->quoteName('#__xdecarocompetitions_countries', 'a'))
             ->leftJoin(
-                $db->quoteName('#__decarocompetitions_federations', 'f')
+                $db->quoteName('#__xdecarocompetitions_federations', 'f')
                 . ' ON ' . $db->quoteName('f.country_id') . ' = ' . $db->quoteName('a.id')
                 . ' AND ' . $db->quoteName('f.state') . ' <> -2'
             )
             ->leftJoin(
-                $db->quoteName('#__decarocompetitions_zone_countries', 'zc')
+                $db->quoteName('#__xdecarocompetitions_zone_countries', 'zc')
                 . ' ON ' . $db->quoteName('zc.country_id') . ' = ' . $db->quoteName('a.id')
             )
             ->leftJoin(
-                $db->quoteName('#__decarocompetitions_zones', 'z')
+                $db->quoteName('#__xdecarocompetitions_zones', 'z')
                 . ' ON ' . $db->quoteName('z.id') . ' = ' . $db->quoteName('zc.zone_id')
                 . ' AND ' . $db->quoteName('z.state') . ' <> -2'
             )
@@ -78,7 +78,7 @@ final class CountriesModel extends ListModel
         $zoneId = (int) $this->getState('filter.zone_id');
         if ($zoneId > 0) {
             $query->where(
-                'EXISTS (SELECT 1 FROM ' . $db->quoteName('#__decarocompetitions_zone_countries', 'zcf')
+                'EXISTS (SELECT 1 FROM ' . $db->quoteName('#__xdecarocompetitions_zone_countries', 'zcf')
                 . ' WHERE ' . $db->quoteName('zcf.country_id') . ' = ' . $db->quoteName('a.id')
                 . ' AND ' . $db->quoteName('zcf.zone_id') . ' = :zoneId)'
             )->bind(':zoneId', $zoneId, ParameterType::INTEGER);
@@ -114,8 +114,8 @@ final class CountriesModel extends ListModel
                 $db->quoteName('z.code'),
                 $db->quoteName('o.name', 'organization_name'),
             ])
-            ->from($db->quoteName('#__decarocompetitions_zones', 'z'))
-            ->leftJoin($db->quoteName('#__decarocompetitions_organizations', 'o') . ' ON ' . $db->quoteName('o.id') . ' = ' . $db->quoteName('z.organization_id'))
+            ->from($db->quoteName('#__xdecarocompetitions_zones', 'z'))
+            ->leftJoin($db->quoteName('#__xdecarocompetitions_organizations', 'o') . ' ON ' . $db->quoteName('o.id') . ' = ' . $db->quoteName('z.organization_id'))
             ->where($db->quoteName('z.state') . ' <> -2')
             ->order($db->quoteName('z.ordering') . ' ASC')
             ->order($db->quoteName('z.name') . ' ASC');

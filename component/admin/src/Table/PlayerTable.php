@@ -1,5 +1,5 @@
 <?php
-namespace Xdecaro\Component\Decarodcl\Administrator\Table;
+namespace Xdecaro\Component\Competitions\Administrator\Table;
 
 defined('_JEXEC') or die;
 
@@ -13,7 +13,7 @@ final class PlayerTable extends Table
 {
     public function __construct(DatabaseDriver $db)
     {
-        parent::__construct('#__decarocompetitions_players', 'id', $db);
+        parent::__construct('#__xdecarocompetitions_players', 'id', $db);
     }
 
     public function check(): bool
@@ -26,17 +26,17 @@ final class PlayerTable extends Table
         $this->approval_status = trim((string) $this->approval_status) ?: 'pending';
 
         if ($this->first_name === '') {
-            $this->setError(Text::_('COM_DECARODCL_ERROR_PLAYER_FIRST_NAME_REQUIRED'));
+            $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_PLAYER_FIRST_NAME_REQUIRED'));
             return false;
         }
 
         if ($this->last_name === '') {
-            $this->setError(Text::_('COM_DECARODCL_ERROR_PLAYER_LAST_NAME_REQUIRED'));
+            $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_PLAYER_LAST_NAME_REQUIRED'));
             return false;
         }
 
         if (!in_array($this->approval_status, ['pending', 'approved', 'rejected'], true)) {
-            $this->setError(Text::_('COM_DECARODCL_ERROR_PLAYER_APPROVAL_INVALID'));
+            $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_PLAYER_APPROVAL_INVALID'));
             return false;
         }
 
@@ -44,12 +44,12 @@ final class PlayerTable extends Table
             $date = \DateTimeImmutable::createFromFormat('!Y-m-d', $this->birth_date);
 
             if ($date === false || $date->format('Y-m-d') !== $this->birth_date) {
-                $this->setError(Text::_('COM_DECARODCL_ERROR_PLAYER_BIRTH_DATE_INVALID'));
+                $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_PLAYER_BIRTH_DATE_INVALID'));
                 return false;
             }
 
             if ($this->birth_date > Factory::getDate()->format('Y-m-d')) {
-                $this->setError(Text::_('COM_DECARODCL_ERROR_PLAYER_BIRTH_DATE_FUTURE'));
+                $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_PLAYER_BIRTH_DATE_FUTURE'));
                 return false;
             }
         }
@@ -58,19 +58,19 @@ final class PlayerTable extends Table
 
         if ($this->nationality_code !== null) {
             if (strlen($this->nationality_code) > 3) {
-                $this->setError(Text::_('COM_DECARODCL_ERROR_PLAYER_NATIONALITY_INVALID'));
+                $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_PLAYER_NATIONALITY_INVALID'));
                 return false;
             }
 
             $query = $db->getQuery(true)
                 ->select('COUNT(*)')
-                ->from($db->quoteName('#__decarocompetitions_countries'))
+                ->from($db->quoteName('#__xdecarocompetitions_countries'))
                 ->where($db->quoteName('code') . ' = :nationalityCode')
                 ->where($db->quoteName('state') . ' <> -2')
                 ->bind(':nationalityCode', $this->nationality_code);
 
             if ((int) $db->setQuery($query)->loadResult() === 0) {
-                $this->setError(Text::_('COM_DECARODCL_ERROR_PLAYER_NATIONALITY_INVALID'));
+                $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_PLAYER_NATIONALITY_INVALID'));
                 return false;
             }
         }
@@ -78,20 +78,20 @@ final class PlayerTable extends Table
         if ($this->external_ref !== null) {
             $query = $db->getQuery(true)
                 ->select('COUNT(*)')
-                ->from($db->quoteName('#__decarocompetitions_players'))
+                ->from($db->quoteName('#__xdecarocompetitions_players'))
                 ->where($db->quoteName('external_ref') . ' = :externalRef')
                 ->where($db->quoteName('id') . ' <> :id')
                 ->bind(':externalRef', $this->external_ref)
                 ->bind(':id', $this->id, ParameterType::INTEGER);
 
             if ((int) $db->setQuery($query)->loadResult() > 0) {
-                $this->setError(Text::_('COM_DECARODCL_ERROR_PLAYER_EXTERNAL_REF_DUPLICATE'));
+                $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_PLAYER_EXTERNAL_REF_DUPLICATE'));
                 return false;
             }
         }
 
         if (!$this->canChangeApprovalStatus()) {
-            $this->setError(Text::_('COM_DECARODCL_ERROR_APPROVAL_PERMISSION'));
+            $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_APPROVAL_PERMISSION'));
             return false;
         }
 
@@ -120,7 +120,7 @@ final class PlayerTable extends Table
     {
         $identity = Factory::getApplication()->getIdentity();
 
-        if ($identity->authorise('core.edit.state', 'com_decarodcl')) {
+        if ($identity->authorise('core.edit.state', 'com_xdecarocompetitions')) {
             return true;
         }
 
@@ -131,7 +131,7 @@ final class PlayerTable extends Table
         $db = $this->getDbo();
         $query = $db->getQuery(true)
             ->select($db->quoteName('approval_status'))
-            ->from($db->quoteName('#__decarocompetitions_players'))
+            ->from($db->quoteName('#__xdecarocompetitions_players'))
             ->where($db->quoteName('id') . ' = :id')
             ->bind(':id', $this->id, ParameterType::INTEGER);
 
@@ -142,7 +142,7 @@ final class PlayerTable extends Table
     {
         $identity = Factory::getApplication()->getIdentity();
 
-        if ($identity->authorise('core.edit.state', 'com_decarodcl')) {
+        if ($identity->authorise('core.edit.state', 'com_xdecarocompetitions')) {
             return;
         }
 
@@ -154,7 +154,7 @@ final class PlayerTable extends Table
         $db = $this->getDbo();
         $query = $db->getQuery(true)
             ->select($db->quoteName('state'))
-            ->from($db->quoteName('#__decarocompetitions_players'))
+            ->from($db->quoteName('#__xdecarocompetitions_players'))
             ->where($db->quoteName('id') . ' = :stateId')
             ->bind(':stateId', $this->id, ParameterType::INTEGER);
 

@@ -1,0 +1,2 @@
+-- Competitions by xdecaro 1.0.0 clean schema baseline.
+-- Fresh installations are defined by admin/sql/install.mysql.utf8mb4.sql.

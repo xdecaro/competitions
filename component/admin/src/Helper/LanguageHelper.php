@@ -1,5 +1,5 @@
 <?php
-namespace Xdecaro\Component\Decarodcl\Administrator\Helper;
+namespace Xdecaro\Component\Competitions\Administrator\Helper;
 
 defined('_JEXEC') or die;
 
@@ -10,12 +10,12 @@ final class LanguageHelper
     public static function load(): void
     {
         $language = Factory::getApplication()->getLanguage();
-        $language->load('com_decarodcl.070', JPATH_ADMINISTRATOR, null, true);
-        $language->load('com_decarodcl.071', JPATH_ADMINISTRATOR, null, true);
-        $language->load('com_decarodcl.080', JPATH_ADMINISTRATOR, null, true);
-        $language->load('com_decarodcl.082', JPATH_ADMINISTRATOR, null, true);
-        $language->load('com_decarodcl.090', JPATH_ADMINISTRATOR, null, true);
-        $language->load('com_decarodcl.100', JPATH_ADMINISTRATOR, null, true);
-        $language->load('com_decarodcl.121', JPATH_ADMINISTRATOR, null, true);
+        $language->load('com_xdecarocompetitions.070', JPATH_ADMINISTRATOR, null, true);
+        $language->load('com_xdecarocompetitions.071', JPATH_ADMINISTRATOR, null, true);
+        $language->load('com_xdecarocompetitions.080', JPATH_ADMINISTRATOR, null, true);
+        $language->load('com_xdecarocompetitions.082', JPATH_ADMINISTRATOR, null, true);
+        $language->load('com_xdecarocompetitions.090', JPATH_ADMINISTRATOR, null, true);
+        $language->load('com_xdecarocompetitions.100', JPATH_ADMINISTRATOR, null, true);
+        $language->load('com_xdecarocompetitions.121', JPATH_ADMINISTRATOR, null, true);
     }
 }

@@ -2,7 +2,7 @@
 
 Competitions uses the Xdecaro Core cross-product reference contract for relationships with other Xdecaro products.
 
-The visible product/repository name is Competitions, but the installed Joomla component element remains **`com_decarodcl`** for upgrade compatibility. Cross-product `EntityReference` values must therefore use `com_decarodcl`; do not derive the component identifier from the repository name.
+The visible product/repository name is Competitions, but the installed Joomla component element remains **`com_xdecarocompetitions`** for upgrade compatibility. Cross-product `EntityReference` values must therefore use `com_xdecarocompetitions`; do not derive the component identifier from the repository name.
 
 Use:
 
@@ -11,12 +11,12 @@ Use:
 
 ## Optional runtime adapter
 
-From Competitions 0.11.0, `Xdecaro\Component\Decarodcl\Administrator\Service\CoreIntegrationService` is registered in the Joomla DI container.
+From Competitions 0.11.0, `Xdecaro\Component\Competitions\Administrator\Service\CoreIntegrationService` is registered in the Joomla DI container.
 
 Core remains optional:
 
 - `isAvailable()` checks whether the Core public reference classes are available;
-- `createEntityReference()` creates a Competitions-owned reference using the required historical component element `com_decarodcl`;
+- `createEntityReference()` creates a Competitions-owned reference using the required historical component element `com_xdecarocompetitions`;
 - `createRelationReference()` creates a typed relation from a Competitions entity to another product's published entity;
 - Core-dependent calls fail with a controlled `RuntimeException` when Core is unavailable.
 
@@ -29,7 +29,7 @@ Typical integrations include:
 - Documents document -> participant, team, season, match or other published Competitions entity;
 - Events event -> tournament, season, match or competition-related event.
 
-Do not expose `#__decarocompetitions_*` tables as the integration API and do not rename the historical Joomla identifiers merely to match the visible product name.
+Do not expose `#__xdecarocompetitions_*` tables as the integration API and do not rename the historical Joomla identifiers merely to match the visible product name.
 
 Entity type names become stable public API only when Competitions explicitly publishes them. Preserve compatibility for any entity type once published.
 

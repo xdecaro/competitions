@@ -1,5 +1,5 @@
 <?php
-namespace Xdecaro\Component\Decarodcl\Administrator\Table;
+namespace Xdecaro\Component\Competitions\Administrator\Table;
 
 defined('_JEXEC') or die;
 
@@ -8,13 +8,13 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Table\Table;
 use Joomla\Database\DatabaseDriver;
 use Joomla\Database\ParameterType;
-use Xdecaro\Component\Decarodcl\Administrator\Helper\LanguageHelper;
+use Xdecaro\Component\Competitions\Administrator\Helper\LanguageHelper;
 
 final class OrganizationTable extends Table
 {
     public function __construct(DatabaseDriver $db)
     {
-        parent::__construct('#__decarocompetitions_organizations', 'id', $db);
+        parent::__construct('#__xdecarocompetitions_organizations', 'id', $db);
     }
 
     public function check(): bool
@@ -28,22 +28,22 @@ final class OrganizationTable extends Table
         $this->email = trim((string) $this->email) ?: null;
 
         if ($this->name === '') {
-            $this->setError(Text::_('COM_DECARODCL_ERROR_ORGANIZATION_NAME_REQUIRED'));
+            $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_ORGANIZATION_NAME_REQUIRED'));
             return false;
         }
         if ($this->email !== null && filter_var($this->email, FILTER_VALIDATE_EMAIL) === false) {
-            $this->setError(Text::_('COM_DECARODCL_ERROR_EMAIL_INVALID'));
+            $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_EMAIL_INVALID'));
             return false;
         }
         if ($this->website !== null && filter_var($this->website, FILTER_VALIDATE_URL) === false) {
-            $this->setError(Text::_('COM_DECARODCL_ERROR_URL_INVALID'));
+            $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_URL_INVALID'));
             return false;
         }
         if ($this->country_id > 0) {
             $db = $this->getDbo();
-            $query = $db->getQuery(true)->select('COUNT(*)')->from($db->quoteName('#__decarocompetitions_countries'))->where($db->quoteName('id') . ' = :countryId')->where($db->quoteName('state') . ' <> -2')->bind(':countryId', $this->country_id, ParameterType::INTEGER);
+            $query = $db->getQuery(true)->select('COUNT(*)')->from($db->quoteName('#__xdecarocompetitions_countries'))->where($db->quoteName('id') . ' = :countryId')->where($db->quoteName('state') . ' <> -2')->bind(':countryId', $this->country_id, ParameterType::INTEGER);
             if ((int) $db->setQuery($query)->loadResult() === 0) {
-                $this->setError(Text::_('COM_DECARODCL_ERROR_ORGANIZATION_COUNTRY_INVALID'));
+                $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_ORGANIZATION_COUNTRY_INVALID'));
                 return false;
             }
         }
@@ -67,7 +67,7 @@ final class OrganizationTable extends Table
     private function enforceStatePermission(): void
     {
         $identity = Factory::getApplication()->getIdentity();
-        if ($identity->authorise('core.edit.state', 'com_decarodcl')) {
+        if ($identity->authorise('core.edit.state', 'com_xdecarocompetitions')) {
             return;
         }
         if (!$this->id) {
@@ -75,7 +75,7 @@ final class OrganizationTable extends Table
             return;
         }
         $db = $this->getDbo();
-        $query = $db->getQuery(true)->select($db->quoteName('state'))->from($db->quoteName('#__decarocompetitions_organizations'))->where($db->quoteName('id') . ' = :id')->bind(':id', $this->id, ParameterType::INTEGER);
+        $query = $db->getQuery(true)->select($db->quoteName('state'))->from($db->quoteName('#__xdecarocompetitions_organizations'))->where($db->quoteName('id') . ' = :id')->bind(':id', $this->id, ParameterType::INTEGER);
         $currentState = $db->setQuery($query)->loadResult();
         if ($currentState !== null) {
             $this->state = (int) $currentState;

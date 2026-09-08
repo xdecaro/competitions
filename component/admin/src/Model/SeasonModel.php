@@ -1,26 +1,26 @@
 <?php
-namespace Xdecaro\Component\Decarodcl\Administrator\Model;
+namespace Xdecaro\Component\Competitions\Administrator\Model;
 
 defined('_JEXEC') or die;
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Table\Table;
-use Xdecaro\Component\Decarodcl\Administrator\Helper\OrganizationAssignmentHelper;
+use Xdecaro\Component\Competitions\Administrator\Helper\OrganizationAssignmentHelper;
 
 final class SeasonModel extends BaseAdminModel
 {
     private const ORGANIZATION_FIELDS = ['organizer_ids'=>'organizer','governing_body_ids'=>'governing_body','co_organizer_ids'=>'co_organizer','local_organizer_ids'=>'local_organizer','partner_ids'=>'partner'];
 
     public function getTable($type = 'Season', $prefix = 'Administrator', $config = []): Table { return parent::getTable($type, $prefix, $config); }
-    public function getForm($data = [], $loadData = true) { return $this->loadForm('com_decarodcl.season', 'season', ['control'=>'jform','load_data'=>$loadData]); }
+    public function getForm($data = [], $loadData = true) { return $this->loadForm('com_xdecarocompetitions.season', 'season', ['control'=>'jform','load_data'=>$loadData]); }
 
     protected function loadFormData()
     {
-        $data = Factory::getApplication()->getUserState('com_decarodcl.edit.season.data', []);
+        $data = Factory::getApplication()->getUserState('com_xdecarocompetitions.edit.season.data', []);
         if (!$data) {
             $data = $this->getItem();
             if (!empty($data->id)) {
-                $assignments = OrganizationAssignmentHelper::load($this->getDatabase(), '#__decarocompetitions_season_organizations', 'season_id', (int) $data->id);
+                $assignments = OrganizationAssignmentHelper::load($this->getDatabase(), '#__xdecarocompetitions_season_organizations', 'season_id', (int) $data->id);
                 foreach (self::ORGANIZATION_FIELDS as $field => $role) $data->{$field} = $assignments[$role] ?? [];
             }
         }
@@ -38,7 +38,7 @@ final class SeasonModel extends BaseAdminModel
             if (!parent::save($data)) { $db->transactionRollback(); return false; }
             $id = (int) $this->getState($this->getName() . '.id');
             if ($id <= 0) throw new \RuntimeException('Season ID not available after save.');
-            OrganizationAssignmentHelper::sync($db, '#__decarocompetitions_season_organizations', 'season_id', $id, $roles);
+            OrganizationAssignmentHelper::sync($db, '#__xdecarocompetitions_season_organizations', 'season_id', $id, $roles);
             $db->transactionCommit(); return true;
         } catch (\Throwable $e) {
             if ($started) { try { $db->transactionRollback(); } catch (\Throwable) {} }

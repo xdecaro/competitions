@@ -1,5 +1,5 @@
 <?php
-namespace Xdecaro\Component\Decarodcl\Administrator\Model;
+namespace Xdecaro\Component\Competitions\Administrator\Model;
 
 defined('_JEXEC') or die;
 
@@ -42,25 +42,25 @@ final class MatchesModel extends ListModel
             ->select($db->quoteName('away.name', 'away_team_name'))
             ->select($db->quoteName('away.short_name', 'away_team_short_name'))
             ->select($db->quoteName('v.name', 'venue_name'))
-            ->from($db->quoteName('#__decarocompetitions_matches', 'a'))
+            ->from($db->quoteName('#__xdecarocompetitions_matches', 'a'))
             ->innerJoin(
-                $db->quoteName('#__decarocompetitions_seasons', 's')
+                $db->quoteName('#__xdecarocompetitions_seasons', 's')
                 . ' ON ' . $db->quoteName('s.id') . ' = ' . $db->quoteName('a.season_id')
             )
             ->innerJoin(
-                $db->quoteName('#__decarocompetitions_tournaments', 't')
+                $db->quoteName('#__xdecarocompetitions_tournaments', 't')
                 . ' ON ' . $db->quoteName('t.id') . ' = ' . $db->quoteName('s.tournament_id')
             )
             ->innerJoin(
-                $db->quoteName('#__decarocompetitions_teams', 'home')
+                $db->quoteName('#__xdecarocompetitions_teams', 'home')
                 . ' ON ' . $db->quoteName('home.id') . ' = ' . $db->quoteName('a.home_team_id')
             )
             ->innerJoin(
-                $db->quoteName('#__decarocompetitions_teams', 'away')
+                $db->quoteName('#__xdecarocompetitions_teams', 'away')
                 . ' ON ' . $db->quoteName('away.id') . ' = ' . $db->quoteName('a.away_team_id')
             )
             ->leftJoin(
-                $db->quoteName('#__decarocompetitions_venues', 'v')
+                $db->quoteName('#__xdecarocompetitions_venues', 'v')
                 . ' ON ' . $db->quoteName('v.id') . ' = ' . $db->quoteName('a.venue_id')
             );
 
@@ -150,7 +150,7 @@ final class MatchesModel extends ListModel
         $db = $this->getDatabase();
         $query = $db->getQuery(true)
             ->select([$db->quoteName('id'), $db->quoteName('name')])
-            ->from($db->quoteName('#__decarocompetitions_tournaments'))
+            ->from($db->quoteName('#__xdecarocompetitions_tournaments'))
             ->where($db->quoteName('state') . ' <> -2')
             ->order($db->quoteName('name') . ' ASC');
 
@@ -167,9 +167,9 @@ final class MatchesModel extends ListModel
                 $db->quoteName('s.season_year'),
                 $db->quoteName('t.name', 'tournament_name'),
             ])
-            ->from($db->quoteName('#__decarocompetitions_seasons', 's'))
+            ->from($db->quoteName('#__xdecarocompetitions_seasons', 's'))
             ->innerJoin(
-                $db->quoteName('#__decarocompetitions_tournaments', 't')
+                $db->quoteName('#__xdecarocompetitions_tournaments', 't')
                 . ' ON ' . $db->quoteName('t.id') . ' = ' . $db->quoteName('s.tournament_id')
             )
             ->where($db->quoteName('s.state') . ' <> -2')
@@ -186,7 +186,7 @@ final class MatchesModel extends ListModel
         $db = $this->getDatabase();
         $query = $db->getQuery(true)
             ->select([$db->quoteName('id'), $db->quoteName('name'), $db->quoteName('short_name')])
-            ->from($db->quoteName('#__decarocompetitions_teams'))
+            ->from($db->quoteName('#__xdecarocompetitions_teams'))
             ->where($db->quoteName('state') . ' <> -2')
             ->where($db->quoteName('approval_status') . ' = ' . $db->quote('approved'))
             ->order($db->quoteName('name') . ' ASC');

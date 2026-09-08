@@ -1,5 +1,5 @@
 <?php
-namespace Xdecaro\Component\Decarodcl\Administrator\Model;
+namespace Xdecaro\Component\Competitions\Administrator\Model;
 
 defined('_JEXEC') or die;
 
@@ -15,12 +15,12 @@ final class CountryModel extends BaseAdminModel
 
     public function getForm($data = [], $loadData = true)
     {
-        return $this->loadForm('com_decarodcl.country', 'country', ['control' => 'jform', 'load_data' => $loadData]);
+        return $this->loadForm('com_xdecarocompetitions.country', 'country', ['control' => 'jform', 'load_data' => $loadData]);
     }
 
     protected function loadFormData()
     {
-        $data = Factory::getApplication()->getUserState('com_decarodcl.edit.country.data', []);
+        $data = Factory::getApplication()->getUserState('com_xdecarocompetitions.edit.country.data', []);
 
         if (!$data) {
             $data = $this->getItem();

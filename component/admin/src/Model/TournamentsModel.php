@@ -1,5 +1,5 @@
 <?php
-namespace Xdecaro\Component\Decarodcl\Administrator\Model;
+namespace Xdecaro\Component\Competitions\Administrator\Model;
 
 defined('_JEXEC') or die;
 
@@ -33,18 +33,18 @@ final class TournamentsModel extends ListModel
 
         $countryNames = $db->getQuery(true)
             ->select("GROUP_CONCAT(" . $db->quoteName('c.name') . " ORDER BY " . $db->quoteName('tc.ordering') . " SEPARATOR ', ')")
-            ->from($db->quoteName('#__decarocompetitions_tournament_countries', 'tc'))
+            ->from($db->quoteName('#__xdecarocompetitions_tournament_countries', 'tc'))
             ->innerJoin(
-                $db->quoteName('#__decarocompetitions_countries', 'c')
+                $db->quoteName('#__xdecarocompetitions_countries', 'c')
                 . ' ON ' . $db->quoteName('c.id') . ' = ' . $db->quoteName('tc.country_id')
             )
             ->where($db->quoteName('tc.tournament_id') . ' = ' . $db->quoteName('a.id'));
 
         $zoneNames = $db->getQuery(true)
             ->select("GROUP_CONCAT(" . $db->quoteName('z.name') . " ORDER BY " . $db->quoteName('tz.ordering') . " SEPARATOR ', ')")
-            ->from($db->quoteName('#__decarocompetitions_tournament_zones', 'tz'))
+            ->from($db->quoteName('#__xdecarocompetitions_tournament_zones', 'tz'))
             ->innerJoin(
-                $db->quoteName('#__decarocompetitions_zones', 'z')
+                $db->quoteName('#__xdecarocompetitions_zones', 'z')
                 . ' ON ' . $db->quoteName('z.id') . ' = ' . $db->quoteName('tz.zone_id')
             )
             ->where($db->quoteName('tz.tournament_id') . ' = ' . $db->quoteName('a.id'));
@@ -54,9 +54,9 @@ final class TournamentsModel extends ListModel
             ->select('COUNT(s.id) AS ' . $db->quoteName('seasons_count'))
             ->select('(' . $countryNames . ') AS ' . $db->quoteName('scope_countries'))
             ->select('(' . $zoneNames . ') AS ' . $db->quoteName('scope_zones'))
-            ->from($db->quoteName('#__decarocompetitions_tournaments', 'a'))
+            ->from($db->quoteName('#__xdecarocompetitions_tournaments', 'a'))
             ->leftJoin(
-                $db->quoteName('#__decarocompetitions_seasons', 's')
+                $db->quoteName('#__xdecarocompetitions_seasons', 's')
                 . ' ON ' . $db->quoteName('s.tournament_id') . ' = ' . $db->quoteName('a.id')
                 . ' AND ' . $db->quoteName('s.state') . ' <> -2'
             )
@@ -141,7 +141,7 @@ final class TournamentsModel extends ListModel
         $db = $this->getDatabase();
         $query = $db->getQuery(true)
             ->select('DISTINCT ' . $db->quoteName('discipline'))
-            ->from($db->quoteName('#__decarocompetitions_tournaments'))
+            ->from($db->quoteName('#__xdecarocompetitions_tournaments'))
             ->where($db->quoteName('state') . ' <> -2')
             ->where($db->quoteName('discipline') . ' IS NOT NULL')
             ->where($db->quoteName('discipline') . " <> ''")

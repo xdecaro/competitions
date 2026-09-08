@@ -1,81 +1,81 @@
 {
   "$schema": "https://developer.joomla.org/schemas/json-schema/web_assets.json",
-  "name": "com_decarodcl",
-  "version": "0.13.0",
+  "name": "com_xdecarocompetitions",
+  "version": "1.0.0",
   "description": "Competitions administrator assets",
   "license": "GPL-2.0-or-later",
   "assets": [
     {
-      "name": "com_decarodcl.admin",
+      "name": "com_xdecarocompetitions.admin",
       "type": "style",
-      "uri": "com_decarodcl/admin.css",
-      "version": "0.13.0"
+      "uri": "com_xdecarocompetitions/admin.css",
+      "version": "1.0.0"
     },
     {
-      "name": "com_decarodcl.filterbar-style",
+      "name": "com_xdecarocompetitions.filterbar-style",
       "type": "style",
-      "uri": "com_decarodcl/filterbar.css",
-      "version": "0.13.0",
+      "uri": "com_xdecarocompetitions/filterbar.css",
+      "version": "1.0.0",
       "dependencies": [
-        "com_decarodcl.admin"
+        "com_xdecarocompetitions.admin"
       ]
     },
     {
-      "name": "com_decarodcl.filterbar",
+      "name": "com_xdecarocompetitions.filterbar",
       "type": "script",
-      "uri": "com_decarodcl/filterbar.js",
-      "version": "0.13.0",
+      "uri": "com_xdecarocompetitions/filterbar.js",
+      "version": "1.0.0",
       "attributes": {
         "defer": true
       }
     },
     {
-      "name": "com_decarodcl.live-sync-style",
+      "name": "com_xdecarocompetitions.live-sync-style",
       "type": "style",
-      "uri": "com_decarodcl/live-sync.css",
-      "version": "0.13.0"
+      "uri": "com_xdecarocompetitions/live-sync.css",
+      "version": "1.0.0"
     },
     {
-      "name": "com_decarodcl.live-sync",
+      "name": "com_xdecarocompetitions.live-sync",
       "type": "script",
-      "uri": "com_decarodcl/live-sync.js",
-      "version": "0.13.0",
+      "uri": "com_xdecarocompetitions/live-sync.js",
+      "version": "1.0.0",
       "attributes": {
         "defer": true
       }
     },
     {
-      "name": "com_decarodcl.scope",
+      "name": "com_xdecarocompetitions.scope",
       "type": "script",
-      "uri": "com_decarodcl/scope.js",
-      "version": "0.13.0",
+      "uri": "com_xdecarocompetitions/scope.js",
+      "version": "1.0.0",
       "attributes": {
         "defer": true
       }
     },
     {
-      "name": "com_decarodcl.core-bridge",
+      "name": "com_xdecarocompetitions.core-bridge",
       "type": "style",
-      "uri": "com_decarodcl/core-bridge.css",
-      "version": "0.13.0",
+      "uri": "com_xdecarocompetitions/core-bridge.css",
+      "version": "1.0.0",
       "dependencies": [
-        "com_decarodcl.admin"
+        "com_xdecarocompetitions.admin"
       ]
     },
     {
-      "name": "com_decarodcl.information",
+      "name": "com_xdecarocompetitions.information",
       "type": "style",
-      "uri": "com_decarodcl/information.css",
-      "version": "0.13.0",
+      "uri": "com_xdecarocompetitions/information.css",
+      "version": "1.0.0",
       "dependencies": [
-        "com_decarodcl.admin"
+        "com_xdecarocompetitions.admin"
       ]
     },
     {
-      "name": "com_decarodcl.information",
+      "name": "com_xdecarocompetitions.information",
       "type": "script",
-      "uri": "com_decarodcl/information.js",
-      "version": "0.13.0",
+      "uri": "com_xdecarocompetitions/information.js",
+      "version": "1.0.0",
       "attributes": {
         "defer": true
       }

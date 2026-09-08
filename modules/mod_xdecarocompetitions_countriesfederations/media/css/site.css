@@ -1,0 +1,130 @@
+.competitions-cf {
+    --competitions-cf-border: color-mix(in srgb, currentColor 16%, transparent);
+    --competitions-cf-muted: color-mix(in srgb, currentColor 68%, transparent);
+    --competitions-cf-surface: color-mix(in srgb, currentColor 4%, transparent);
+    display: grid;
+    gap: 1rem;
+}
+
+.competitions-cf__toolbar {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.competitions-cf__search {
+    box-sizing: border-box;
+    width: min(100%, 28rem);
+    min-height: 2.75rem;
+    padding: .65rem .85rem;
+    color: inherit;
+    background: transparent;
+    border: 1px solid var(--competitions-cf-border);
+    border-radius: .55rem;
+    font: inherit;
+}
+
+.competitions-cf__search:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+}
+
+.competitions-cf__list {
+    display: grid;
+    gap: .85rem;
+}
+
+.competitions-cf__country {
+    border: 1px solid var(--competitions-cf-border);
+    border-radius: .7rem;
+    overflow: hidden;
+}
+
+.competitions-cf__country[hidden] {
+    display: none;
+}
+
+.competitions-cf__country-head,
+.competitions-cf__federation {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: .9rem 1rem;
+}
+
+.competitions-cf__country-head {
+    background: var(--competitions-cf-surface);
+}
+
+.competitions-cf__country-main,
+.competitions-cf__federation-main,
+.competitions-cf__meta {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    min-width: 0;
+}
+
+.competitions-cf__country-name {
+    margin: 0;
+    font-size: 1.05rem;
+    line-height: 1.25;
+}
+
+.competitions-cf__code,
+.competitions-cf__short,
+.competitions-cf__empty,
+.competitions-cf__no-results {
+    color: var(--competitions-cf-muted);
+}
+
+.competitions-cf__code,
+.competitions-cf__short {
+    display: inline-block;
+    margin-top: .15rem;
+    font-size: .82rem;
+}
+
+.competitions-cf__flag,
+.competitions-cf__logo {
+    flex: 0 0 auto;
+    width: 2.25rem;
+    height: 2.25rem;
+    object-fit: contain;
+    border-radius: .3rem;
+}
+
+.competitions-cf__federations {
+    display: grid;
+}
+
+.competitions-cf__federation + .competitions-cf__federation {
+    border-top: 1px solid var(--competitions-cf-border);
+}
+
+.competitions-cf__status {
+    flex: 0 0 auto;
+    padding: .2rem .5rem;
+    border: 1px solid var(--competitions-cf-border);
+    border-radius: 999px;
+    font-size: .78rem;
+}
+
+.competitions-cf__empty,
+.competitions-cf__no-results {
+    margin: 0;
+    padding: .9rem 1rem;
+}
+
+@media (max-width: 640px) {
+    .competitions-cf__country-head,
+    .competitions-cf__federation {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .competitions-cf__meta {
+        width: 100%;
+        justify-content: space-between;
+    }
+}

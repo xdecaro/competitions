@@ -6,10 +6,10 @@ $title = htmlspecialchars((string) ($displayData['title'] ?? ''), ENT_QUOTES, 'U
 $description = htmlspecialchars((string) ($displayData['description'] ?? ''), ENT_QUOTES, 'UTF-8');
 $modifier = preg_replace('/[^A-Za-z0-9_-]/', '', (string) ($displayData['class'] ?? ''));
 ?>
-<header class="dcl-page-header<?= $modifier !== '' ? ' ' . $modifier : ''; ?>">
-    <span class="dcl-page-header__eyebrow"><?= $eyebrow; ?></span>
-    <h1 class="dcl-page-header__title"><?= $title; ?></h1>
+<header class="competitions-page-header<?= $modifier !== '' ? ' ' . $modifier : ''; ?>">
+    <span class="competitions-page-header__eyebrow"><?= $eyebrow; ?></span>
+    <h1 class="competitions-page-header__title"><?= $title; ?></h1>
     <?php if ($description !== '') : ?>
-        <p class="dcl-page-header__description"><?= $description; ?></p>
+        <p class="competitions-page-header__description"><?= $description; ?></p>
     <?php endif; ?>
 </header>

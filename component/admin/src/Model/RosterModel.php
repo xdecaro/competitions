@@ -1,5 +1,5 @@
 <?php
-namespace Xdecaro\Component\Decarodcl\Administrator\Model;
+namespace Xdecaro\Component\Competitions\Administrator\Model;
 
 defined('_JEXEC') or die;
 
@@ -17,7 +17,7 @@ final class RosterModel extends BaseAdminModel
     public function getForm($data = [], $loadData = true)
     {
         return $this->loadForm(
-            'com_decarodcl.roster',
+            'com_xdecarocompetitions.roster',
             'roster',
             ['control' => 'jform', 'load_data' => $loadData]
         );
@@ -25,7 +25,7 @@ final class RosterModel extends BaseAdminModel
 
     protected function loadFormData()
     {
-        $data = Factory::getApplication()->getUserState('com_decarodcl.edit.roster.data', []);
+        $data = Factory::getApplication()->getUserState('com_xdecarocompetitions.edit.roster.data', []);
 
         if (!$data) {
             $data = $this->getItem();
@@ -38,7 +38,7 @@ final class RosterModel extends BaseAdminModel
     {
         parent::preprocessForm($form, $data, $group);
 
-        if (!Factory::getApplication()->getIdentity()->authorise('core.edit.state', 'com_decarodcl')) {
+        if (!Factory::getApplication()->getIdentity()->authorise('core.edit.state', 'com_xdecarocompetitions')) {
             $form->setFieldAttribute('state', 'disabled', 'true');
             $form->setFieldAttribute('state', 'readonly', 'true');
             $form->setFieldAttribute('status', 'disabled', 'true');

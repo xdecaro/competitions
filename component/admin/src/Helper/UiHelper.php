@@ -1,5 +1,5 @@
 <?php
-namespace Xdecaro\Component\Decarodcl\Administrator\Helper;
+namespace Xdecaro\Component\Competitions\Administrator\Helper;
 
 defined('_JEXEC') or die;
 
@@ -17,21 +17,21 @@ final class UiHelper
 
         $document = Factory::getApplication()->getDocument();
         $wa = $document->getWebAssetManager();
-        $styleName = 'com_decarodcl.admin.runtime';
-        $filterStyleName = 'com_decarodcl.filterbar-style.runtime';
-        $filterScriptName = 'com_decarodcl.filterbar.runtime';
-        $syncStyleName = 'com_decarodcl.live-sync-style.runtime';
-        $syncScriptName = 'com_decarodcl.live-sync.runtime';
-        $scopeScriptName = 'com_decarodcl.scope.runtime';
+        $styleName = 'com_xdecarocompetitions.admin.runtime';
+        $filterStyleName = 'com_xdecarocompetitions.filterbar-style.runtime';
+        $filterScriptName = 'com_xdecarocompetitions.filterbar.runtime';
+        $syncStyleName = 'com_xdecarocompetitions.live-sync-style.runtime';
+        $syncScriptName = 'com_xdecarocompetitions.live-sync.runtime';
+        $scopeScriptName = 'com_xdecarocompetitions.scope.runtime';
 
         if (!$wa->assetExists('style', $styleName)) {
-            $wa->registerStyle($styleName, 'com_decarodcl/admin.css', ['version' => self::VERSION]);
+            $wa->registerStyle($styleName, 'com_xdecarocompetitions/admin.css', ['version' => self::VERSION]);
         }
 
         if (!$wa->assetExists('style', $filterStyleName)) {
             $wa->registerStyle(
                 $filterStyleName,
-                'com_decarodcl/filterbar.css',
+                'com_xdecarocompetitions/filterbar.css',
                 ['version' => self::VERSION],
                 [],
                 [$styleName]
@@ -39,13 +39,13 @@ final class UiHelper
         }
 
         if (!$wa->assetExists('style', $syncStyleName)) {
-            $wa->registerStyle($syncStyleName, 'com_decarodcl/live-sync.css', ['version' => self::VERSION]);
+            $wa->registerStyle($syncStyleName, 'com_xdecarocompetitions/live-sync.css', ['version' => self::VERSION]);
         }
 
         if (!$wa->assetExists('script', $filterScriptName)) {
             $wa->registerScript(
                 $filterScriptName,
-                'com_decarodcl/filterbar.js',
+                'com_xdecarocompetitions/filterbar.js',
                 ['version' => self::VERSION],
                 ['defer' => true]
             );
@@ -54,7 +54,7 @@ final class UiHelper
         if (!$wa->assetExists('script', $syncScriptName)) {
             $wa->registerScript(
                 $syncScriptName,
-                'com_decarodcl/live-sync.js',
+                'com_xdecarocompetitions/live-sync.js',
                 ['version' => self::VERSION],
                 ['defer' => true]
             );
@@ -63,39 +63,39 @@ final class UiHelper
         if (!$wa->assetExists('script', $scopeScriptName)) {
             $wa->registerScript(
                 $scopeScriptName,
-                'com_decarodcl/scope.js',
+                'com_xdecarocompetitions/scope.js',
                 ['version' => self::VERSION],
                 ['defer' => true]
             );
         }
 
         $token = Session::getFormToken();
-        $document->addScriptOptions('com_decarodcl.filterbar', [
+        $document->addScriptOptions('com_xdecarocompetitions.filterbar', [
             'strings' => [
-                'filters' => Text::_('COM_DECARODCL_FILTERBAR_FILTERS'),
-                'clear' => Text::_('COM_DECARODCL_FILTERBAR_CLEAR'),
-                'show' => Text::_('COM_DECARODCL_FILTERBAR_SHOW'),
-                'hide' => Text::_('COM_DECARODCL_FILTERBAR_HIDE'),
-                'remove' => Text::_('COM_DECARODCL_FILTERBAR_REMOVE'),
+                'filters' => Text::_('COM_XDECAROCOMPETITIONS_FILTERBAR_FILTERS'),
+                'clear' => Text::_('COM_XDECAROCOMPETITIONS_FILTERBAR_CLEAR'),
+                'show' => Text::_('COM_XDECAROCOMPETITIONS_FILTERBAR_SHOW'),
+                'hide' => Text::_('COM_XDECAROCOMPETITIONS_FILTERBAR_HIDE'),
+                'remove' => Text::_('COM_XDECAROCOMPETITIONS_FILTERBAR_REMOVE'),
             ],
         ]);
-        $document->addScriptOptions('com_decarodcl.liveSync', [
-            'endpoint' => 'index.php?option=com_decarodcl&task=sync.poll&format=json',
+        $document->addScriptOptions('com_xdecarocompetitions.liveSync', [
+            'endpoint' => 'index.php?option=com_xdecarocompetitions&task=sync.poll&format=json',
             'token' => $token,
             'interval' => 5000,
             'strings' => [
-                'presence' => Text::_('COM_DECARODCL_LIVE_PRESENCE'),
-                'conflict' => Text::_('COM_DECARODCL_LIVE_CONFLICT'),
-                'reload' => Text::_('COM_DECARODCL_LIVE_RELOAD'),
+                'presence' => Text::_('COM_XDECAROCOMPETITIONS_LIVE_PRESENCE'),
+                'conflict' => Text::_('COM_XDECAROCOMPETITIONS_LIVE_CONFLICT'),
+                'reload' => Text::_('COM_XDECAROCOMPETITIONS_LIVE_RELOAD'),
             ],
         ]);
-        $document->addScriptOptions('com_decarodcl.scope', [
-            'endpoint' => 'index.php?option=com_decarodcl&task=scope.eligibleTeams&format=json',
+        $document->addScriptOptions('com_xdecarocompetitions.scope', [
+            'endpoint' => 'index.php?option=com_xdecarocompetitions&task=scope.eligibleTeams&format=json',
             'token' => $token,
             'strings' => [
-                'selectSeason' => Text::_('COM_DECARODCL_PARTICIPATION_SELECT_SEASON_FIRST'),
-                'loading' => Text::_('COM_DECARODCL_PARTICIPATION_LOADING_TEAMS'),
-                'noTeams' => Text::_('COM_DECARODCL_PARTICIPATION_NO_ELIGIBLE_TEAMS'),
+                'selectSeason' => Text::_('COM_XDECAROCOMPETITIONS_PARTICIPATION_SELECT_SEASON_FIRST'),
+                'loading' => Text::_('COM_XDECAROCOMPETITIONS_PARTICIPATION_LOADING_TEAMS'),
+                'noTeams' => Text::_('COM_XDECAROCOMPETITIONS_PARTICIPATION_NO_ELIGIBLE_TEAMS'),
                 'selectTeam' => Text::_('JSELECT'),
             ],
         ]);

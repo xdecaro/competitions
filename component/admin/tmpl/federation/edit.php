@@ -5,11 +5,11 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
 
 $wa = Factory::getApplication()->getDocument()->getWebAssetManager();
-$wa->useStyle('com_decarodcl.admin');
+$wa->useStyle('com_xdecarocompetitions.admin');
 
 HTMLHelper::_('behavior.formvalidator');
 ?>
-<form action="index.php?option=com_decarodcl&layout=edit&id=<?= (int) $this->item->id; ?>" method="post" name="adminForm" id="federation-form" class="form-validate dcl-admin">
+<form action="index.php?option=com_xdecarocompetitions&layout=edit&id=<?= (int) $this->item->id; ?>" method="post" name="adminForm" id="federation-form" class="form-validate competitions-admin">
     <div class="card">
         <div class="card-body">
             <?= $this->form->renderFieldset('details'); ?>

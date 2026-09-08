@@ -1,5 +1,5 @@
 <?php
-namespace Xdecaro\Component\Decarodcl\Administrator\Model;
+namespace Xdecaro\Component\Competitions\Administrator\Model;
 
 defined('_JEXEC') or die;
 
@@ -17,7 +17,7 @@ final class MatchModel extends BaseAdminModel
     public function getForm($data = [], $loadData = true)
     {
         return $this->loadForm(
-            'com_decarodcl.match',
+            'com_xdecarocompetitions.match',
             'match',
             ['control' => 'jform', 'load_data' => $loadData]
         );
@@ -25,7 +25,7 @@ final class MatchModel extends BaseAdminModel
 
     protected function loadFormData()
     {
-        $data = Factory::getApplication()->getUserState('com_decarodcl.edit.match.data', []);
+        $data = Factory::getApplication()->getUserState('com_xdecarocompetitions.edit.match.data', []);
 
         return $data ?: $this->getItem();
     }
@@ -34,7 +34,7 @@ final class MatchModel extends BaseAdminModel
     {
         parent::preprocessForm($form, $data, $group);
 
-        if (!Factory::getApplication()->getIdentity()->authorise('core.edit.state', 'com_decarodcl')) {
+        if (!Factory::getApplication()->getIdentity()->authorise('core.edit.state', 'com_xdecarocompetitions')) {
             $form->setFieldAttribute('state', 'disabled', 'true');
             $form->setFieldAttribute('state', 'readonly', 'true');
         }

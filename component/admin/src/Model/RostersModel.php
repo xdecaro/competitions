@@ -1,5 +1,5 @@
 <?php
-namespace Xdecaro\Component\Decarodcl\Administrator\Model;
+namespace Xdecaro\Component\Competitions\Administrator\Model;
 
 defined('_JEXEC') or die;
 
@@ -43,25 +43,25 @@ final class RostersModel extends ListModel
             ->select($db->quoteName('s.name', 'season_name'))
             ->select($db->quoteName('s.season_year', 'season_year'))
             ->select($db->quoteName('t.name', 'tournament_name'))
-            ->from($db->quoteName('#__decarocompetitions_rosters', 'a'))
+            ->from($db->quoteName('#__xdecarocompetitions_rosters', 'a'))
             ->innerJoin(
-                $db->quoteName('#__decarocompetitions_participations', 'pr')
+                $db->quoteName('#__xdecarocompetitions_participations', 'pr')
                 . ' ON ' . $db->quoteName('pr.id') . ' = ' . $db->quoteName('a.participation_id')
             )
             ->innerJoin(
-                $db->quoteName('#__decarocompetitions_teams', 'tm')
+                $db->quoteName('#__xdecarocompetitions_teams', 'tm')
                 . ' ON ' . $db->quoteName('tm.id') . ' = ' . $db->quoteName('a.team_id')
             )
             ->innerJoin(
-                $db->quoteName('#__decarocompetitions_players', 'p')
+                $db->quoteName('#__xdecarocompetitions_players', 'p')
                 . ' ON ' . $db->quoteName('p.id') . ' = ' . $db->quoteName('a.player_id')
             )
             ->innerJoin(
-                $db->quoteName('#__decarocompetitions_seasons', 's')
+                $db->quoteName('#__xdecarocompetitions_seasons', 's')
                 . ' ON ' . $db->quoteName('s.id') . ' = ' . $db->quoteName('pr.season_id')
             )
             ->innerJoin(
-                $db->quoteName('#__decarocompetitions_tournaments', 't')
+                $db->quoteName('#__xdecarocompetitions_tournaments', 't')
                 . ' ON ' . $db->quoteName('t.id') . ' = ' . $db->quoteName('s.tournament_id')
             );
 
@@ -139,7 +139,7 @@ final class RostersModel extends ListModel
         $db = $this->getDatabase();
         $query = $db->getQuery(true)
             ->select([$db->quoteName('id'), $db->quoteName('name')])
-            ->from($db->quoteName('#__decarocompetitions_teams'))
+            ->from($db->quoteName('#__xdecarocompetitions_teams'))
             ->where($db->quoteName('state') . ' <> -2')
             ->order($db->quoteName('name') . ' ASC');
 
@@ -156,9 +156,9 @@ final class RostersModel extends ListModel
                 $db->quoteName('s.season_year'),
                 $db->quoteName('t.name', 'tournament_name'),
             ])
-            ->from($db->quoteName('#__decarocompetitions_seasons', 's'))
+            ->from($db->quoteName('#__xdecarocompetitions_seasons', 's'))
             ->innerJoin(
-                $db->quoteName('#__decarocompetitions_tournaments', 't')
+                $db->quoteName('#__xdecarocompetitions_tournaments', 't')
                 . ' ON ' . $db->quoteName('t.id') . ' = ' . $db->quoteName('s.tournament_id')
             )
             ->where($db->quoteName('s.state') . ' <> -2')

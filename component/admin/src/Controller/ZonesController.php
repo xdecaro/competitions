@@ -1,5 +1,5 @@
 <?php
-namespace Xdecaro\Component\Decarodcl\Administrator\Controller;
+namespace Xdecaro\Component\Competitions\Administrator\Controller;
 
 defined('_JEXEC') or die;
 
@@ -16,7 +16,7 @@ final class ZonesController extends AdminController
 
     public function publish(): void
     {
-        if (!Factory::getApplication()->getIdentity()->authorise('core.edit.state', 'com_decarodcl')) {
+        if (!Factory::getApplication()->getIdentity()->authorise('core.edit.state', 'com_xdecarocompetitions')) {
             throw new \RuntimeException(Text::_('JERROR_ALERTNOAUTHOR'), 403);
         }
 
@@ -25,7 +25,7 @@ final class ZonesController extends AdminController
 
     public function delete(): void
     {
-        if (!Factory::getApplication()->getIdentity()->authorise('core.delete', 'com_decarodcl')) {
+        if (!Factory::getApplication()->getIdentity()->authorise('core.delete', 'com_xdecarocompetitions')) {
             throw new \RuntimeException(Text::_('JERROR_ALERTNOAUTHOR'), 403);
         }
 

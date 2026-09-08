@@ -1,5 +1,5 @@
 <?php
-namespace Xdecaro\Component\Decarodcl\Administrator\Service;
+namespace Xdecaro\Component\Competitions\Administrator\Service;
 
 defined('_JEXEC') or die;
 
@@ -7,12 +7,12 @@ defined('_JEXEC') or die;
  * Optional adapter between Competitions and the public Core by xdecaro
  * cross-product reference contract.
  *
- * The historical Joomla component element remains com_decarodcl and must be
+ * The historical Joomla component element remains com_xdecarocompetitions and must be
  * used in public entity references for upgrade compatibility.
  */
 final class CoreIntegrationService
 {
-    private const COMPONENT = 'com_decarodcl';
+    private const COMPONENT = 'com_xdecarocompetitions';
 
     public function isAvailable(): bool
     {

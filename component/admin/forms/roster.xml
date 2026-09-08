@@ -1,34 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <form>
-  <fieldset name="details" label="COM_DECARODCL_ROSTER_DETAILS">
+  <fieldset name="details" label="COM_XDECAROCOMPETITIONS_ROSTER_DETAILS">
     <field name="id" type="hidden" />
     <field name="modified" type="hidden" />
     <field
       name="participation_id"
       type="sql"
-      label="COM_DECARODCL_FIELD_PARTICIPATION"
+      label="COM_XDECAROCOMPETITIONS_FIELD_PARTICIPATION"
       required="true"
-      query="SELECT p.id AS value, CONCAT(tm.name, ' — ', t.name, ' / ', s.name, IF(s.season_year IS NULL, '', CONCAT(' (', s.season_year, ')'))) AS text FROM #__decarocompetitions_participations AS p INNER JOIN #__decarocompetitions_teams AS tm ON tm.id = p.team_id INNER JOIN #__decarocompetitions_seasons AS s ON s.id = p.season_id INNER JOIN #__decarocompetitions_tournaments AS t ON t.id = s.tournament_id WHERE p.state &lt;&gt; -2 AND tm.state &lt;&gt; -2 AND s.state &lt;&gt; -2 AND t.state &lt;&gt; -2 ORDER BY s.season_year DESC, t.name ASC, tm.name ASC"
+      query="SELECT p.id AS value, CONCAT(tm.name, ' — ', t.name, ' / ', s.name, IF(s.season_year IS NULL, '', CONCAT(' (', s.season_year, ')'))) AS text FROM #__xdecarocompetitions_participations AS p INNER JOIN #__xdecarocompetitions_teams AS tm ON tm.id = p.team_id INNER JOIN #__xdecarocompetitions_seasons AS s ON s.id = p.season_id INNER JOIN #__xdecarocompetitions_tournaments AS t ON t.id = s.tournament_id WHERE p.state &lt;&gt; -2 AND tm.state &lt;&gt; -2 AND s.state &lt;&gt; -2 AND t.state &lt;&gt; -2 ORDER BY s.season_year DESC, t.name ASC, tm.name ASC"
       key_field="value"
       value_field="text"
     />
     <field
       name="player_id"
       type="sql"
-      label="COM_DECARODCL_FIELD_PLAYER"
+      label="COM_XDECAROCOMPETITIONS_FIELD_PLAYER"
       required="true"
-      query="SELECT p.id AS value, CONCAT(p.last_name, ' ', p.first_name, IF(p.external_ref IS NULL OR p.external_ref = '', '', CONCAT(' — ', p.external_ref))) AS text FROM #__decarocompetitions_players AS p WHERE p.state &lt;&gt; -2 ORDER BY p.last_name ASC, p.first_name ASC"
+      query="SELECT p.id AS value, CONCAT(p.last_name, ' ', p.first_name, IF(p.external_ref IS NULL OR p.external_ref = '', '', CONCAT(' — ', p.external_ref))) AS text FROM #__xdecarocompetitions_players AS p WHERE p.state &lt;&gt; -2 ORDER BY p.last_name ASC, p.first_name ASC"
       key_field="value"
       value_field="text"
     />
-    <field name="shirt_number" type="number" label="COM_DECARODCL_FIELD_SHIRT_NUMBER" min="0" max="999" />
-    <field name="role" type="text" label="COM_DECARODCL_FIELD_ROLE" description="COM_DECARODCL_FIELD_ROLE_DESC" maxlength="50" />
-    <field name="status" type="list" label="COM_DECARODCL_FIELD_ROSTER_STATUS" default="pending">
-      <option value="pending">COM_DECARODCL_ROSTER_PENDING</option>
-      <option value="approved">COM_DECARODCL_ROSTER_APPROVED</option>
-      <option value="rejected">COM_DECARODCL_ROSTER_REJECTED</option>
+    <field name="shirt_number" type="number" label="COM_XDECAROCOMPETITIONS_FIELD_SHIRT_NUMBER" min="0" max="999" />
+    <field name="role" type="text" label="COM_XDECAROCOMPETITIONS_FIELD_ROLE" description="COM_XDECAROCOMPETITIONS_FIELD_ROLE_DESC" maxlength="50" />
+    <field name="status" type="list" label="COM_XDECAROCOMPETITIONS_FIELD_ROSTER_STATUS" default="pending">
+      <option value="pending">COM_XDECAROCOMPETITIONS_ROSTER_PENDING</option>
+      <option value="approved">COM_XDECAROCOMPETITIONS_ROSTER_APPROVED</option>
+      <option value="rejected">COM_XDECAROCOMPETITIONS_ROSTER_REJECTED</option>
     </field>
-    <field name="review_note" type="textarea" label="COM_DECARODCL_FIELD_REVIEW_NOTE" rows="5" filter="safehtml" />
+    <field name="review_note" type="textarea" label="COM_XDECAROCOMPETITIONS_FIELD_REVIEW_NOTE" rows="5" filter="safehtml" />
     <field name="state" type="list" label="JSTATUS" default="1">
       <option value="1">JPUBLISHED</option>
       <option value="0">JUNPUBLISHED</option>

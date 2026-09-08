@@ -1,5 +1,5 @@
 <?php
-namespace Xdecaro\Component\Decarodcl\Administrator\Table;
+namespace Xdecaro\Component\Competitions\Administrator\Table;
 
 defined('_JEXEC') or die;
 
@@ -8,13 +8,13 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Table\Table;
 use Joomla\Database\DatabaseDriver;
 use Joomla\Database\ParameterType;
-use Xdecaro\Component\Decarodcl\Administrator\Helper\TournamentScopeHelper;
+use Xdecaro\Component\Competitions\Administrator\Helper\TournamentScopeHelper;
 
 final class ParticipationTable extends Table
 {
     public function __construct(DatabaseDriver $db)
     {
-        parent::__construct('#__decarocompetitions_participations', 'id', $db);
+        parent::__construct('#__xdecarocompetitions_participations', 'id', $db);
     }
 
     public function check(): bool
@@ -25,22 +25,22 @@ final class ParticipationTable extends Table
         $this->review_note = trim((string) $this->review_note) ?: null;
 
         if ($this->team_id <= 0) {
-            $this->setError(Text::_('COM_DECARODCL_ERROR_PARTICIPATION_TEAM_REQUIRED'));
+            $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_PARTICIPATION_TEAM_REQUIRED'));
             return false;
         }
 
         if ($this->season_id <= 0) {
-            $this->setError(Text::_('COM_DECARODCL_ERROR_PARTICIPATION_SEASON_REQUIRED'));
+            $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_PARTICIPATION_SEASON_REQUIRED'));
             return false;
         }
 
         if (!in_array($this->status, ['draft', 'submitted', 'approved', 'rejected'], true)) {
-            $this->setError(Text::_('COM_DECARODCL_ERROR_PARTICIPATION_STATUS_INVALID'));
+            $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_PARTICIPATION_STATUS_INVALID'));
             return false;
         }
 
         if (!$this->canChangeStatus()) {
-            $this->setError(Text::_('COM_DECARODCL_ERROR_APPROVAL_PERMISSION'));
+            $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_APPROVAL_PERMISSION'));
             return false;
         }
 
@@ -50,7 +50,7 @@ final class ParticipationTable extends Table
 
         $query = $db->getQuery(true)
             ->select([$db->quoteName('approval_status'), $db->quoteName('state')])
-            ->from($db->quoteName('#__decarocompetitions_teams'))
+            ->from($db->quoteName('#__xdecarocompetitions_teams'))
             ->where($db->quoteName('id') . ' = :teamId')
             ->where($db->quoteName('state') . ' <> -2')
             ->bind(':teamId', $this->team_id, ParameterType::INTEGER);
@@ -58,25 +58,25 @@ final class ParticipationTable extends Table
         $team = $db->setQuery($query)->loadObject();
 
         if (!$team) {
-            $this->setError(Text::_('COM_DECARODCL_ERROR_PARTICIPATION_TEAM_INVALID'));
+            $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_PARTICIPATION_TEAM_INVALID'));
             return false;
         }
 
         if ($this->status === 'approved' && (string) $team->approval_status !== 'approved') {
-            $this->setError(Text::_('COM_DECARODCL_ERROR_PARTICIPATION_TEAM_NOT_APPROVED'));
+            $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_PARTICIPATION_TEAM_NOT_APPROVED'));
             return false;
         }
 
         $query = $db->getQuery(true)
             ->select($db->quoteName('tournament_id'))
-            ->from($db->quoteName('#__decarocompetitions_seasons'))
+            ->from($db->quoteName('#__xdecarocompetitions_seasons'))
             ->where($db->quoteName('id') . ' = :seasonId')
             ->where($db->quoteName('state') . ' <> -2')
             ->bind(':seasonId', $this->season_id, ParameterType::INTEGER);
         $tournamentId = (int) $db->setQuery($query, 0, 1)->loadResult();
 
         if ($tournamentId <= 0) {
-            $this->setError(Text::_('COM_DECARODCL_ERROR_PARTICIPATION_SEASON_INVALID'));
+            $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_PARTICIPATION_SEASON_INVALID'));
             return false;
         }
 
@@ -89,7 +89,7 @@ final class ParticipationTable extends Table
 
         $query = $db->getQuery(true)
             ->select('COUNT(*)')
-            ->from($db->quoteName('#__decarocompetitions_participations'))
+            ->from($db->quoteName('#__xdecarocompetitions_participations'))
             ->where($db->quoteName('team_id') . ' = :teamId')
             ->where($db->quoteName('season_id') . ' = :seasonId')
             ->where($db->quoteName('id') . ' <> :id')
@@ -98,7 +98,7 @@ final class ParticipationTable extends Table
             ->bind(':id', $this->id, ParameterType::INTEGER);
 
         if ((int) $db->setQuery($query)->loadResult() > 0) {
-            $this->setError(Text::_('COM_DECARODCL_ERROR_PARTICIPATION_DUPLICATE'));
+            $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_PARTICIPATION_DUPLICATE'));
             return false;
         }
 
@@ -120,7 +120,7 @@ final class ParticipationTable extends Table
                     $db->quoteName('reviewed_at'),
                     $db->quoteName('reviewed_by'),
                 ])
-                ->from($db->quoteName('#__decarocompetitions_participations'))
+                ->from($db->quoteName('#__xdecarocompetitions_participations'))
                 ->where($db->quoteName('id') . ' = :id')
                 ->bind(':id', $this->id, ParameterType::INTEGER);
             $previous = $db->setQuery($query)->loadObject();
@@ -158,7 +158,7 @@ final class ParticipationTable extends Table
     {
         $identity = Factory::getApplication()->getIdentity();
 
-        if ($identity->authorise('core.edit.state', 'com_decarodcl')) {
+        if ($identity->authorise('core.edit.state', 'com_xdecarocompetitions')) {
             return;
         }
 
@@ -170,7 +170,7 @@ final class ParticipationTable extends Table
         $db = $this->getDbo();
         $query = $db->getQuery(true)
             ->select($db->quoteName('state'))
-            ->from($db->quoteName('#__decarocompetitions_participations'))
+            ->from($db->quoteName('#__xdecarocompetitions_participations'))
             ->where($db->quoteName('id') . ' = :stateId')
             ->bind(':stateId', $this->id, ParameterType::INTEGER);
 
@@ -185,7 +185,7 @@ final class ParticipationTable extends Table
     {
         $identity = Factory::getApplication()->getIdentity();
 
-        if ($identity->authorise('core.edit.state', 'com_decarodcl')) {
+        if ($identity->authorise('core.edit.state', 'com_xdecarocompetitions')) {
             return true;
         }
 
@@ -196,7 +196,7 @@ final class ParticipationTable extends Table
         $db = $this->getDbo();
         $query = $db->getQuery(true)
             ->select($db->quoteName('status'))
-            ->from($db->quoteName('#__decarocompetitions_participations'))
+            ->from($db->quoteName('#__xdecarocompetitions_participations'))
             ->where($db->quoteName('id') . ' = :id')
             ->bind(':id', $this->id, ParameterType::INTEGER);
 
