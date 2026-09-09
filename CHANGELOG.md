@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.2.0 - 2026-09-09
+
+- Added optional bridges to Notifications 1.x and Tasks 1.x through their public Joomla component services only.
+- Added an ACL-protected Competitions Analytics provider for tournaments, seasons, teams, matches, participations, match events and rankings.
+- Added `plg_xdecaroanalytics_competitions` for Analytics provider discovery.
+- Added a Joomla Scheduled Tasks plugin for upcoming scheduled-match reminders to an explicitly configured Joomla manager.
+- Added Core capability declarations for analytics, notification/task bridges and match reminders when Core 1.4+ CapabilityRegistry is available.
+- Kept all optional integrations safe when the related product is absent; no external database tables are read or written.
+- Added a non-destructive 1.2.0 schema marker; no competition-domain database changes are required.
+- Fixed Joomla SQL manifest declarations to use `charset="utf8"` while retaining utf8mb4 table definitions.
+- Package updates preserve existing plugin enabled/disabled state; integration plugins are enabled only on fresh install.
+
 ## 1.1.0 - 2026-09-08
 
 - Made `xdecaro\Component\Competitions` the canonical PHP component namespace.
