@@ -5,58 +5,81 @@ on:
     branches: [main]
   pull_request:
 
+permissions: {contents: read}
+
 jobs:
   validate:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
+      - uses: shivammathur/setup-php@v2
+        with: {php-version: '8.3', extensions: zip, coverage: none}
       - name: PHP syntax
         run: find component modules plugins package -name '*.php' -print0 | xargs -0 -n1 php -l
-
       - name: JavaScript syntax
         run: find component modules plugins -name '*.js' -print0 | xargs -0 -n1 node --check
-
       - name: XML syntax
         run: |
           python3 - <<'PY'
           from pathlib import Path
           import xml.etree.ElementTree as ET
           for path in Path('.').rglob('*.xml'):
-              if '.git' in path.parts or 'dist' in path.parts:
-                  continue
-              ET.parse(path)
-              print('OK', path)
+              if '.git' not in path.parts and 'dist' not in path.parts: ET.parse(path)
           PY
-
-      - name: Source and metadata validation
+      - name: Source validation
         run: python3 tools/validate_release.py
-
-      - name: Deterministic build A
+      - name: Deterministic build
         run: |
-          set -euo pipefail
           python3 tools/build.py
-          cp dist/SHA256SUMS.txt /tmp/competitions-sha-a.txt
-
-      - name: Deterministic build B
-        run: |
-          set -euo pipefail
+          cp dist/SHA256SUMS.txt /tmp/a.txt
+          python3 tools/validate_release.py --dist
           rm -rf dist
           python3 tools/build.py
-          diff -u /tmp/competitions-sha-a.txt dist/SHA256SUMS.txt
+          diff -u /tmp/a.txt dist/SHA256SUMS.txt
+          python3 tools/validate_release.py --dist
 
-      - name: Distribution validation
-        run: python3 tools/validate_release.py --dist
-
-      - name: Verify Core integration and package identity
+  joomla-runtime:
+    runs-on: ubuntu-latest
+    needs: validate
+    services:
+      mysql:
+        image: mysql:8.0
+        env: {MYSQL_ALLOW_EMPTY_PASSWORD: 'yes', MYSQL_DATABASE: joomla}
+        ports: ['3306:3306']
+        options: >-
+          --health-cmd="mysqladmin ping -h localhost" --health-interval=10s --health-timeout=5s --health-retries=10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with: {php-version: '8.3', extensions: 'mysqli,zip,simplexml', coverage: none}
+      - name: Build package
+        run: python3 tools/build.py
+      - name: Download Joomla 6.1.3
         run: |
-          set -euo pipefail
-          VERSION="$(cat VERSION)"
-          COMPONENT="dist/com_xdecarocompetitions_${VERSION}.zip"
-          PACKAGE="dist/pkg_xdecarocompetitions_${VERSION}.zip"
-          unzip -p "$COMPONENT" media/joomla.asset.json | grep -Fq '"com_xdecarocompetitions.core-bridge"'
-          unzip -p "$COMPONENT" admin/src/Service/CoreIntegrationService.php | grep -Fq 'com_xdecarocompetitions'
-          unzip -p "$COMPONENT" admin/tmpl/information/core.php | grep -Fq 'xdecaro-scope competitions-core-scope'
-          unzip -p "$COMPONENT" admin/sql/install.mysql.utf8mb4.sql | grep -Fq '#__xdecarocompetitions_'
-          unzip -l "$PACKAGE" | grep -Fq "com_xdecarocompetitions_${VERSION}.zip"
-          unzip -l "$PACKAGE" | grep -Fq "plg_system_xdecarocompetitions_${VERSION}.zip"
+          curl -fL --retry 3 'https://github.com/joomla/joomla-cms/releases/download/6.1.3/Joomla_6.1.3-Stable-Full_Package.zip' -o /tmp/joomla.zip
+          echo 'a49305652503f9344d046d55471f324a07882996132ed967c3b0fe34707ae4a1  /tmp/joomla.zip' | sha256sum --check --strict
+          mkdir joomla && unzip -q /tmp/joomla.zip -d joomla
+      - name: Install Joomla and Competitions
+        run: |
+          cd joomla
+          php installation/joomla.php install --site-name='Competitions CI' --admin-user='CI Admin' --admin-username=admin --admin-password="CompCI-${GITHUB_RUN_ID}!" --admin-email=admin@example.invalid --db-type=mysqli --db-host=127.0.0.1 --db-user=root --db-pass='' --db-name=joomla --db-prefix=cmp_ --db-encryption=0 --no-interaction
+          VERSION="$(cat "$GITHUB_WORKSPACE/VERSION")"
+          php cli/joomla.php extension:install --path="$GITHUB_WORKSPACE/dist/pkg_xdecarocompetitions_${VERSION}.zip" -vvv
+      - name: Verify package and schema
+        run: |
+          MYSQL=(mysql --protocol=TCP -h127.0.0.1 -uroot --batch --skip-column-names joomla)
+          for table in cmp_xdecarocompetitions_tournaments cmp_xdecarocompetitions_seasons cmp_xdecarocompetitions_teams cmp_xdecarocompetitions_participations cmp_xdecarocompetitions_matches cmp_xdecarocompetitions_match_events cmp_xdecarocompetitions_rankings; do
+            test "$("${MYSQL[@]}" -e "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='joomla' AND table_name='${table}';")" = '1'
+          done
+          for row in "component|com_xdecarocompetitions|" "plugin|xdecarocompetitions|system" "plugin|competitions|xdecaroanalytics" "plugin|xdecarocompetitions|task"; do
+            IFS='|' read -r type element folder <<< "$row"
+            count="$("${MYSQL[@]}" -e "SELECT COUNT(*) FROM cmp_extensions WHERE type='${type}' AND element='${element}' AND folder='${folder}';")"
+            test "$count" = '1'
+          done
+          for row in "system|xdecarocompetitions" "xdecaroanalytics|competitions" "task|xdecarocompetitions"; do
+            IFS='|' read -r folder element <<< "$row"
+            enabled="$("${MYSQL[@]}" -e "SELECT enabled FROM cmp_extensions WHERE type='plugin' AND folder='${folder}' AND element='${element}' LIMIT 1;")"
+            test "$enabled" = '1'
+          done
+          schema="$("${MYSQL[@]}" -e "SELECT s.version_id FROM cmp_schemas s JOIN cmp_extensions e ON e.extension_id=s.extension_id WHERE e.type='component' AND e.element='com_xdecarocompetitions' LIMIT 1;")"
+          test "$schema" = '1.2.0'
