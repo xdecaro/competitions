@@ -1,0 +1,2 @@
+-- Competitions 1.2.0 integration-only schema marker.
+-- No domain tables or stored competition data are changed by this release.

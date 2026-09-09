@@ -6,75 +6,22 @@
   <copyright>Copyright (C) 2026 Luca De Caro. All rights reserved.</copyright>
   <license>GNU General Public License version 2 or later</license>
   <authorUrl>https://github.com/xdecaro/competitions</authorUrl>
-  <version>1.1.0</version>
+  <version>1.2.0</version>
   <description>COM_XDECAROCOMPETITIONS_XML_DESCRIPTION</description>
   <targetplatform name="joomla" version="6.*" />
   <namespace path="src">xdecaro\Component\Competitions</namespace>
 
-  <files folder="site">
-    <folder>src</folder>
-  </files>
-
+  <files folder="site"><folder>src</folder></files>
   <administration>
     <menu>COM_XDECAROCOMPETITIONS</menu>
     <submenu>
-      <menu view="dashboard">COM_XDECAROCOMPETITIONS_DASHBOARD</menu>
-      <menu view="organizations">COM_XDECAROCOMPETITIONS_ORGANIZATIONS</menu>
-      <menu view="zones">COM_XDECAROCOMPETITIONS_ZONES</menu>
-      <menu view="countries">COM_XDECAROCOMPETITIONS_COUNTRIES</menu>
-      <menu view="federations">COM_XDECAROCOMPETITIONS_FEDERATIONS</menu>
-      <menu view="tournaments">COM_XDECAROCOMPETITIONS_TOURNAMENTS</menu>
-      <menu view="seasons">COM_XDECAROCOMPETITIONS_SEASONS</menu>
-      <menu view="teams">COM_XDECAROCOMPETITIONS_TEAMS</menu>
-      <menu view="participations">COM_XDECAROCOMPETITIONS_PARTICIPATIONS</menu>
-      <menu view="players">COM_XDECAROCOMPETITIONS_PLAYERS</menu>
-      <menu view="rosters">COM_XDECAROCOMPETITIONS_ROSTERS</menu>
-      <menu view="matches">COM_XDECAROCOMPETITIONS_MATCHES</menu>
-      <menu view="information">COM_XDECAROCOMPETITIONS_INFORMATION</menu>
+      <menu view="dashboard">COM_XDECAROCOMPETITIONS_DASHBOARD</menu><menu view="organizations">COM_XDECAROCOMPETITIONS_ORGANIZATIONS</menu><menu view="zones">COM_XDECAROCOMPETITIONS_ZONES</menu><menu view="countries">COM_XDECAROCOMPETITIONS_COUNTRIES</menu><menu view="federations">COM_XDECAROCOMPETITIONS_FEDERATIONS</menu><menu view="tournaments">COM_XDECAROCOMPETITIONS_TOURNAMENTS</menu><menu view="seasons">COM_XDECAROCOMPETITIONS_SEASONS</menu><menu view="teams">COM_XDECAROCOMPETITIONS_TEAMS</menu><menu view="participations">COM_XDECAROCOMPETITIONS_PARTICIPATIONS</menu><menu view="players">COM_XDECAROCOMPETITIONS_PLAYERS</menu><menu view="rosters">COM_XDECAROCOMPETITIONS_ROSTERS</menu><menu view="matches">COM_XDECAROCOMPETITIONS_MATCHES</menu><menu view="information">COM_XDECAROCOMPETITIONS_INFORMATION</menu>
     </submenu>
-    <files folder="admin">
-      <filename>access.xml</filename>
-      <filename>config.xml</filename>
-      <folder>forms</folder>
-      <folder>layouts</folder>
-      <folder>services</folder>
-      <folder>sql</folder>
-      <folder>src</folder>
-      <folder>tmpl</folder>
-    </files>
-    <languages folder="admin/language">
-      <language tag="en-GB">en-GB/com_xdecarocompetitions.ini</language>
-      <language tag="en-GB">en-GB/com_xdecarocompetitions.sys.ini</language>
-      <language tag="it-IT">it-IT/com_xdecarocompetitions.ini</language>
-      <language tag="it-IT">it-IT/com_xdecarocompetitions.sys.ini</language>
-    </languages>
+    <files folder="admin"><filename>access.xml</filename><filename>config.xml</filename><folder>forms</folder><folder>layouts</folder><folder>services</folder><folder>sql</folder><folder>src</folder><folder>tmpl</folder></files>
+    <languages folder="admin/language"><language tag="en-GB">en-GB/com_xdecarocompetitions.ini</language><language tag="en-GB">en-GB/com_xdecarocompetitions.sys.ini</language><language tag="it-IT">it-IT/com_xdecarocompetitions.ini</language><language tag="it-IT">it-IT/com_xdecarocompetitions.sys.ini</language></languages>
   </administration>
-
-  <media destination="com_xdecarocompetitions" folder="media">
-    <filename>joomla.asset.json</filename>
-    <filename>admin.css</filename>
-    <filename>live-sync.css</filename>
-    <filename>live-sync.js</filename>
-    <filename>scope.js</filename>
-    <folder>css</folder>
-    <folder>js</folder>
-  </media>
-
-  <install>
-    <sql>
-      <file driver="mysql" charset="utf8mb4">sql/install.mysql.utf8mb4.sql</file>
-    </sql>
-  </install>
-
-  <uninstall>
-    <sql>
-      <file driver="mysql" charset="utf8mb4">sql/uninstall.mysql.utf8mb4.sql</file>
-    </sql>
-  </uninstall>
-
-  <update>
-    <schemas>
-      <schemapath type="mysql">sql/updates/mysql</schemapath>
-    </schemas>
-  </update>
+  <media destination="com_xdecarocompetitions" folder="media"><filename>joomla.asset.json</filename><filename>admin.css</filename><filename>live-sync.css</filename><filename>live-sync.js</filename><filename>scope.js</filename><folder>css</folder><folder>js</folder></media>
+  <install><sql><file driver="mysql" charset="utf8">sql/install.mysql.utf8mb4.sql</file></sql></install>
+  <uninstall><sql><file driver="mysql" charset="utf8">sql/uninstall.mysql.utf8mb4.sql</file></sql></uninstall>
+  <update><schemas><schemapath type="mysql">sql/updates/mysql</schemapath></schemas></update>
 </extension>
