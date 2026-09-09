@@ -64,4 +64,4 @@ jobs:
             "dist/mod_xdecarocompetitions_countriesfederations_${VERSION}.zip" \
             "dist/pkg_xdecarocompetitions_${VERSION}.zip" \
             "dist/SHA256SUMS.txt" --target main --title "Competitions by xdecaro ${VERSION}" \
-            --notes "Competitions ${VERSION}: optional Notifications, Tasks and Analytics integrations through stable public services, with no cross-product database coupling."
+            --notes "Competitions ${VERSION}: optional Finance 1.2 public-service integration for idempotent participation-fee obligations and team deposit/caution movements, while competition pricing and disciplinary rules remain owned by Competitions. Notifications, Tasks and Analytics integrations remain optional and there is no cross-product database coupling."
