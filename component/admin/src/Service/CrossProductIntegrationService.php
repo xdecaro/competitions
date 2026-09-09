@@ -7,6 +7,7 @@ use InvalidArgumentException;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Log\Log;
+use RuntimeException;
 use Throwable;
 
 /** Optional bridges to public xdecaro component services. */
@@ -106,10 +107,11 @@ final class CrossProductIntegrationService
     ): ?int {
         $participationId = $this->positiveIdentifier($participationId, 'participation');
         $teamId = $this->positiveIdentifier($teamId, 'team');
+        $amount = $this->positiveAmount($amount);
 
         return $this->withFinanceService(function (object $service) use ($participationId, $teamId, $amount, $dueDate, $currency, $description, $actorUserId): int {
             if (!method_exists($service, 'createObligation')) {
-                throw new \RuntimeException('Finance createObligation API is unavailable.');
+                throw new RuntimeException('Finance createObligation API is unavailable.');
             }
 
             return (int) $service->createObligation([
@@ -135,7 +137,7 @@ final class CrossProductIntegrationService
 
         return $this->withFinanceService(function (object $service) use ($teamId, $currency): int {
             if (!method_exists($service, 'getOrCreateDepositAccount')) {
-                throw new \RuntimeException('Finance deposit account API is unavailable.');
+                throw new RuntimeException('Finance deposit account API is unavailable.');
             }
 
             return (int) $service->getOrCreateDepositAccount(self::COMPONENT, 'team', $teamId, $currency);
@@ -152,15 +154,16 @@ final class CrossProductIntegrationService
         int $actorUserId = 0
     ): ?int {
         $teamId = $this->positiveIdentifier($teamId, 'team');
+        $amount = $this->positiveAmount($amount);
         $externalKey = $this->externalToken($externalKey);
 
         return $this->withFinanceService(function (object $service) use ($teamId, $amount, $externalKey, $description, $currency, $actorUserId): int {
             if (!method_exists($service, 'getOrCreateDepositAccount') || !method_exists($service, 'postDepositMovement')) {
-                throw new \RuntimeException('Finance deposit API is unavailable.');
+                throw new RuntimeException('Finance deposit API is unavailable.');
             }
 
             $accountId = (int) $service->getOrCreateDepositAccount(self::COMPONENT, 'team', $teamId, $currency);
-            return (int) $service->postDepositMovement($accountId, 'credit', abs((float) $amount), [
+            return (int) $service->postDepositMovement($accountId, 'credit', $amount, [
                 'external_key' => 'competitions:deposit:team:' . $teamId . ':credit:' . $externalKey,
                 'description' => $description,
                 'source_component' => self::COMPONENT,
@@ -188,14 +191,15 @@ final class CrossProductIntegrationService
         $sourceId = $this->positiveIdentifier($sourceId, 'source');
         $sourceEntity = $this->entityToken($sourceEntity);
         $cause = $this->entityToken($cause);
+        $amount = $this->negativeAmount($amount);
 
         return $this->withFinanceService(function (object $service) use ($teamId, $sourceEntity, $sourceId, $cause, $amount, $description, $currency, $actorUserId): int {
             if (!method_exists($service, 'getOrCreateDepositAccount') || !method_exists($service, 'postDepositMovement')) {
-                throw new \RuntimeException('Finance deposit API is unavailable.');
+                throw new RuntimeException('Finance deposit API is unavailable.');
             }
 
             $accountId = (int) $service->getOrCreateDepositAccount(self::COMPONENT, 'team', $teamId, $currency);
-            return (int) $service->postDepositMovement($accountId, 'debit', -abs((float) $amount), [
+            return (int) $service->postDepositMovement($accountId, 'debit', $amount, [
                 'external_key' => 'competitions:deposit:team:' . $teamId . ':' . $sourceEntity . ':' . $sourceId . ':' . $cause,
                 'description' => $description,
                 'source_component' => self::COMPONENT,
@@ -211,7 +215,7 @@ final class CrossProductIntegrationService
 
         return $this->withFinanceService(function (object $service) use ($teamId, $currency): float {
             if (!method_exists($service, 'getOrCreateDepositAccount') || !method_exists($service, 'getDepositBalance')) {
-                throw new \RuntimeException('Finance deposit query API is unavailable.');
+                throw new RuntimeException('Finance deposit query API is unavailable.');
             }
 
             $accountId = (int) $service->getOrCreateDepositAccount(self::COMPONENT, 'team', $teamId, $currency);
@@ -219,6 +223,10 @@ final class CrossProductIntegrationService
         });
     }
 
+    /**
+     * Finance is optional. Absence returns null. Once Finance is enabled, provider
+     * incompatibility or financial write/query failures are logged and propagated.
+     */
     private function withFinanceService(callable $operation): mixed
     {
         if (!$this->financeAvailable()) {
@@ -228,14 +236,18 @@ final class CrossProductIntegrationService
         try {
             $component = Factory::getApplication()->bootComponent('com_decarofinance');
             if (!is_object($component) || !method_exists($component, 'getFinanceService')) {
-                return null;
+                throw new RuntimeException('Finance public component service is unavailable.');
             }
 
             $service = $component->getFinanceService();
-            return is_object($service) ? $operation($service) : null;
+            if (!is_object($service)) {
+                throw new RuntimeException('Finance service is unavailable.');
+            }
+
+            return $operation($service);
         } catch (Throwable $exception) {
-            Log::add('Competitions Finance bridge: ' . $exception->getMessage(), Log::WARNING, 'com_xdecarocompetitions.integration');
-            return null;
+            Log::add('Competitions Finance bridge: ' . $exception->getMessage(), Log::ERROR, 'com_xdecarocompetitions.integration');
+            throw $exception;
         }
     }
 
@@ -267,5 +279,20 @@ final class CrossProductIntegrationService
         }
 
         return $value;
+    }
+
+    private function positiveAmount(float|string $value): string
+    {
+        $value = trim((string) $value);
+        if ($value === '' || !is_numeric($value) || (float) $value <= 0) {
+            throw new InvalidArgumentException('Amount must be greater than zero.');
+        }
+
+        return ltrim($value, '+');
+    }
+
+    private function negativeAmount(float|string $value): string
+    {
+        return '-' . ltrim($this->positiveAmount($value), '-');
     }
 }
