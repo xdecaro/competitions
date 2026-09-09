@@ -2,29 +2,22 @@
 <extension type="package" method="upgrade">
   <name>PKG_XDECAROCOMPETITIONS</name>
   <packagename>xdecarocompetitions</packagename>
-  <version>1.1.0</version>
+  <version>1.2.0</version>
   <creationDate>2026-09</creationDate>
-  <author>Luca De Caro</author>
-  <authorUrl>https://github.com/xdecaro/competitions</authorUrl>
+  <author>Luca De Caro</author><authorUrl>https://github.com/xdecaro/competitions</authorUrl>
   <copyright>Copyright (C) 2026 Luca De Caro. All rights reserved.</copyright>
   <license>GNU General Public License version 2 or later</license>
   <description>Competitions package for Joomla 6.</description>
   <targetplatform name="joomla" version="6.*" />
   <scriptfile>script.php</scriptfile>
-
   <files>
-    <file type="component" id="com_xdecarocompetitions">com_xdecarocompetitions_1.1.0.zip</file>
-    <file type="plugin" id="xdecarocompetitions" group="system">plg_system_xdecarocompetitions_1.1.0.zip</file>
-    <file type="module" id="mod_xdecarocompetitions_matchtimeline" client="site">mod_xdecarocompetitions_matchtimeline_1.1.0.zip</file>
-    <file type="module" id="mod_xdecarocompetitions_countriesfederations" client="site">mod_xdecarocompetitions_countriesfederations_1.1.0.zip</file>
+    <file type="component" id="com_xdecarocompetitions">com_xdecarocompetitions_1.2.0.zip</file>
+    <file type="plugin" id="xdecarocompetitions" group="system">plg_system_xdecarocompetitions_1.2.0.zip</file>
+    <file type="plugin" id="competitions" group="xdecaroanalytics">plg_xdecaroanalytics_competitions_1.2.0.zip</file>
+    <file type="plugin" id="xdecarocompetitions" group="task">plg_task_xdecarocompetitions_1.2.0.zip</file>
+    <file type="module" id="mod_xdecarocompetitions_matchtimeline" client="site">mod_xdecarocompetitions_matchtimeline_1.2.0.zip</file>
+    <file type="module" id="mod_xdecarocompetitions_countriesfederations" client="site">mod_xdecarocompetitions_countriesfederations_1.2.0.zip</file>
   </files>
-
-  <languages folder="language">
-    <language tag="en-GB">en-GB/pkg_xdecarocompetitions.sys.ini</language>
-    <language tag="it-IT">it-IT/pkg_xdecarocompetitions.sys.ini</language>
-  </languages>
-
-  <updateservers>
-    <server type="extension" priority="1" name="Competitions Package Updates">https://raw.githubusercontent.com/xdecaro/competitions/main/updates/pkg_xdecarocompetitions.xml</server>
-  </updateservers>
+  <languages folder="language"><language tag="en-GB">en-GB/pkg_xdecarocompetitions.sys.ini</language><language tag="it-IT">it-IT/pkg_xdecarocompetitions.sys.ini</language></languages>
+  <updateservers><server type="extension" priority="1" name="Competitions Package Updates">https://raw.githubusercontent.com/xdecaro/competitions/main/updates/pkg_xdecarocompetitions.xml</server></updateservers>
 </extension>
