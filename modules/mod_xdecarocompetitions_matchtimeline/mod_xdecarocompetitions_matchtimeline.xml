@@ -1,41 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="module" client="site" method="upgrade">
   <name>MOD_XDECAROCOMPETITIONS_MATCHTIMELINE</name>
-  <author>xdecaro</author>
-  <creationDate>2026-09-06</creationDate>
-  <copyright>(C) 2026 xdecaro</copyright>
+  <author>xdecaro</author><creationDate>2026-09-06</creationDate><copyright>(C) 2026 xdecaro</copyright>
   <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
-  <version>1.1.0</version>
-  <description>MOD_XDECAROCOMPETITIONS_MATCHTIMELINE_XML_DESCRIPTION</description>
+  <version>1.2.0</version><description>MOD_XDECAROCOMPETITIONS_MATCHTIMELINE_XML_DESCRIPTION</description>
   <namespace path="src">xdecaro\Module\CompetitionsMatchTimeline</namespace>
-  <files>
-    <folder module="mod_xdecarocompetitions_matchtimeline">services</folder>
-    <folder>src</folder>
-    <folder>tmpl</folder>
-  </files>
-  <media destination="mod_xdecarocompetitions_matchtimeline" folder="media">
-    <folder>css</folder>
-  </media>
-  <languages folder="language">
-    <language tag="en-GB">en-GB/mod_xdecarocompetitions_matchtimeline.ini</language>
-    <language tag="en-GB">en-GB/mod_xdecarocompetitions_matchtimeline.sys.ini</language>
-    <language tag="it-IT">it-IT/mod_xdecarocompetitions_matchtimeline.ini</language>
-    <language tag="it-IT">it-IT/mod_xdecarocompetitions_matchtimeline.sys.ini</language>
-  </languages>
-  <config>
-    <fields name="params">
-      <fieldset name="basic">
-        <field name="match_id" type="number" label="MOD_XDECAROCOMPETITIONS_MATCHTIMELINE_FIELD_MATCH_ID_LABEL" description="MOD_XDECAROCOMPETITIONS_MATCHTIMELINE_FIELD_MATCH_ID_DESC" default="0" min="0" filter="uint" />
-        <field name="article_id" type="number" label="MOD_XDECAROCOMPETITIONS_MATCHTIMELINE_FIELD_ARTICLE_ID_LABEL" description="MOD_XDECAROCOMPETITIONS_MATCHTIMELINE_FIELD_ARTICLE_ID_DESC" default="0" min="0" filter="uint" />
-        <field name="show_title" type="radio" label="MOD_XDECAROCOMPETITIONS_MATCHTIMELINE_FIELD_SHOW_TITLE_LABEL" default="1" layout="joomla.form.field.radio.switcher" filter="integer">
-          <option value="0">JNO</option>
-          <option value="1">JYES</option>
-        </field>
-        <field name="empty_message" type="radio" label="MOD_XDECAROCOMPETITIONS_MATCHTIMELINE_FIELD_EMPTY_MESSAGE_LABEL" default="0" layout="joomla.form.field.radio.switcher" filter="integer">
-          <option value="0">JHIDE</option>
-          <option value="1">JSHOW</option>
-        </field>
-      </fieldset>
-    </fields>
-  </config>
+  <files><folder module="mod_xdecarocompetitions_matchtimeline">services</folder><folder>src</folder><folder>tmpl</folder></files>
+  <media destination="mod_xdecarocompetitions_matchtimeline" folder="media"><folder>css</folder></media>
+  <languages folder="language"><language tag="en-GB">en-GB/mod_xdecarocompetitions_matchtimeline.ini</language><language tag="en-GB">en-GB/mod_xdecarocompetitions_matchtimeline.sys.ini</language><language tag="it-IT">it-IT/mod_xdecarocompetitions_matchtimeline.ini</language><language tag="it-IT">it-IT/mod_xdecarocompetitions_matchtimeline.sys.ini</language></languages>
+  <config><fields name="params"><fieldset name="basic">
+    <field name="match_id" type="number" label="MOD_XDECAROCOMPETITIONS_MATCHTIMELINE_FIELD_MATCH_ID_LABEL" description="MOD_XDECAROCOMPETITIONS_MATCHTIMELINE_FIELD_MATCH_ID_DESC" default="0" min="0" filter="uint" />
+    <field name="article_id" type="number" label="MOD_XDECAROCOMPETITIONS_MATCHTIMELINE_FIELD_ARTICLE_ID_LABEL" description="MOD_XDECAROCOMPETITIONS_MATCHTIMELINE_FIELD_ARTICLE_ID_DESC" default="0" min="0" filter="uint" />
+    <field name="show_title" type="radio" label="MOD_XDECAROCOMPETITIONS_MATCHTIMELINE_FIELD_SHOW_TITLE_LABEL" default="1" layout="joomla.form.field.radio.switcher" filter="integer"><option value="0">JNO</option><option value="1">JYES</option></field>
+    <field name="empty_message" type="radio" label="MOD_XDECAROCOMPETITIONS_MATCHTIMELINE_FIELD_EMPTY_MESSAGE_LABEL" default="0" layout="joomla.form.field.radio.switcher" filter="integer"><option value="0">JHIDE</option><option value="1">JSHOW</option></field>
+  </fieldset></fields></config>
 </extension>
