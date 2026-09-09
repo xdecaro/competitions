@@ -30,7 +30,9 @@ foreach ([
     "'debtor_component' => self::COMPONENT",
     "'source_entity' => 'participation'",
     "'debtor_entity' => 'team'",
+    'if (!$this->financeAvailable())',
     'throw $exception',
+    'Log::ERROR',
 ] as $token) {
     if (!str_contains($cross, $token)) {
         $fail('Finance bridge contract missing token: ' . $token);
@@ -45,10 +47,6 @@ foreach (['#__decarofinance_', 'Xdecaro\\Component\\Decarofinance', 'xdecaro\\Co
     if (str_contains($cross, $forbidden)) {
         $fail('Forbidden direct Finance coupling found: ' . $forbidden);
     }
-}
-
-if (!str_contains($cross, "return null;\n        }\n\n        try {\n            $component = Factory::getApplication()->bootComponent('com_decarofinance')")) {
-    $fail('Finance absence must remain an explicit optional fallback before provider boot.');
 }
 
 fwrite(STDOUT, "Competitions Finance integration contract OK\n");
