@@ -125,10 +125,10 @@ jobs:
           php finance-absent-probe.php
           rm finance-absent-probe.php
 
-      - name: Download and install published Finance 1.2.0
+      - name: Download and install published Finance 1.2.1
         run: |
-          curl -fL --retry 3 'https://github.com/xdecaro/finance/releases/download/v1.2.0/pkg_decarofinance_1.2.0.zip' -o /tmp/finance.zip
-          echo 'f8a61f864b1b882bcc5a90455999261352a371df552a0ba87a4b52d96fd3cea5  /tmp/finance.zip' | sha256sum --check --strict
+          curl -fL --retry 3 'https://github.com/xdecaro/finance/releases/download/v1.2.1/pkg_decarofinance_1.2.1.zip' -o /tmp/finance.zip
+          echo '85fa382e406076c13d5196198e4310b63f66a73ea989b00ea08c31a59dd6be61  /tmp/finance.zip' | sha256sum --check --strict
           unzip -t /tmp/finance.zip >/dev/null
           cd joomla
           php cli/joomla.php extension:install --path=/tmp/finance.zip -vvv
