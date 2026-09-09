@@ -15,7 +15,7 @@ jobs:
       - uses: shivammathur/setup-php@v2
         with: {php-version: '8.3', extensions: zip, coverage: none}
       - name: PHP syntax
-        run: find component modules plugins package -name '*.php' -print0 | xargs -0 -n1 php -l
+        run: find component modules plugins package tests -name '*.php' -print0 | xargs -0 -n1 php -l
       - name: JavaScript syntax
         run: find component modules plugins -name '*.js' -print0 | xargs -0 -n1 node --check
       - name: XML syntax
@@ -28,6 +28,8 @@ jobs:
           PY
       - name: Source validation
         run: python3 tools/validate_release.py
+      - name: Finance bridge contract
+        run: php tests/finance-integration-contract.php
       - name: Deterministic build
         run: |
           python3 tools/build.py
