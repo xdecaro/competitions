@@ -169,13 +169,17 @@ jobs:
 
           /** @var DatabaseInterface $db */
           $db = $container->get(DatabaseInterface::class);
-          $db->insertObject('#__xdecarocompetitions_teams', (object) ['name' => 'Finance CI Team']);
+          $team = (object) ['name' => 'Finance CI Team'];
+          $db->insertObject('#__xdecarocompetitions_teams', $team);
           $teamId = (int) $db->insertid();
-          $db->insertObject('#__xdecarocompetitions_tournaments', (object) ['name' => 'Finance CI Tournament']);
+          $tournament = (object) ['name' => 'Finance CI Tournament'];
+          $db->insertObject('#__xdecarocompetitions_tournaments', $tournament);
           $tournamentId = (int) $db->insertid();
-          $db->insertObject('#__xdecarocompetitions_seasons', (object) ['tournament_id' => $tournamentId, 'name' => 'Finance CI Season']);
+          $season = (object) ['tournament_id' => $tournamentId, 'name' => 'Finance CI Season'];
+          $db->insertObject('#__xdecarocompetitions_seasons', $season);
           $seasonId = (int) $db->insertid();
-          $db->insertObject('#__xdecarocompetitions_participations', (object) ['team_id' => $teamId, 'season_id' => $seasonId]);
+          $participation = (object) ['team_id' => $teamId, 'season_id' => $seasonId];
+          $db->insertObject('#__xdecarocompetitions_participations', $participation);
           $participationId = (int) $db->insertid();
           if ($teamId < 1 || $participationId < 1) {
               fwrite(STDERR, "Competition fixtures were not created.\n");
