@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+  <fields name="params">
+    <fieldset name="basic">
+      <field name="days" type="number" min="1" max="30" default="3" label="PLG_TASK_XDECAROCOMPETITIONS_FIELD_DAYS" />
+      <field name="limit" type="number" min="1" max="500" default="200" label="PLG_TASK_XDECAROCOMPETITIONS_FIELD_LIMIT" />
+    </fieldset>
+  </fields>
+</form>
