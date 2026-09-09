@@ -32,6 +32,7 @@ final class CoreIntegrationService
             new Capability(self::COMPONENT, 'competitions.analytics.provider', '1'),
             new Capability(self::COMPONENT, 'competitions.notifications.bridge', '1'),
             new Capability(self::COMPONENT, 'competitions.tasks.bridge', '1'),
+            new Capability(self::COMPONENT, 'competitions.finance.bridge', '1'),
             new Capability(self::COMPONENT, 'competitions.match-reminders', '1'),
         ];
     }
