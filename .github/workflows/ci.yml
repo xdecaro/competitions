@@ -15,7 +15,7 @@ jobs:
       - uses: shivammathur/setup-php@v2
         with: {php-version: '8.3', extensions: zip, coverage: none}
       - name: PHP syntax
-        run: find component modules plugins package -name '*.php' -print0 | xargs -0 -n1 php -l
+        run: find component modules plugins package tests -name '*.php' -print0 | xargs -0 -n1 php -l
       - name: JavaScript syntax
         run: find component modules plugins -name '*.js' -print0 | xargs -0 -n1 node --check
       - name: XML syntax
@@ -28,6 +28,8 @@ jobs:
           PY
       - name: Source validation
         run: python3 tools/validate_release.py
+      - name: Finance bridge contract
+        run: php tests/finance-integration-contract.php
       - name: Deterministic build
         run: |
           python3 tools/build.py
@@ -82,4 +84,162 @@ jobs:
             test "$enabled" = '1'
           done
           schema="$("${MYSQL[@]}" -e "SELECT s.version_id FROM cmp_schemas s JOIN cmp_extensions e ON e.extension_id=s.extension_id WHERE e.type='component' AND e.element='com_xdecarocompetitions' LIMIT 1;")"
-          test "$schema" = '1.2.0'
+          test "$schema" = '1.3.0'
+
+      - name: Verify Finance-absent fallback
+        run: |
+          cd joomla
+          cat > finance-absent-probe.php <<'PHP'
+          <?php
+          define('_JEXEC', 1);
+          define('JPATH_BASE', __DIR__);
+          require JPATH_BASE . '/includes/defines.php';
+          require JPATH_BASE . '/includes/framework.php';
+
+          $container = \Joomla\CMS\Factory::getContainer();
+          $container->alias('session', 'session.cli')
+              ->alias('JSession', 'session.cli')
+              ->alias(\Joomla\CMS\Session\Session::class, 'session.cli')
+              ->alias(\Joomla\Session\Session::class, 'session.cli')
+              ->alias(\Joomla\Session\SessionInterface::class, 'session.cli');
+          $app = $container->get(\Joomla\Console\Application::class);
+          \Joomla\CMS\Factory::$application = $app;
+          $app->createExtensionNamespaceMap();
+
+          $component = $app->bootComponent('com_xdecarocompetitions');
+          if (!is_object($component) || !method_exists($component, 'getCrossProductIntegrationService')) {
+              fwrite(STDERR, "Competitions public integration service is unavailable.\n");
+              exit(1);
+          }
+          $bridge = $component->getCrossProductIntegrationService();
+          if ($bridge->financeAvailable()) {
+              fwrite(STDERR, "Finance unexpectedly appears available before installation.\n");
+              exit(1);
+          }
+          if ($bridge->createParticipationFeeObligation(1, 1, '10.00') !== null) {
+              fwrite(STDERR, "Finance-absent bridge did not return null.\n");
+              exit(1);
+          }
+          echo "Finance-absent fallback OK\n";
+          PHP
+          php finance-absent-probe.php
+          rm finance-absent-probe.php
+
+      - name: Download and install published Finance 1.2.1
+        run: |
+          curl -fL --retry 3 'https://github.com/xdecaro/finance/releases/download/v1.2.1/pkg_decarofinance_1.2.1.zip' -o /tmp/finance.zip
+          echo '85fa382e406076c13d5196198e4310b63f66a73ea989b00ea08c31a59dd6be61  /tmp/finance.zip' | sha256sum --check --strict
+          unzip -t /tmp/finance.zip >/dev/null
+          cd joomla
+          php cli/joomla.php extension:install --path=/tmp/finance.zip -vvv
+
+      - name: Exercise Finance public bridge end to end
+        run: |
+          cd joomla
+          cat > finance-bridge-probe.php <<'PHP'
+          <?php
+          define('_JEXEC', 1);
+          define('JPATH_BASE', __DIR__);
+          require JPATH_BASE . '/includes/defines.php';
+          require JPATH_BASE . '/includes/framework.php';
+
+          use Joomla\CMS\Factory;
+          use Joomla\Database\DatabaseInterface;
+
+          $container = Factory::getContainer();
+          $container->alias('session', 'session.cli')
+              ->alias('JSession', 'session.cli')
+              ->alias(\Joomla\CMS\Session\Session::class, 'session.cli')
+              ->alias(\Joomla\Session\Session::class, 'session.cli')
+              ->alias(\Joomla\Session\SessionInterface::class, 'session.cli');
+          $app = $container->get(\Joomla\Console\Application::class);
+          Factory::$application = $app;
+          $app->createExtensionNamespaceMap();
+
+          $competitions = $app->bootComponent('com_xdecarocompetitions');
+          if (!is_object($competitions) || !method_exists($competitions, 'getCrossProductIntegrationService')) {
+              fwrite(STDERR, "Competitions integration service is unavailable.\n");
+              exit(1);
+          }
+          $bridge = $competitions->getCrossProductIntegrationService();
+          if (!$bridge->financeAvailable()) {
+              fwrite(STDERR, "Finance is not available after installation.\n");
+              exit(1);
+          }
+
+          /** @var DatabaseInterface $db */
+          $db = $container->get(DatabaseInterface::class);
+          $team = (object) ['name' => 'Finance CI Team'];
+          $db->insertObject('#__xdecarocompetitions_teams', $team);
+          $teamId = (int) $db->insertid();
+          $tournament = (object) ['name' => 'Finance CI Tournament'];
+          $db->insertObject('#__xdecarocompetitions_tournaments', $tournament);
+          $tournamentId = (int) $db->insertid();
+          $season = (object) ['tournament_id' => $tournamentId, 'name' => 'Finance CI Season'];
+          $db->insertObject('#__xdecarocompetitions_seasons', $season);
+          $seasonId = (int) $db->insertid();
+          $participation = (object) ['team_id' => $teamId, 'season_id' => $seasonId];
+          $db->insertObject('#__xdecarocompetitions_participations', $participation);
+          $participationId = (int) $db->insertid();
+          if ($teamId < 1 || $participationId < 1) {
+              fwrite(STDERR, "Competition fixtures were not created.\n");
+              exit(1);
+          }
+
+          $fee1 = $bridge->createParticipationFeeObligation($participationId, $teamId, '125.00', '2026-12-31', 'EUR', 'Competition participation fee', 1);
+          $fee2 = $bridge->createParticipationFeeObligation($participationId, $teamId, '125.00', '2026-12-31', 'EUR', 'Competition participation fee', 1);
+          if (!is_int($fee1) || $fee1 < 1 || $fee1 !== $fee2) {
+              fwrite(STDERR, "Participation fee is not idempotent.\n");
+              exit(1);
+          }
+
+          $financeComponent = $app->bootComponent('com_decarofinance');
+          if (!is_object($financeComponent) || !method_exists($financeComponent, 'getFinanceService')) {
+              fwrite(STDERR, "Finance public service surface is unavailable.\n");
+              exit(1);
+          }
+          $finance = $financeComponent->getFinanceService();
+          $obligation = $finance->getObligation($fee1);
+          if (!is_array($obligation)
+              || ($obligation['source_component'] ?? '') !== 'com_xdecarocompetitions'
+              || ($obligation['source_entity'] ?? '') !== 'participation'
+              || (string) ($obligation['source_id'] ?? '') !== (string) $participationId
+              || ($obligation['debtor_component'] ?? '') !== 'com_xdecarocompetitions'
+              || ($obligation['debtor_entity'] ?? '') !== 'team'
+              || (string) ($obligation['debtor_id'] ?? '') !== (string) $teamId
+              || abs((float) ($obligation['amount'] ?? 0) - 125.0) > 0.0001) {
+              fwrite(STDERR, "Finance obligation references or amount are incorrect.\n");
+              exit(1);
+          }
+
+          $account1 = $bridge->getOrCreateTeamDepositAccount($teamId, 'EUR');
+          $account2 = $bridge->getOrCreateTeamDepositAccount($teamId, 'EUR');
+          if (!is_int($account1) || $account1 < 1 || $account1 !== $account2) {
+              fwrite(STDERR, "Team deposit account is not stable.\n");
+              exit(1);
+          }
+
+          $credit1 = $bridge->creditTeamDeposit($teamId, '500.00', 'initial-caution-2026', 'Initial caution', 'EUR', 1);
+          $credit2 = $bridge->creditTeamDeposit($teamId, '500.00', 'initial-caution-2026', 'Initial caution', 'EUR', 1);
+          if (!is_int($credit1) || $credit1 < 1 || $credit1 !== $credit2) {
+              fwrite(STDERR, "Deposit credit is not idempotent.\n");
+              exit(1);
+          }
+
+          $debit1 = $bridge->chargeTeamDeposit($teamId, 'participation', $participationId, 'yellow_card', '25.00', 'Yellow card sanction', 'EUR', 1);
+          $debit2 = $bridge->chargeTeamDeposit($teamId, 'participation', $participationId, 'yellow_card', '25.00', 'Yellow card sanction', 'EUR', 1);
+          if (!is_int($debit1) || $debit1 < 1 || $debit1 !== $debit2) {
+              fwrite(STDERR, "Deposit debit is not idempotent.\n");
+              exit(1);
+          }
+
+          $balance = $bridge->getTeamDepositBalance($teamId, 'EUR');
+          if (!is_float($balance) || abs($balance - 475.0) > 0.0001) {
+              fwrite(STDERR, "Unexpected deposit balance: " . var_export($balance, true) . "\n");
+              exit(1);
+          }
+
+          echo "Competitions -> Finance runtime bridge OK\n";
+          PHP
+          php finance-bridge-probe.php
+          rm finance-bridge-probe.php

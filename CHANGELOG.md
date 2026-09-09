@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.3.0 - 2026-09-09
+
+- Added an optional Finance 1.2 public-service bridge through `bootComponent('com_decarofinance')->getFinanceService()` only.
+- Added idempotent participation-fee obligations using stable Finance `external_key` values and typed `component + entity + id` source/debtor references.
+- Added team deposit/caution account creation, idempotent credits, disciplinary debits and balance queries through Finance's public deposit API.
+- Kept competition pricing and disciplinary rules inside Competitions: the bridge receives the rule-derived amount and cause and contains no hard-coded card/suspension/fight tariffs.
+- Finance absence remains supported; if Finance is installed but its public provider or a financial operation fails, the error is logged and propagated rather than silently ignored.
+- Added Core capability `competitions.finance.bridge` when Core 1.4+ CapabilityRegistry is available; no Finance or competition business logic was added to Core.
+- Added a non-destructive 1.3.0 schema marker; no Competitions table changes are required.
+- Strengthened release validation against direct `#__decarofinance_*`, Notifications and Tasks table coupling and against stale child-package/Web Asset versions.
+- Added Joomla 6.1.3 runtime coverage for the published Finance 1.2.0 package, Finance-absent fallback, obligation idempotency and deposit credit/debit balance behavior.
+
 ## 1.2.0 - 2026-09-09
 
 - Added optional bridges to Notifications 1.x and Tasks 1.x through their public Joomla component services only.

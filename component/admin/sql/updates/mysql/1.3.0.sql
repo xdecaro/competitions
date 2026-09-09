@@ -1,0 +1,2 @@
+-- Competitions 1.3.0 adds only optional public-service integration with Finance.
+-- No competition-domain database changes are required.

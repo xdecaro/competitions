@@ -3,7 +3,7 @@
   <name>MOD_XDECAROCOMPETITIONS_COUNTRIESFEDERATIONS</name>
   <author>xdecaro</author><creationDate>2026-09-06</creationDate><copyright>(C) 2026 xdecaro</copyright>
   <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
-  <version>1.2.0</version><description>MOD_XDECAROCOMPETITIONS_COUNTRIESFEDERATIONS_XML_DESCRIPTION</description>
+  <version>1.3.0</version><description>MOD_XDECAROCOMPETITIONS_COUNTRIESFEDERATIONS_XML_DESCRIPTION</description>
   <namespace path="src">xdecaro\Module\CompetitionsCountriesFederations</namespace>
   <files><folder module="mod_xdecarocompetitions_countriesfederations">services</folder><folder>src</folder><folder>tmpl</folder></files>
   <media destination="mod_xdecarocompetitions_countriesfederations" folder="media"><folder>css</folder><folder>js</folder></media>
