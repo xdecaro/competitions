@@ -10,7 +10,9 @@ $fail = static function (string $message): never {
 
 $files = [
     'install' => $root . '/component/admin/sql/install.mysql.utf8mb4.sql',
+    'installExtension' => $root . '/component/admin/sql/install.1.4.0.mysql.utf8mb4.sql',
     'update' => $root . '/component/admin/sql/updates/mysql/1.4.0.sql',
+    'manifest' => $root . '/component/xdecarocompetitions.xml',
     'playerForm' => $root . '/component/admin/forms/player.xml',
     'rosterForm' => $root . '/component/admin/forms/roster.xml',
     'playerTable' => $root . '/component/admin/src/Table/PlayerTable.php',
@@ -27,8 +29,9 @@ foreach ($files as $name => $path) {
     }
 }
 
-$install = (string) file_get_contents($files['install']);
+$freshInstall = (string) file_get_contents($files['install']) . "\n" . (string) file_get_contents($files['installExtension']);
 $update = (string) file_get_contents($files['update']);
+$manifest = (string) file_get_contents($files['manifest']);
 $playerForm = (string) file_get_contents($files['playerForm']);
 $rosterForm = (string) file_get_contents($files['rosterForm']);
 $playerTable = (string) file_get_contents($files['playerTable']);
@@ -39,16 +42,17 @@ $playerTemplate = (string) file_get_contents($files['playerTemplate']);
 $js = (string) file_get_contents($files['js']);
 
 foreach ([
-    '`person_uuid` CHAR(36) NULL',
-    'UNIQUE KEY `uq_player_person_uuid` (`person_uuid`)',
+    'ADD COLUMN `person_uuid` CHAR(36) NULL',
+    'ADD UNIQUE KEY `uq_player_person_uuid` (`person_uuid`)',
+    'ADD COLUMN `photo` VARCHAR(512) NULL',
 ] as $token) {
-    if (!str_contains($install, $token)) {
-        $fail('Player People schema contract missing: ' . $token);
+    if (!str_contains($freshInstall, $token)) {
+        $fail('Fresh-install People/photo schema contract missing: ' . $token);
     }
 }
 
-if (!preg_match('/CREATE TABLE IF NOT EXISTS `#__xdecarocompetitions_rosters`[^;]*`photo` VARCHAR\(512\) NULL/s', $install)) {
-    $fail('Roster edition photo column is missing from install schema.');
+if (!str_contains($manifest, 'sql/install.1.4.0.mysql.utf8mb4.sql')) {
+    $fail('Component manifest must execute the 1.4.0 fresh-install schema extension.');
 }
 
 foreach ([
