@@ -8,6 +8,7 @@ $files = [
     'view' => $root . '/component/admin/src/View/Players/HtmlView.php',
     'controller' => $root . '/component/admin/src/Controller/PlayersController.php',
     'model' => $root . '/component/admin/src/Model/PlayerModel.php',
+    'manifest' => $root . '/component/xdecarocompetitions.xml',
 ];
 
 foreach ($files as $name => $path) {
@@ -20,6 +21,7 @@ foreach ($files as $name => $path) {
 $view = file_get_contents($files['view']);
 $controller = file_get_contents($files['controller']);
 $model = file_get_contents($files['model']);
+$manifest = file_get_contents($files['manifest']);
 
 $loadLanguage = static function (string $locale) use ($root): string {
     $paths = glob($root . '/component/admin/language/' . $locale . '/com_xdecarocompetitions*.ini') ?: [];
@@ -54,6 +56,8 @@ $requirements = [
     [$it, 'COM_XDECAROCOMPETITIONS_TOOLBAR_APPROVE=', 'Italian Approve toolbar label is missing.'],
     [$it, 'COM_XDECAROCOMPETITIONS_TOOLBAR_PENDING=', 'Italian Pending toolbar label is missing.'],
     [$it, 'COM_XDECAROCOMPETITIONS_TOOLBAR_REJECT=', 'Italian Reject toolbar label is missing.'],
+    [$manifest, 'en-GB/com_xdecarocompetitions.144.ini', 'Component manifest must package the English 1.4.4 language fragment.'],
+    [$manifest, 'it-IT/com_xdecarocompetitions.144.ini', 'Component manifest must package the Italian 1.4.4 language fragment.'],
 ];
 
 foreach ($requirements as [$haystack, $needle, $message]) {
