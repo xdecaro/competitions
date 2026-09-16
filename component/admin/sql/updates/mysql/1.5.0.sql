@@ -1,0 +1,2 @@
+-- Competitions 1.5.0
+-- No schema changes. Adds the public People competition-history provider and capability.

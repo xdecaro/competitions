@@ -32,6 +32,7 @@ jobs:
           php tests/people-picker-asset-contract.php
           php tests/people-picker-profile-contract.php
           php tests/people-roster-photo-contract.php
+          php tests/people-history-contract.php
           python3 tools/validate_release.py
       - name: Build twice and verify determinism
         run: |
@@ -68,4 +69,4 @@ jobs:
             "dist/mod_xdecarocompetitions_countriesfederations_${VERSION}.zip" \
             "dist/pkg_xdecarocompetitions_${VERSION}.zip" \
             "dist/SHA256SUMS.txt" --target main --title "Competitions by xdecaro ${VERSION}" \
-            --notes "Competitions ${VERSION}: after selecting a People identity, the player editor now prefills birth date and nationality through a targeted authorised People profile lookup while keeping autocomplete search non-sensitive. People-linked identity, roster photos, Finance, Notifications, Tasks and Analytics integrations remain unchanged."
+            --notes "Competitions ${VERSION}: adds the public read-only person-history provider keyed by People person_uuid and advertises competitions.people_history v1 through Core. Existing People picker/autofill, roster photos, player approval, Finance, Notifications, Tasks and Analytics integrations remain compatible."

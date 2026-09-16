@@ -17,9 +17,9 @@ Competitions by xdecaro is the competition-management component in the xdecaro J
 
 ## Current version
 
-**1.4.4**
+**1.5.0**
 
-Version 1.4.4 adds bulk player approval actions directly to the administrator Players toolbar: Approve, Pending and Reject. The actions require `core.edit.state`, support multiple selected players, update the player `modified` metadata and participate in the existing live-sync change stream.
+Version 1.5.0 adds a public read-only person-history provider keyed by the existing People `person_uuid`. Competitions advertises the `competitions.people_history` v1 capability through Core, allowing People to show competition, season, team, role, shirt number and roster status history without reading Competitions private tables or duplicating competition data.
 
 Photo ownership is explicit:
 
@@ -47,6 +47,8 @@ People integration is discovered at runtime with `bootComponent('com_xdecaropeop
 
 The administrator player editor provides a People search picker. New players require a People person UUID; existing legacy players without a UUID remain editable for compatibility. Search results use the non-sensitive People provider surface. After a person is selected, Competitions performs a targeted sensitive profile lookup so `birth_date` and nationality can be copied when the current user is authorised to view sensitive People data. The selected-profile lookup does not silently degrade to a non-sensitive result. Competitions never queries `#__xdecaropeople_*` directly.
 
+Competitions also exposes `getPersonHistoryService()->getHistoryByPersonUuid()` as a public read-only outward service. It reads only Competitions-owned tables and returns normalized roster history for consumers that first verify `competitions.people_history` v1 through Core's `CapabilityRegistry`.
+
 ### Finance
 
 Finance is optional. Competitions discovers it at runtime with `bootComponent('com_decarofinance')` and consumes only `getFinanceService()`.
@@ -69,17 +71,17 @@ Competitions runtime code never accesses `#__decarofinance_*`.
 
 Notifications and Tasks are optional best-effort integrations through their public Joomla component services. Competitions also exposes an ACL-protected Analytics source through `plg_xdecaroanalytics_competitions` and can schedule upcoming-match reminders through the Joomla Scheduled Tasks plugin.
 
-When Core 1.4+ `CapabilityRegistry` is available, Competitions declares analytics, Notifications, Tasks, Finance and match-reminder capabilities. Core itself contains no competition or finance business logic.
+When Core `CapabilityRegistry` is available, Competitions declares analytics, Notifications, Tasks, Finance, match-reminder and People-history capabilities. Core itself contains no competition or finance business logic.
 
 ## Joomla baseline
 
 The current Competitions 1.x line targets Joomla 6 and PHP 8.3+. Compatibility with earlier Joomla versions is not claimed until runtime-tested.
 
-CI performs a real Joomla 6.1.3 installation of the built package. The 1.4.4 gate validates the People provider boundary, People UUID schema, roster photo schema, People picker WebAsset path, selected sensitive-profile autofill contract, bulk player approval actions and the existing Finance bridge regression coverage.
+CI performs a real Joomla 6.1.3 installation of the built package. The 1.5.0 gate validates the People provider boundary, People UUID schema, roster photo schema, People picker WebAsset path, selected sensitive-profile autofill contract, public person-history provider/runtime, bulk player approval actions and the existing Finance bridge regression coverage.
 
 ## Data and update policy
 
-Fresh installations create only `#__xdecarocompetitions_*` tables. Version 1.4.0 adds nullable unique `person_uuid` to players and a nullable edition/team `photo` to rosters. The update migration is additive and preserves existing player identity fields, legacy photos, rosters and historical competition data.
+Fresh installations create only `#__xdecarocompetitions_*` tables. Version 1.4.0 adds nullable unique `person_uuid` to players and a nullable edition/team `photo` to rosters. Version 1.5.0 does not change the database schema; it adds a public read-only service over the existing indexed UUID and history graph.
 
 Existing player records are not auto-linked or auto-merged. Linking to People must be explicit or performed by a separately verified migration workflow.
 
