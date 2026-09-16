@@ -7,6 +7,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\View\HtmlView as BaseHtmlView;
 use Joomla\CMS\Toolbar\ToolbarHelper;
+use Throwable;
 use xdecaro\Component\Competitions\Administrator\Helper\UiHelper;
 
 final class HtmlView extends BaseHtmlView
@@ -14,10 +15,12 @@ final class HtmlView extends BaseHtmlView
     public $form;
     public $item;
     public $state;
+    public ?array $person = null;
 
     public function display($tpl = null): void
     {
-        $user = Factory::getApplication()->getIdentity();
+        $app = Factory::getApplication();
+        $user = $app->getIdentity();
 
         if (!$user->authorise('core.manage', 'com_xdecarocompetitions')) {
             throw new \RuntimeException(Text::_('JERROR_ALERTNOAUTHOR'), 403);
@@ -32,6 +35,22 @@ final class HtmlView extends BaseHtmlView
         if (count($errors = $this->get('Errors'))) {
             throw new \RuntimeException(implode("\n", $errors));
         }
+
+        $personUuid = strtolower(trim((string) ($this->item->person_uuid ?? '')));
+        if ($personUuid !== '') {
+            try {
+                $component = $app->bootComponent('com_xdecarocompetitions');
+                if (is_object($component) && method_exists($component, 'getPeopleIntegrationService')) {
+                    $this->person = $component->getPeopleIntegrationService()->getPerson($personUuid, false);
+                }
+            } catch (Throwable) {
+                $this->person = null;
+            }
+        }
+
+        // The People UUID is rendered explicitly by the template so the identity picker
+        // and the normal Joomla fieldset never submit duplicate inputs.
+        $this->form->removeField('person_uuid');
 
         $isNew = empty($this->item->id);
 
