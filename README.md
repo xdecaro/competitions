@@ -17,21 +17,35 @@ Competitions by xdecaro is the competition-management component in the xdecaro J
 
 ## Current version
 
-**1.3.0**
+**1.4.0**
 
-Version 1.3.0 adds an optional Finance bridge through Finance's public Joomla component service. It is a backward-compatible 1.x update from 1.2.0 and does not change the Competitions database schema.
+Version 1.4.0 links Competitions players to the canonical People identity registry through People’s public provider and introduces a roster-owned competition photo for a specific team/edition. Existing player photos remain readable only as a legacy fallback.
 
-The earlier pre-1.0 experimental identities are not part of the supported 1.x migration path.
+Photo ownership is explicit:
+
+1. a roster photo belongs to the player’s participation in that team/edition;
+2. otherwise Competitions uses the person’s People profile-document reference when available;
+3. otherwise an existing legacy player photo can still be used as a compatibility fallback.
+
+Competitions does not copy People profile images or access People private tables.
 
 ## Architecture
 
 Competitions owns competition-domain data and rules: countries and sporting territories, federations, organizations used in competition roles, zones, tournaments, seasons, teams, participations, players, rosters, matches, match events, rankings/coefficient data, synchronization state and the business reason/amount for competition charges or disciplinary deductions.
+
+People owns canonical person identity. New Competition player records are linked by stable `person_uuid`; legacy unlinked player records remain supported so upgrades do not destroy historical data. The Competitions player record retains competition-specific lifecycle/approval data and historical compatibility fields while the roster owns edition/team-specific presentation such as its photo.
 
 Other products own their own domains. Competitions must not read or write another xdecaro product's private tables, and other products must not read or write `#__xdecarocompetitions_*` directly.
 
 Core integration remains infrastructure-only: public references, shared administrator design assets, diagnostics, capabilities and reusable technical services. Competition rules and sports-domain behavior remain in this repository.
 
 ## Optional integrations
+
+### People
+
+People integration is discovered at runtime with `bootComponent('com_xdecaropeople')` and consumed only through `getPersonProviderService()`.
+
+The administrator player editor provides a People search picker. New players require a People person UUID; existing legacy players without a UUID remain editable for compatibility. Competitions never queries `#__xdecaropeople_*` directly.
 
 ### Finance
 
@@ -61,13 +75,13 @@ When Core 1.4+ `CapabilityRegistry` is available, Competitions declares analytic
 
 The current Competitions 1.x line targets Joomla 6 and PHP 8.3+. Compatibility with earlier Joomla versions is not claimed until runtime-tested.
 
-CI performs a real Joomla 6.1.3 installation of the built package and validates the current schema. The 1.3.0 gate also installs the published Finance 1.2.0 package and exercises the public Finance bridge end to end.
+CI performs a real Joomla 6.1.3 installation of the built package. The 1.4.0 gate validates the People provider boundary, People UUID schema, roster photo schema and the existing Finance bridge regression coverage.
 
 ## Data and update policy
 
-Fresh installations create only `#__xdecarocompetitions_*` tables. The canonical `admin/sql/install.mysql.utf8mb4.sql` contains the complete current Competitions schema and does not replay pre-1.0 `ALTER TABLE` migrations.
+Fresh installations create only `#__xdecarocompetitions_*` tables. Version 1.4.0 adds nullable unique `person_uuid` to players and a nullable edition/team `photo` to rosters. The update migration is additive and preserves existing player identity fields, legacy photos, rosters and historical competition data.
 
-`1.3.0.sql` is intentionally non-mutating because the Finance integration requires no competition-domain database change. Normal updates must preserve existing data, configuration and plugin enabled/disabled state.
+Existing player records are not auto-linked or auto-merged. Linking to People must be explicit or performed by a separately verified migration workflow.
 
 ## Build
 
