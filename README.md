@@ -17,9 +17,9 @@ Competitions by xdecaro is the competition-management component in the xdecaro J
 
 ## Current version
 
-**1.4.2**
+**1.4.3**
 
-Version 1.4.2 keeps the People-linked player identity and roster-owned competition-photo model introduced in the 1.4 line, and extends the People picker so selecting a person can prefill birth date and nationality through a targeted authorised profile lookup. The autocomplete search itself remains non-sensitive.
+Version 1.4.3 fixes selected People-profile autofill for player birth date and nationality. Competitions now requires the authorised sensitive profile lookup instead of silently falling back to the non-sensitive profile, normalizes birth dates to `Y-m-d`, and accepts both People `nationality_code` and `nationality_codes`. The autocomplete search itself remains non-sensitive.
 
 Photo ownership is explicit:
 
@@ -45,7 +45,7 @@ Core integration remains infrastructure-only: public references, shared administ
 
 People integration is discovered at runtime with `bootComponent('com_xdecaropeople')` and consumed only through `getPersonProviderService()`.
 
-The administrator player editor provides a People search picker. New players require a People person UUID; existing legacy players without a UUID remain editable for compatibility. Search results use the non-sensitive People provider surface. After a person is selected, Competitions performs a targeted profile lookup so `birth_date` and `nationality_code` can be copied when the current user is authorised to view sensitive People data. Competitions never queries `#__xdecaropeople_*` directly.
+The administrator player editor provides a People search picker. New players require a People person UUID; existing legacy players without a UUID remain editable for compatibility. Search results use the non-sensitive People provider surface. After a person is selected, Competitions performs a targeted sensitive profile lookup so `birth_date` and nationality can be copied when the current user is authorised to view sensitive People data. The selected-profile lookup does not silently degrade to a non-sensitive result. Competitions never queries `#__xdecaropeople_*` directly.
 
 ### Finance
 
@@ -75,7 +75,7 @@ When Core 1.4+ `CapabilityRegistry` is available, Competitions declares analytic
 
 The current Competitions 1.x line targets Joomla 6 and PHP 8.3+. Compatibility with earlier Joomla versions is not claimed until runtime-tested.
 
-CI performs a real Joomla 6.1.3 installation of the built package. The 1.4.2 gate validates the People provider boundary, People UUID schema, roster photo schema, People picker WebAsset path, selected-profile autofill contract and the existing Finance bridge regression coverage.
+CI performs a real Joomla 6.1.3 installation of the built package. The 1.4.3 gate validates the People provider boundary, People UUID schema, roster photo schema, People picker WebAsset path, selected sensitive-profile autofill contract and the existing Finance bridge regression coverage.
 
 ## Data and update policy
 
