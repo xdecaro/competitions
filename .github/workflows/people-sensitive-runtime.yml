@@ -1,0 +1,173 @@
+name: Competitions People sensitive runtime
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  people-sensitive-runtime:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+          MYSQL_DATABASE: joomla
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h localhost"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: 'mysqli,zip,simplexml'
+          coverage: none
+
+      - name: Build Competitions
+        run: python3 tools/build.py
+
+      - name: Build Core 2.0.1
+        shell: bash
+        run: |
+          set -euo pipefail
+          CORE_SHA='423d1cb0bf0a4cedf165295e03050f5a886bbcd3'
+          git clone --quiet https://github.com/xdecaro/core.git /tmp/core-src
+          git -C /tmp/core-src checkout --quiet "$CORE_SHA"
+          test "$(tr -d '\r\n' < /tmp/core-src/VERSION)" = '2.0.1'
+          python3 /tmp/core-src/build/build.py
+          cp /tmp/core-src/dist/pkg_xdecarocore_2.0.1.zip /tmp/core.zip
+          unzip -t /tmp/core.zip >/dev/null
+
+      - name: Build People integration dependency
+        shell: bash
+        run: |
+          set -euo pipefail
+          git clone --quiet https://github.com/xdecaro/people.git /tmp/people-src
+          if [ "${GITHUB_EVENT_NAME}" = 'pull_request' ]; then
+            git -C /tmp/people-src checkout --quiet fix/sensitive-provider-1.2.18
+          else
+            git -C /tmp/people-src checkout --quiet main
+          fi
+          test "$(tr -d '\r\n' < /tmp/people-src/VERSION)" = '1.2.18'
+          chmod +x /tmp/people-src/build/build.sh
+          (cd /tmp/people-src && build/build.sh)
+          cp /tmp/people-src/dist/pkg_xdecaropeople_1.2.18.zip /tmp/people.zip
+          unzip -t /tmp/people.zip >/dev/null
+
+      - name: Download Joomla 6.1.3
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fL --retry 3 'https://github.com/joomla/joomla-cms/releases/download/6.1.3/Joomla_6.1.3-Stable-Full_Package.zip' -o /tmp/joomla.zip
+          echo 'a49305652503f9344d046d55471f324a07882996132ed967c3b0fe34707ae4a1  /tmp/joomla.zip' | sha256sum --check --strict
+          mkdir joomla
+          unzip -q /tmp/joomla.zip -d joomla
+
+      - name: Install Joomla, Core, People and Competitions
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd joomla
+          php installation/joomla.php install \
+            --site-name='Competitions People CI' \
+            --admin-user='CI Admin' \
+            --admin-username=admin \
+            --admin-password="CompPeopleCI-${GITHUB_RUN_ID}!" \
+            --admin-email=admin@example.invalid \
+            --db-type=mysqli \
+            --db-host=127.0.0.1 \
+            --db-user=root \
+            --db-pass='' \
+            --db-name=joomla \
+            --db-prefix=cpi_ \
+            --db-encryption=0 \
+            --no-interaction
+          php cli/joomla.php extension:install --path=/tmp/core.zip -vvv
+          php cli/joomla.php extension:install --path=/tmp/people.zip -vvv
+          VERSION="$(tr -d '\r\n' < "$GITHUB_WORKSPACE/VERSION")"
+          php cli/joomla.php extension:install --path="$GITHUB_WORKSPACE/dist/pkg_xdecarocompetitions_${VERSION}.zip" -vvv
+
+      - name: Seed People profile with birth date and nationality
+        shell: bash
+        run: |
+          set -euo pipefail
+          mysql --protocol=TCP -h127.0.0.1 -uroot joomla <<'SQL'
+          INSERT INTO cpi_xdecaropeople_people
+            (uuid, display_name, first_name, last_name, birth_date, nationality_code, nationality_codes, person_status, source_component, state, access, created, created_by)
+          VALUES
+            ('32f12e6f-9891-4cae-8b55-14b0a12227df', 'Noemi Di Marco', 'Noemi', 'Di Marco', '1991-01-21', 'ITA', '["ITA"]', 'active', 'com_xdecaropeople', 1, 1, NOW(), 0);
+          SQL
+
+      - name: Verify sensitive People profile through Competitions
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd joomla
+          cat > competitions-people-sensitive-probe.php <<'PHP'
+          <?php
+          $_SERVER['HTTP_HOST'] = 'localhost';
+          define('_JEXEC', 1);
+          define('JPATH_BASE', __DIR__);
+          require JPATH_BASE . '/includes/defines.php';
+          require JPATH_BASE . '/includes/framework.php';
+
+          $container = \Joomla\CMS\Factory::getContainer();
+          $container->alias('session', 'session.cli')
+              ->alias('JSession', 'session.cli')
+              ->alias(\Joomla\CMS\Session\Session::class, 'session.cli')
+              ->alias(\Joomla\Session\Session::class, 'session.cli')
+              ->alias(\Joomla\Session\SessionInterface::class, 'session.cli');
+
+          $app = $container->get('JApplicationAdministrator');
+          \Joomla\CMS\Factory::$application = $app;
+          $app->createExtensionNamespaceMap();
+
+          $db = $container->get(\Joomla\Database\DatabaseInterface::class);
+          $query = $db->getQuery(true)
+              ->select($db->quoteName('id'))
+              ->from($db->quoteName('#__users'))
+              ->where($db->quoteName('username') . ' = ' . $db->quote('admin'));
+          $adminId = (int) $db->setQuery($query, 0, 1)->loadResult();
+          $userFactory = $container->get(\Joomla\CMS\User\UserFactoryInterface::class);
+          $app->loadIdentity($userFactory->loadUserById($adminId));
+
+          $competitions = $app->bootComponent('com_competitions');
+          if (!is_object($competitions) || !method_exists($competitions, 'getPeopleIntegrationService')) {
+              fwrite(STDERR, "Competitions People integration service unavailable.\n");
+              exit(1);
+          }
+
+          $profile = $competitions->getPeopleIntegrationService()->getProfilePerson('32f12e6f-9891-4cae-8b55-14b0a12227df');
+          if (!is_array($profile)) {
+              fwrite(STDERR, "Sensitive People profile was not returned.\n");
+              exit(1);
+          }
+          if (($profile['birth_date'] ?? null) !== '1991-01-21') {
+              fwrite(STDERR, "Birth date missing from sensitive People profile.\n");
+              var_export($profile);
+              exit(1);
+          }
+          if (($profile['nationality_code'] ?? null) !== 'ITA') {
+              fwrite(STDERR, "Nationality code missing from sensitive People profile.\n");
+              var_export($profile);
+              exit(1);
+          }
+          if (($profile['nationality_codes'][0] ?? null) !== 'ITA') {
+              fwrite(STDERR, "Nationality list missing from sensitive People profile.\n");
+              var_export($profile);
+              exit(1);
+          }
+
+          echo "Competitions + People sensitive profile runtime OK\n";
+          PHP
+          php competitions-people-sensitive-probe.php
