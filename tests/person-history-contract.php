@@ -77,9 +77,9 @@ if (!str_contains($core, "new Capability(self::COMPONENT, 'competitions.people_h
     $fail('competitions.people_history v1 capability is missing.');
 }
 
-$workflow = file_get_contents($root . '/.github/workflows/ci.yml');
+$workflow = file_get_contents($root . '/.github/workflows/person-history-contract.yml');
 if ($workflow === false || !str_contains($workflow, 'php tests/person-history-contract.php')) {
-    $fail('Person history contract is not executed by CI.');
+    $fail('Person history contract is not executed by its CI workflow.');
 }
 
 echo "Competitions person history contract OK\n";
