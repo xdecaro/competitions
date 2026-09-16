@@ -1,0 +1,133 @@
+name: Competitions People history runtime
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  runtime:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+          MYSQL_DATABASE: joomla
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h localhost" --health-interval=10s --health-timeout=5s --health-retries=10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mysqli,zip,simplexml
+          coverage: none
+      - name: Build Competitions package
+        run: python3 tools/build.py
+      - name: Install Joomla 6.1.3 and Competitions
+        run: |
+          curl -fL --retry 3 'https://github.com/joomla/joomla-cms/releases/download/6.1.3/Joomla_6.1.3-Stable-Full_Package.zip' -o /tmp/joomla.zip
+          mkdir joomla
+          unzip -q /tmp/joomla.zip -d joomla
+          cd joomla
+          php installation/joomla.php install --site-name='History CI' --admin-user='CI Admin' --admin-username=admin --admin-password="HistoryCI-${GITHUB_RUN_ID}!" --admin-email=admin@example.invalid --db-type=mysqli --db-host=127.0.0.1 --db-user=root --db-pass='' --db-name=joomla --db-prefix=hist_ --db-encryption=0 --no-interaction
+          VERSION="$(cat "$GITHUB_WORKSPACE/VERSION")"
+          php cli/joomla.php extension:install --path="$GITHUB_WORKSPACE/dist/pkg_xdecarocompetitions_${VERSION}.zip" -vvv
+      - name: Exercise person history provider
+        run: |
+          cd joomla
+          cat > people-history-probe.php <<'PHP'
+          <?php
+          define('_JEXEC', 1);
+          define('JPATH_BASE', __DIR__);
+          require JPATH_BASE . '/includes/defines.php';
+          require JPATH_BASE . '/includes/framework.php';
+
+          use Joomla\CMS\Factory;
+          use Joomla\Database\DatabaseInterface;
+
+          $container = Factory::getContainer();
+          $container->alias('session', 'session.cli')
+              ->alias('JSession', 'session.cli')
+              ->alias(\Joomla\CMS\Session\Session::class, 'session.cli')
+              ->alias(\Joomla\Session\Session::class, 'session.cli')
+              ->alias(\Joomla\Session\SessionInterface::class, 'session.cli');
+          $app = $container->get(\Joomla\Console\Application::class);
+          Factory::$application = $app;
+          $app->createExtensionNamespaceMap();
+
+          /** @var DatabaseInterface $db */
+          $db = $container->get(DatabaseInterface::class);
+
+          $tournament = (object) ['name' => 'DCL Runtime Cup'];
+          $db->insertObject('#__xdecarocompetitions_tournaments', $tournament);
+          $tournamentId = (int) $db->insertid();
+
+          $seasonOld = (object) ['tournament_id' => $tournamentId, 'name' => '2025', 'season_year' => 2025, 'start_date' => '2025-09-01', 'end_date' => '2025-09-07'];
+          $db->insertObject('#__xdecarocompetitions_seasons', $seasonOld);
+          $seasonOldId = (int) $db->insertid();
+          $seasonNew = (object) ['tournament_id' => $tournamentId, 'name' => '2026', 'season_year' => 2026, 'start_date' => '2026-09-01', 'end_date' => '2026-09-07'];
+          $db->insertObject('#__xdecarocompetitions_seasons', $seasonNew);
+          $seasonNewId = (int) $db->insertid();
+
+          $teamOld = (object) ['name' => 'Old Team'];
+          $db->insertObject('#__xdecarocompetitions_teams', $teamOld);
+          $teamOldId = (int) $db->insertid();
+          $teamNew = (object) ['name' => 'New Team'];
+          $db->insertObject('#__xdecarocompetitions_teams', $teamNew);
+          $teamNewId = (int) $db->insertid();
+
+          $uuid = '11111111-2222-3333-4444-555555555555';
+          $player = (object) ['person_uuid' => $uuid, 'first_name' => 'History', 'last_name' => 'Player'];
+          $db->insertObject('#__xdecarocompetitions_players', $player);
+          $playerId = (int) $db->insertid();
+
+          $participationOld = (object) ['team_id' => $teamOldId, 'season_id' => $seasonOldId];
+          $db->insertObject('#__xdecarocompetitions_participations', $participationOld);
+          $participationOldId = (int) $db->insertid();
+          $participationNew = (object) ['team_id' => $teamNewId, 'season_id' => $seasonNewId];
+          $db->insertObject('#__xdecarocompetitions_participations', $participationNew);
+          $participationNewId = (int) $db->insertid();
+
+          $rosterOld = (object) ['participation_id' => $participationOldId, 'team_id' => $teamOldId, 'player_id' => $playerId, 'shirt_number' => 10, 'role' => 'player', 'status' => 'approved'];
+          $db->insertObject('#__xdecarocompetitions_rosters', $rosterOld);
+          $rosterNew = (object) ['participation_id' => $participationNewId, 'team_id' => $teamNewId, 'player_id' => $playerId, 'shirt_number' => 7, 'role' => 'captain', 'status' => 'approved'];
+          $db->insertObject('#__xdecarocompetitions_rosters', $rosterNew);
+
+          $component = $app->bootComponent('com_competitions');
+          if (!is_object($component) || !method_exists($component, 'getPersonHistoryService')) {
+              fwrite(STDERR, "Public person history service is unavailable.\n");
+              exit(1);
+          }
+
+          $history = $component->getPersonHistoryService()->getHistoryByPersonUuid('  ' . strtoupper($uuid) . '  ');
+          if (count($history) !== 2) {
+              fwrite(STDERR, "Expected two history rows.\n");
+              exit(1);
+          }
+          if (($history[0]['season_year'] ?? null) !== 2026 || ($history[0]['team_name'] ?? '') !== 'New Team' || ($history[0]['shirt_number'] ?? null) !== 7) {
+              fwrite(STDERR, "Newest history row is incorrect.\n");
+              exit(1);
+          }
+          if (($history[1]['season_year'] ?? null) !== 2025 || ($history[1]['team_name'] ?? '') !== 'Old Team') {
+              fwrite(STDERR, "Older history row is incorrect.\n");
+              exit(1);
+          }
+          if (array_diff(['player_id','roster_id','participation_id','team_id','team_name','season_id','season_name','season_year','tournament_id','competition_name','role','shirt_number','status','start_date','end_date'], array_keys($history[0]))) {
+              fwrite(STDERR, "Normalized history shape is incomplete.\n");
+              exit(1);
+          }
+          if ($component->getPersonHistoryService()->getHistoryByPersonUuid('   ') !== []) {
+              fwrite(STDERR, "Empty UUID must return an empty history.\n");
+              exit(1);
+          }
+
+          echo "Competitions People history runtime OK\n";
+          PHP
+          php people-history-probe.php

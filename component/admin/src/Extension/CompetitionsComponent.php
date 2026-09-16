@@ -11,6 +11,7 @@ use xdecaro\Component\Competitions\Administrator\Service\CoreIntegrationService;
 use xdecaro\Component\Competitions\Administrator\Service\CrossProductIntegrationService;
 use xdecaro\Component\Competitions\Administrator\Service\MatchReminderService;
 use xdecaro\Component\Competitions\Administrator\Service\PeopleIntegrationService;
+use xdecaro\Component\Competitions\Administrator\Service\PersonHistoryService;
 
 /** Public, provider-owned service surface for optional xdecaro integrations. */
 final class CompetitionsComponent extends MVCComponent
@@ -21,6 +22,7 @@ final class CompetitionsComponent extends MVCComponent
     private ?MatchReminderService $matchReminders = null;
     private ?PeopleIntegrationService $people = null;
     private ?CompetitionPhotoService $photos = null;
+    private ?PersonHistoryService $personHistory = null;
 
     public function setCoreIntegrationService(CoreIntegrationService $service): void { $this->core = $service; }
     public function setCrossProductIntegrationService(CrossProductIntegrationService $service): void { $this->crossProduct = $service; }
@@ -28,6 +30,7 @@ final class CompetitionsComponent extends MVCComponent
     public function setMatchReminderService(MatchReminderService $service): void { $this->matchReminders = $service; }
     public function setPeopleIntegrationService(PeopleIntegrationService $service): void { $this->people = $service; }
     public function setCompetitionPhotoService(CompetitionPhotoService $service): void { $this->photos = $service; }
+    public function setPersonHistoryService(PersonHistoryService $service): void { $this->personHistory = $service; }
 
     public function getCoreIntegrationService(): CoreIntegrationService
     {
@@ -57,5 +60,10 @@ final class CompetitionsComponent extends MVCComponent
     public function getCompetitionPhotoService(): CompetitionPhotoService
     {
         return $this->photos ?? throw new RuntimeException('Competitions photo service is unavailable.');
+    }
+
+    public function getPersonHistoryService(): PersonHistoryService
+    {
+        return $this->personHistory ?? throw new RuntimeException('Competitions person history service is unavailable.');
     }
 }
