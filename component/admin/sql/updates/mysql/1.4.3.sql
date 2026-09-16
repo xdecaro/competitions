@@ -1,0 +1,2 @@
+-- Competitions 1.4.3
+-- No schema changes. People sensitive profile autofill fix.
