@@ -11,7 +11,7 @@
   <targetplatform name="joomla" version="6.*" />
   <scriptfile>script.php</scriptfile>
   <files>
-    <file type="component" id="com_xdecarocompetitions">com_xdecarocompetitions_1.4.0.zip</file>
+    <file type="component" id="com_competitions">com_competitions_1.4.0.zip</file>
     <file type="plugin" id="xdecarocompetitions" group="system">plg_system_xdecarocompetitions_1.4.0.zip</file>
     <file type="plugin" id="competitions" group="xdecaroanalytics">plg_xdecaroanalytics_competitions_1.4.0.zip</file>
     <file type="plugin" id="xdecarocompetitions" group="task">plg_task_xdecarocompetitions_1.4.0.zip</file>
