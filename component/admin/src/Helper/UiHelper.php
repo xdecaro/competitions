@@ -73,7 +73,7 @@ final class UiHelper
         if (!$wa->assetExists('script', $peopleScriptName)) {
             $wa->registerScript(
                 $peopleScriptName,
-                'com_xdecarocompetitions/js/people-picker.js',
+                'com_xdecarocompetitions/people-picker.js',
                 ['version' => self::VERSION],
                 ['defer' => true]
             );
