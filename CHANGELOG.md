@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.4.1 - 2026-09-16
+
+- Fixed the Joomla 6 WebAsset URI for `people-picker.js`; the player People autocomplete is loaded from the standard component `js` media folder again.
+- Added a focused RED/GREEN asset-path contract so a duplicated `/js/` segment cannot silently disable the picker again.
+- Made package/CI version checks derive from `VERSION` instead of hard-coding the 1.4.0 artifact name.
+- Added a non-destructive 1.4.1 schema marker so Joomla records the patch version correctly.
+- Corrected the release workflow to publish the clean `com_competitions_<version>.zip` component artifact.
+
 ## 1.4.0 - 2026-09-16
 
 - Added a stable nullable unique `person_uuid` link from Competitions players to People identities.
