@@ -2,7 +2,7 @@
 
 ## Goal
 
-Expose a stable, read-only public Competitions service that returns a person's competition history by People `person_uuid`, so People can render a Competitions tab without reading Competitions private tables or duplicating competition-owned data.
+Expose a stable, read-only Competitions service that returns a person's competition history by People `person_uuid`, so People can render a Competitions tab without reading Competitions private tables or duplicating competition-owned data.
 
 ## Domain ownership
 
@@ -11,6 +11,20 @@ Competitions remains the sole owner of player records, roster memberships, teams
 People remains the owner of person master data. This feature does not move competition state into People and does not introduce writes from People into Competitions.
 
 The cross-product key is the existing `person_uuid` stored on `#__xdecarocompetitions_players`. No People numeric ID is introduced.
+
+## Core capability
+
+Competitions adds the capability:
+
+```text
+competitions.people_history v1
+```
+
+under component `com_xdecarocompetitions` in `CoreIntegrationService::getCapabilities()`.
+
+This capability advertises availability of the public person-history API. It does not carry data and does not move competition logic into Core.
+
+No Core library change is required because the existing `CapabilityRegistry` already supports this discovery pattern.
 
 ## Public component surface
 
@@ -35,7 +49,7 @@ This is a read-only contract. It must not update players, rosters, participation
 
 ## Query model
 
-The provider resolves `person_uuid` through the Competitions player row and then joins the competition-owned history graph:
+The provider resolves `person_uuid` through the Competitions player row and joins the competition-owned history graph:
 
 ```text
 players
@@ -50,12 +64,12 @@ The query returns one row per roster membership. A person appearing in multiple 
 
 The provider must not collapse separate roster memberships into one row.
 
-Rows are ordered newest first using the best available competition chronology:
+Rows are ordered newest first using:
 
 1. `seasons.start_date` descending when available;
 2. `seasons.season_year` descending;
 3. `seasons.id` descending;
-4. `rosters.id` descending as a deterministic final tie-breaker.
+4. `rosters.id` descending as deterministic tie-breaker.
 
 ## Normalized return shape
 
@@ -96,35 +110,37 @@ The UUID is trimmed and lowercased before lookup.
 
 ## State handling
 
-Historical visibility is based on persisted roster history, not only currently active rows. The provider must include roster memberships that remain legitimate historical records even if a season has ended.
+Historical visibility is based on persisted roster history, not only currently active rows. The provider includes legitimate historical roster memberships after a season has ended.
 
-Rows whose underlying player or roster record has been explicitly trashed/deleted according to the component's existing state conventions are excluded. The implementation must follow the repository's current state semantics rather than inventing a new archive flag.
+Rows whose underlying player or roster record is explicitly trashed/deleted according to the component's existing state conventions are excluded. The implementation follows existing state semantics and does not invent a new archive flag.
 
-No historical snapshot table is introduced in this feature. Display names are resolved from the current Competitions entities at query time.
+No historical snapshot table is introduced. Display names are resolved from current Competitions entities at query time.
 
-## Optional consumer behavior
+## Consumer boundary
 
-Competitions does not depend on People to serve the history method: it accepts a UUID string and queries its own data.
+Competitions does not depend on People to serve this history method: it accepts a UUID string and queries only Competitions-owned data.
 
-People may optionally consume this service by booting `com_competitions`. Competitions must not boot People from inside `PersonHistoryService` and must not create a circular dependency.
+A consumer such as People may boot `com_xdecarocompetitions` at runtime, obtain `getCoreIntegrationService()`, register the returned Competitions capabilities into an in-memory Core `CapabilityRegistry`, require `competitions.people_history` v1, and only then call `getPersonHistoryService()`.
 
-The existing `PeopleIntegrationService` used by Competitions for player selection/autofill remains unchanged in responsibility. `PersonHistoryService` is a separate provider because it serves Competitions-owned data outward rather than reading People-owned data inward.
+The consumer must not import Competitions implementation classes as a hard compile-time dependency and must not query Competitions tables.
+
+The existing `PeopleIntegrationService` used by Competitions for player selection/autofill remains unchanged in responsibility. `PersonHistoryService` is separate because it serves Competitions-owned data outward rather than reading People-owned data inward.
 
 ## Security
 
-The service returns only competition-domain data required for the history UI. It must not return birth date, nationality copied for player workflow, disability, accessibility, tax, residence, contact data, or any other People-sensitive values.
+The service returns only competition-domain data required for the history UI. It must not return birth date, nationality copied for player workflow, disability, accessibility, tax, residence, contact data or any other People-sensitive values.
 
 Database access uses Joomla's database abstraction, bound UUID parameters and `#__` table names.
 
-The provider is read-only and performs no state-changing operation, so no CSRF token is required for direct in-process use.
+The provider is read-only and performs no state-changing operation, so no CSRF token is required for in-process use.
 
-Normal Joomla administrator authorization remains the responsibility of the consuming UI. No frontend public endpoint is added by this feature.
+Normal Joomla administrator authorization remains the responsibility of the consuming UI. No frontend public endpoint is added.
 
 ## Performance
 
-The history is fetched in one bounded join query per person view. Do not query teams, seasons or tournaments inside a PHP loop.
+The history is fetched in one join query per person view. Do not query teams, seasons or tournaments inside a PHP loop.
 
-The existing unique/indexed `person_uuid` player lookup should be used. If implementation inspection shows the existing index is absent or insufficient on supported installed schemas, add a non-destructive migration rather than relying on a table scan.
+Use the existing unique/indexed `person_uuid` lookup. If implementation inspection shows the index is absent on any supported installed schema, add a non-destructive migration rather than relying on a table scan.
 
 ## Compatibility
 
@@ -132,7 +148,7 @@ Existing player and roster data must be preserved.
 
 No destructive schema recreation is allowed.
 
-The service is additive to the public component surface and does not change the current People picker/autofill contract.
+The service and capability are additive to the public surface and do not change the current People picker/autofill contract.
 
 Competitions remains usable when People is absent because this outward provider operates only on Competitions-owned stored UUID values.
 
@@ -140,6 +156,7 @@ Competitions remains usable when People is absent because this outward provider 
 
 Contract and runtime tests must cover:
 
+- `CoreIntegrationService::getCapabilities()` declares `competitions.people_history` version `1`;
 - `CompetitionsComponent::getPersonHistoryService()` exists and returns the registered service;
 - empty UUID returns `[]`;
 - UUID lookup is normalized by trim/lowercase;
