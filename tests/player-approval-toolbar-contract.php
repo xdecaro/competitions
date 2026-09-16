@@ -8,8 +8,6 @@ $files = [
     'view' => $root . '/component/admin/src/View/Players/HtmlView.php',
     'controller' => $root . '/component/admin/src/Controller/PlayersController.php',
     'model' => $root . '/component/admin/src/Model/PlayerModel.php',
-    'en' => $root . '/component/admin/language/en-GB/com_xdecarocompetitions.ini',
-    'it' => $root . '/component/admin/language/it-IT/com_xdecarocompetitions.ini',
 ];
 
 foreach ($files as $name => $path) {
@@ -22,8 +20,21 @@ foreach ($files as $name => $path) {
 $view = file_get_contents($files['view']);
 $controller = file_get_contents($files['controller']);
 $model = file_get_contents($files['model']);
-$en = file_get_contents($files['en']);
-$it = file_get_contents($files['it']);
+
+$loadLanguage = static function (string $locale) use ($root): string {
+    $paths = glob($root . '/component/admin/language/' . $locale . '/com_xdecarocompetitions*.ini') ?: [];
+    sort($paths);
+
+    $content = '';
+    foreach ($paths as $path) {
+        $content .= "\n" . file_get_contents($path);
+    }
+
+    return $content;
+};
+
+$en = $loadLanguage('en-GB');
+$it = $loadLanguage('it-IT');
 
 $requirements = [
     [$view, "players.approve", 'Players toolbar must expose Approve bulk action.'],
