@@ -41,6 +41,14 @@ jobs:
           python3 tools/build.py
           diff -u /tmp/a.txt dist/SHA256SUMS.txt
           python3 tools/validate_release.py --dist
+      - name: Upload test package
+        uses: actions/upload-artifact@v4
+        with:
+          name: competitions-1.4.0-package
+          path: |
+            dist/pkg_xdecarocompetitions_1.4.0.zip
+            dist/SHA256SUMS.txt
+          if-no-files-found: error
 
   joomla-runtime:
     runs-on: ubuntu-latest
