@@ -32,6 +32,8 @@ jobs:
         run: php tests/finance-integration-contract.php
       - name: People roster photo contract
         run: php tests/people-roster-photo-contract.php
+      - name: People picker asset contract
+        run: php tests/people-picker-asset-contract.php
       - name: Deterministic build
         run: |
           python3 tools/build.py
@@ -44,9 +46,9 @@ jobs:
       - name: Upload test package
         uses: actions/upload-artifact@v4
         with:
-          name: competitions-1.4.0-package
+          name: competitions-package
           path: |
-            dist/pkg_xdecarocompetitions_1.4.0.zip
+            dist/pkg_xdecarocompetitions_*.zip
             dist/SHA256SUMS.txt
           if-no-files-found: error
 
@@ -97,7 +99,8 @@ jobs:
             test "$enabled" = '1'
           done
           schema="$("${MYSQL[@]}" -e "SELECT s.version_id FROM cmp_schemas s JOIN cmp_extensions e ON e.extension_id=s.extension_id WHERE e.type='component' AND e.element='com_competitions' LIMIT 1;")"
-          test "$schema" = '1.4.0'
+          VERSION="$(cat "$GITHUB_WORKSPACE/VERSION")"
+          test "$schema" = "$VERSION"
 
       - name: Verify Finance-absent fallback
         run: |
