@@ -1,0 +1,16 @@
+name: Competitions People profile autofill
+
+on:
+  pull_request:
+
+permissions: {contents: read}
+
+jobs:
+  people-profile-autofill:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with: {php-version: '8.3', coverage: none}
+      - name: People profile autofill contract
+        run: php tests/people-picker-profile-contract.php
