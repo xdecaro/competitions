@@ -1,0 +1,1 @@
+-- Competitions 1.4.1: People picker asset path fix; no database schema changes.
