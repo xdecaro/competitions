@@ -1,0 +1,2 @@
+-- Competitions 1.4.4
+-- No schema changes. Player approval toolbar actions.
