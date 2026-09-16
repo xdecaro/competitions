@@ -1,0 +1,1 @@
+-- Competitions 1.4.2: People picker profile autofill; no database changes required.
