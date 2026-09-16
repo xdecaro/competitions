@@ -12,7 +12,9 @@ $files = [
     'install' => $root . '/component/admin/sql/install.mysql.utf8mb4.sql',
     'installExtension' => $root . '/component/admin/sql/install.1.4.0.mysql.utf8mb4.sql',
     'update' => $root . '/component/admin/sql/updates/mysql/1.4.0.sql',
-    'manifest' => $root . '/component/xdecarocompetitions.xml',
+    'manifest' => $root . '/component/competitions.xml',
+    'packageManifest' => $root . '/package/pkg_xdecarocompetitions.xml',
+    'build' => $root . '/tools/build.py',
     'playerForm' => $root . '/component/admin/forms/player.xml',
     'rosterForm' => $root . '/component/admin/forms/roster.xml',
     'playerModel' => $root . '/component/admin/src/Model/PlayerModel.php',
@@ -31,9 +33,23 @@ foreach ($files as $name => $path) {
     }
 }
 
+if (is_file($root . '/component/xdecarocompetitions.xml')) {
+    $fail('Legacy component manifest component/xdecarocompetitions.xml must be removed for the clean com_competitions identity.');
+}
+
+foreach (['en-GB', 'it-IT'] as $language) {
+    foreach (['com_competitions.ini', 'com_competitions.140.ini', 'com_competitions.sys.ini'] as $filename) {
+        if (!is_file($root . '/component/admin/language/' . $language . '/' . $filename)) {
+            $fail('Missing Joomla component language file: ' . $language . '/' . $filename);
+        }
+    }
+}
+
 $freshInstall = (string) file_get_contents($files['install']) . "\n" . (string) file_get_contents($files['installExtension']);
 $update = (string) file_get_contents($files['update']);
 $manifest = (string) file_get_contents($files['manifest']);
+$packageManifest = (string) file_get_contents($files['packageManifest']);
+$build = (string) file_get_contents($files['build']);
 $playerForm = (string) file_get_contents($files['playerForm']);
 $rosterForm = (string) file_get_contents($files['rosterForm']);
 $playerModel = (string) file_get_contents($files['playerModel']);
@@ -44,6 +60,39 @@ $people = (string) file_get_contents($files['people']);
 $photo = (string) file_get_contents($files['photo']);
 $playerTemplate = (string) file_get_contents($files['playerTemplate']);
 $js = (string) file_get_contents($files['js']);
+
+if (!str_contains($manifest, '<element>com_competitions</element>')) {
+    $fail('Component manifest must explicitly declare <element>com_competitions</element>.');
+}
+if (!str_contains($manifest, 'destination="com_competitions"')) {
+    $fail('Component media destination must be com_competitions.');
+}
+if (str_contains($manifest, 'com_xdecarocompetitions')) {
+    $fail('Component manifest still contains legacy com_xdecarocompetitions identity.');
+}
+if (!str_contains($packageManifest, 'type="component" id="com_competitions"')) {
+    $fail('Package manifest must install component id com_competitions.');
+}
+if (!str_contains($packageManifest, 'com_competitions_1.4.0.zip')) {
+    $fail('Package manifest must reference com_competitions_1.4.0.zip.');
+}
+if (!str_contains($build, 'com_competitions_{VERSION}.zip')) {
+    $fail('Build must produce com_competitions_<version>.zip.');
+}
+
+$runtimeFiles = [];
+$iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($root . '/component', FilesystemIterator::SKIP_DOTS));
+foreach ($iterator as $path) {
+    if (!$path->isFile()) {
+        continue;
+    }
+    $runtimeFiles[] = $path->getPathname();
+}
+foreach ($runtimeFiles as $path) {
+    if (str_contains((string) file_get_contents($path), 'com_xdecarocompetitions')) {
+        $fail('Legacy runtime component identity remains in ' . str_replace($root . '/', '', $path));
+    }
+}
 
 foreach ([
     'ADD COLUMN `person_uuid` CHAR(36) NULL',
@@ -158,11 +207,8 @@ foreach ($controllerFiles as $controllerPath) {
         continue;
     }
 
-    if (!preg_match('/protected\s+\$option\s*=\s*[\'\"]com_xdecarocompetitions[\'\"]\s*;/', $controllerCode)) {
-        $fail(
-            basename($controllerPath)
-            . ' must pin $option to com_xdecarocompetitions so Joomla does not infer com_competitions in redirects.'
-        );
+    if (str_contains($controllerCode, 'com_xdecarocompetitions')) {
+        $fail(basename($controllerPath) . ' still contains the legacy component option.');
     }
 }
 
