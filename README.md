@@ -17,9 +17,9 @@ Competitions by xdecaro is the competition-management component in the xdecaro J
 
 ## Current version
 
-**1.4.1**
+**1.4.2**
 
-Version 1.4.1 keeps the People-linked player identity and roster-owned competition-photo model introduced in the 1.4 line, and fixes the Joomla 6 WebAsset path for the People autocomplete so search results are loaded in the player editor.
+Version 1.4.2 keeps the People-linked player identity and roster-owned competition-photo model introduced in the 1.4 line, and extends the People picker so selecting a person can prefill birth date and nationality through a targeted authorised profile lookup. The autocomplete search itself remains non-sensitive.
 
 Photo ownership is explicit:
 
@@ -45,7 +45,7 @@ Core integration remains infrastructure-only: public references, shared administ
 
 People integration is discovered at runtime with `bootComponent('com_xdecaropeople')` and consumed only through `getPersonProviderService()`.
 
-The administrator player editor provides a People search picker. New players require a People person UUID; existing legacy players without a UUID remain editable for compatibility. Competitions never queries `#__xdecaropeople_*` directly.
+The administrator player editor provides a People search picker. New players require a People person UUID; existing legacy players without a UUID remain editable for compatibility. Search results use the non-sensitive People provider surface. After a person is selected, Competitions performs a targeted profile lookup so `birth_date` and `nationality_code` can be copied when the current user is authorised to view sensitive People data. Competitions never queries `#__xdecaropeople_*` directly.
 
 ### Finance
 
@@ -75,7 +75,7 @@ When Core 1.4+ `CapabilityRegistry` is available, Competitions declares analytic
 
 The current Competitions 1.x line targets Joomla 6 and PHP 8.3+. Compatibility with earlier Joomla versions is not claimed until runtime-tested.
 
-CI performs a real Joomla 6.1.3 installation of the built package. The 1.4.1 gate validates the People provider boundary, People UUID schema, roster photo schema, People picker WebAsset path and the existing Finance bridge regression coverage.
+CI performs a real Joomla 6.1.3 installation of the built package. The 1.4.2 gate validates the People provider boundary, People UUID schema, roster photo schema, People picker WebAsset path, selected-profile autofill contract and the existing Finance bridge regression coverage.
 
 ## Data and update policy
 
