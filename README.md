@@ -17,9 +17,9 @@ Competitions by xdecaro is the competition-management component in the xdecaro J
 
 ## Current version
 
-**1.4.3**
+**1.4.4**
 
-Version 1.4.3 fixes selected People-profile autofill for player birth date and nationality. Competitions now requires the authorised sensitive profile lookup instead of silently falling back to the non-sensitive profile, normalizes birth dates to `Y-m-d`, and accepts both People `nationality_code` and `nationality_codes`. The autocomplete search itself remains non-sensitive.
+Version 1.4.4 adds bulk player approval actions directly to the administrator Players toolbar: Approve, Pending and Reject. The actions require `core.edit.state`, support multiple selected players, update the player `modified` metadata and participate in the existing live-sync change stream.
 
 Photo ownership is explicit:
 
@@ -75,7 +75,7 @@ When Core 1.4+ `CapabilityRegistry` is available, Competitions declares analytic
 
 The current Competitions 1.x line targets Joomla 6 and PHP 8.3+. Compatibility with earlier Joomla versions is not claimed until runtime-tested.
 
-CI performs a real Joomla 6.1.3 installation of the built package. The 1.4.3 gate validates the People provider boundary, People UUID schema, roster photo schema, People picker WebAsset path, selected sensitive-profile autofill contract and the existing Finance bridge regression coverage.
+CI performs a real Joomla 6.1.3 installation of the built package. The 1.4.4 gate validates the People provider boundary, People UUID schema, roster photo schema, People picker WebAsset path, selected sensitive-profile autofill contract, bulk player approval actions and the existing Finance bridge regression coverage.
 
 ## Data and update policy
 
