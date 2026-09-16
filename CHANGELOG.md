@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.4.3 - 2026-09-16
+
+- Fixed People player autofill when the selected sensitive profile could not be returned completely.
+- Removed the silent fallback to a non-sensitive People profile, so missing birth date/nationality can no longer be hidden behind a successful response.
+- Normalizes People birth dates to `Y-m-d` for the Joomla calendar field.
+- Supports both `nationality_code` and People `nationality_codes`, using the first nationality when needed.
+- Added a non-destructive 1.4.3 schema marker; no database structure changes are required.
+
 ## 1.4.2 - 2026-09-16
 
 - Added a targeted People profile lookup after selecting a person in the player editor.
@@ -31,7 +39,7 @@
 
 ## 1.3.0 - 2026-09-09
 
-- Added an optional Finance 1.2 public-service bridge through `bootComponent('com_decarofinance')->getFinanceService()` only.
+- Added an optional Finance 1.2 public-service bridge through `bootComponent('com_decarofinance')` and consumes only `getFinanceService()`.
 - Added idempotent participation-fee obligations using stable Finance `external_key` values and typed `component + entity + id` source/debtor references.
 - Added team deposit/caution account creation, idempotent credits, disciplinary debits and balance queries through Finance's public deposit API.
 - Kept competition pricing and disciplinary rules inside Competitions: the bridge receives the rule-derived amount and cause and contains no hard-coded card/suspension/fight tariffs.
