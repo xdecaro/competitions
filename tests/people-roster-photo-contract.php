@@ -3,10 +3,15 @@
 declare(strict_types=1);
 
 $root = dirname(__DIR__);
+$version = trim((string) file_get_contents($root . '/VERSION'));
 $fail = static function (string $message): never {
     fwrite(STDERR, "ERROR: {$message}\n");
     exit(1);
 };
+
+if ($version === '') {
+    $fail('VERSION is empty.');
+}
 
 $files = [
     'install' => $root . '/component/admin/sql/install.mysql.utf8mb4.sql',
@@ -54,8 +59,8 @@ $js = (string) file_get_contents($files['js']);
 if (!str_contains($packageManifest, 'type="component" id="com_competitions"')) {
     $fail('Package manifest must install component id com_competitions.');
 }
-if (!str_contains($packageManifest, 'com_competitions_1.4.0.zip')) {
-    $fail('Package manifest must reference com_competitions_1.4.0.zip.');
+if (!str_contains($packageManifest, 'com_competitions_' . $version . '.zip')) {
+    $fail('Package manifest must reference the current-version com_competitions ZIP.');
 }
 foreach (['LEGACY_COMPONENT_OPTION = "com_xdecarocompetitions"', 'COMPONENT_OPTION = "com_competitions"', 'stage_extension', 'com_competitions_{VERSION}.zip'] as $token) {
     if (!str_contains($build, $token)) {
@@ -70,10 +75,10 @@ if ($buildStatus !== 0) {
     $fail("Component identity build failed:\n" . implode("\n", $buildOutput));
 }
 
-$componentZip = $root . '/dist/com_competitions_1.4.0.zip';
-$legacyComponentZip = $root . '/dist/com_xdecarocompetitions_1.4.0.zip';
+$componentZip = $root . '/dist/com_competitions_' . $version . '.zip';
+$legacyComponentZip = $root . '/dist/com_xdecarocompetitions_' . $version . '.zip';
 if (!is_file($componentZip) || is_file($legacyComponentZip)) {
-    $fail('Distribution must contain com_competitions_1.4.0.zip and no legacy component ZIP.');
+    $fail('Distribution must contain the current com_competitions component ZIP and no legacy component ZIP.');
 }
 
 $archive = new ZipArchive();
