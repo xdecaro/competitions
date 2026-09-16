@@ -3,6 +3,7 @@ namespace xdecaro\Component\Competitions\Administrator\Controller;
 
 defined('_JEXEC') or die;
 
+use DateTimeImmutable;
 use Joomla\CMS\Factory;
 use Joomla\CMS\MVC\Controller\BaseController;
 use Joomla\CMS\Response\JsonResponse;
@@ -82,18 +83,61 @@ final class PeopleController extends BaseController
                 throw new RuntimeException('People person not found.', 404);
             }
 
+            $nationalityCodes = $this->normalizeNationalityCodes($person['nationality_codes'] ?? []);
+            $nationalityCode = strtoupper(trim((string) ($person['nationality_code'] ?? '')));
+            if ($nationalityCode === '' && $nationalityCodes !== []) {
+                $nationalityCode = $nationalityCodes[0];
+            }
+
             echo new JsonResponse([
                 'uuid' => $uuid,
                 'display_name' => (string) ($person['display_name'] ?? ''),
                 'first_name' => (string) ($person['first_name'] ?? ''),
                 'last_name' => (string) ($person['last_name'] ?? ''),
-                'birth_date' => (string) ($person['birth_date'] ?? ''),
-                'nationality_code' => (string) ($person['nationality_code'] ?? ''),
+                'birth_date' => $this->normalizeBirthDate($person['birth_date'] ?? null),
+                'nationality_code' => $nationalityCode,
+                'nationality_codes' => $nationalityCodes,
             ]);
         } catch (Throwable $e) {
             echo new JsonResponse(null, $e->getMessage(), true);
         }
 
         $app->close();
+    }
+
+    private function normalizeBirthDate(mixed $value): string
+    {
+        $value = trim((string) ($value ?? ''));
+        if ($value === '') {
+            return '';
+        }
+
+        foreach (['!Y-m-d', '!d/m/Y', '!Y-m-d H:i:s'] as $format) {
+            $date = DateTimeImmutable::createFromFormat($format, $value);
+            $errors = DateTimeImmutable::getLastErrors();
+            if ($date !== false && ($errors === false || ($errors['warning_count'] === 0 && $errors['error_count'] === 0))) {
+                return $date->format('Y-m-d');
+            }
+        }
+
+        return '';
+    }
+
+    private function normalizeNationalityCodes(mixed $value): array
+    {
+        if (is_string($value)) {
+            $decoded = json_decode($value, true);
+            $value = is_array($decoded) ? $decoded : [$value];
+        }
+
+        $result = [];
+        foreach ((array) $value as $code) {
+            $code = strtoupper(trim((string) $code));
+            if ($code !== '' && !in_array($code, $result, true)) {
+                $result[] = $code;
+            }
+        }
+
+        return $result;
     }
 }

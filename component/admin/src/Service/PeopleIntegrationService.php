@@ -44,11 +44,7 @@ final class PeopleIntegrationService
 
     public function getProfilePerson(string $uuid): ?array
     {
-        try {
-            return $this->getPerson($uuid, true);
-        } catch (Throwable) {
-            return $this->getPerson($uuid, false);
-        }
+        return $this->getPerson($uuid, true);
     }
 
     private function provider(): object
