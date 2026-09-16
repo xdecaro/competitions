@@ -17,5 +17,6 @@ final class LanguageHelper
         $language->load('com_xdecarocompetitions.090', JPATH_ADMINISTRATOR, null, true);
         $language->load('com_xdecarocompetitions.100', JPATH_ADMINISTRATOR, null, true);
         $language->load('com_xdecarocompetitions.121', JPATH_ADMINISTRATOR, null, true);
+        $language->load('com_xdecarocompetitions.140', JPATH_ADMINISTRATOR, null, true);
     }
 }
