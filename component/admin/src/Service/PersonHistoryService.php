@@ -45,7 +45,7 @@ final class PersonHistoryService
             ->join('INNER', $this->db->quoteName('#__xdecarocompetitions_teams', 'tm') . ' ON tm.id = r.team_id')
             ->join('INNER', $this->db->quoteName('#__xdecarocompetitions_seasons', 's') . ' ON s.id = pa.season_id')
             ->join('INNER', $this->db->quoteName('#__xdecarocompetitions_tournaments', 't') . ' ON t.id = s.tournament_id')
-            ->where('LOWER(p.person_uuid) = :person_uuid')
+            ->where('p.person_uuid = :person_uuid')
             ->where('p.state <> -2')
             ->where('r.state <> -2')
             ->bind(':person_uuid', $personUuid, ParameterType::STRING)
