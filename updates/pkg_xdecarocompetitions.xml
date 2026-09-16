@@ -3,7 +3,7 @@
   <name>Competitions by xdecaro</name><description>Competitions by xdecaro package for Joomla 6.</description>
   <element>pkg_xdecarocompetitions</element><type>package</type><client>site</client><version>1.4.2</version>
   <downloads><downloadurl type="full" format="zip">https://github.com/xdecaro/competitions/releases/download/v1.4.2/pkg_xdecarocompetitions_1.4.2.zip</downloadurl></downloads>
-  <tags><tag>stable</tag></tags><sha256>19321618aa4c51cde8f98e3a6c6e69103c2cb46b02dca5af24dfd376549d0e16</sha256>
+  <tags><tag>stable</tag></tags><sha256>63c82b6d9c350d8c7d80ce70c6fe9b0d4835db9dba4272a3c4e9a50565b1002b</sha256>
   <maintainer>Luca De Caro</maintainer><maintainerurl>https://github.com/xdecaro/competitions</maintainerurl>
   <targetplatform name="joomla" version="6\.[0-9]+" /><php_minimum>8.3.0</php_minimum>
 </update></updates>
