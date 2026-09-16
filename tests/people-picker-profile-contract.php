@@ -9,11 +9,11 @@ $checks = [
     [$controller, 'getProfilePerson', 'Profile action must use the public People profile lookup.'],
     [$controller, "'birth_date'", 'Profile response must expose birth_date when authorised.'],
     [$controller, "'nationality_code'", 'Profile response must expose nationality_code when authorised.'],
-    [$picker, "people.profile", 'People picker must request the selected People profile.'],
+    [$picker, 'people.profile', 'People picker must request the selected People profile.'],
     [$picker, "getElementById('jform_birth_date')", 'People picker must target the birth date field.'],
     [$picker, "getElementById('jform_nationality_code')", 'People picker must target the nationality field.'],
-    [$picker, 'profile.birth_date', 'People picker must copy birth_date from the selected profile.'],
-    [$picker, 'profile.nationality_code', 'People picker must copy nationality_code from the selected profile.'],
+    [$picker, 'birth_date', 'People picker must copy birth_date from the selected profile.'],
+    [$picker, 'nationality_code', 'People picker must copy nationality_code from the selected profile.'],
 ];
 
 foreach ($checks as [$source, $needle, $message]) {
@@ -23,7 +23,7 @@ foreach ($checks as [$source, $needle, $message]) {
     }
 }
 
-if (str_contains($controller, "searchPeople($q, 20, true)")) {
+if (str_contains($controller, 'searchPeople($q, 20, true)')) {
     fwrite(STDERR, "People search must remain non-sensitive; sensitive fields belong to the selected profile lookup only.\n");
     exit(1);
 }
