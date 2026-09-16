@@ -3,6 +3,7 @@ namespace xdecaro\Component\Competitions\Administrator\Model;
 
 defined('_JEXEC') or die;
 
+use InvalidArgumentException;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Form\Form;
 use Joomla\CMS\Language\Text;
@@ -10,6 +11,7 @@ use Joomla\CMS\Table\Table;
 use Joomla\Database\ParameterType;
 use RuntimeException;
 use Throwable;
+use xdecaro\Component\Competitions\Administrator\Helper\LiveSyncHelper;
 
 final class PlayerModel extends BaseAdminModel
 {
@@ -25,6 +27,53 @@ final class PlayerModel extends BaseAdminModel
             'player',
             ['control' => 'jform', 'load_data' => $loadData]
         );
+    }
+
+    public function setApprovalStatus(&$pks, string $status): bool
+    {
+        $status = strtolower(trim($status));
+
+        if (!in_array($status, ['pending', 'approved', 'rejected'], true)) {
+            throw new InvalidArgumentException('Invalid player approval status: ' . $status);
+        }
+
+        $ids = array_values(array_unique(array_filter(array_map('intval', (array) $pks))));
+
+        if (!$ids) {
+            $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_NO_PLAYERS_SELECTED'));
+            return false;
+        }
+
+        $db = $this->getDatabase();
+        $placeholders = [];
+        $query = $db->getQuery(true)
+            ->update($db->quoteName('#__xdecarocompetitions_players'))
+            ->set($db->quoteName('approval_status') . ' = :approvalStatus')
+            ->bind(':approvalStatus', $status);
+
+        foreach ($ids as $index => $id) {
+            $placeholder = ':playerId' . $index;
+            $placeholders[] = $placeholder;
+            $query->bind($placeholder, $ids[$index], ParameterType::INTEGER);
+        }
+
+        $query->where($db->quoteName('id') . ' IN (' . implode(',', $placeholders) . ')');
+        $db->setQuery($query)->execute();
+
+        LiveSyncHelper::touchModified(
+            $db,
+            'player',
+            $ids,
+            (int) Factory::getApplication()->getIdentity()->id
+        );
+
+        foreach ($ids as $id) {
+            LiveSyncHelper::record($db, 'player', $id, 'update');
+        }
+
+        $pks = $ids;
+
+        return true;
     }
 
     protected function loadFormData()
