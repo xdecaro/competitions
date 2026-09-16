@@ -1,6 +1,8 @@
 name: Competitions People profile autofill
 
 on:
+  push:
+    branches: [main]
   pull_request:
 
 permissions: {contents: read}
