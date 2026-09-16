@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.4.0 - 2026-09-16
+
+- Added a stable nullable unique `person_uuid` link from Competitions players to People identities.
+- Added an administrator People picker for new player records using `bootComponent('com_xdecaropeople')->getPersonProviderService()` only.
+- New player records require a People person selection, while existing legacy players without a People link remain supported to preserve installed data.
+- Removed the global editable player photo from the current player form; People owns the primary profile photo.
+- Added a roster-owned photo for a player’s specific team/competition edition.
+- Added deterministic photo resolution priority: roster/edition photo, then People profile-document reference, then legacy player photo.
+- Kept the legacy player `photo` column intact as a read-only compatibility fallback; no historical photo data is discarded.
+- Added additive 1.4.0 schema migration for `person_uuid` and roster `photo`.
+- Added release contracts that prohibit direct `#__xdecaropeople_*` coupling and verify People/provider and photo-fallback boundaries.
+- Updated Joomla 6.1.3 CI and package/version metadata for the 1.4.0 release line.
+
 ## 1.3.0 - 2026-09-09
 
 - Added an optional Finance 1.2 public-service bridge through `bootComponent('com_decarofinance')->getFinanceService()` only.
