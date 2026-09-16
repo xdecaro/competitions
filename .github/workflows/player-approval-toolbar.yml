@@ -1,0 +1,163 @@
+name: Competitions player approval toolbar
+
+on:
+  pull_request:
+    paths:
+      - 'component/admin/src/View/Players/**'
+      - 'component/admin/src/Controller/PlayersController.php'
+      - 'component/admin/src/Model/PlayerModel.php'
+      - 'component/admin/language/**'
+      - 'tests/player-approval-toolbar-contract.php'
+      - '.github/workflows/player-approval-toolbar.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'component/admin/src/View/Players/**'
+      - 'component/admin/src/Controller/PlayersController.php'
+      - 'component/admin/src/Model/PlayerModel.php'
+      - 'component/admin/language/**'
+      - 'tests/player-approval-toolbar-contract.php'
+      - '.github/workflows/player-approval-toolbar.yml'
+
+permissions: {contents: read}
+
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with: {php-version: '8.3', coverage: none}
+      - name: Player approval toolbar contract
+        run: php tests/player-approval-toolbar-contract.php
+
+  runtime:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.0
+        env: {MYSQL_ALLOW_EMPTY_PASSWORD: 'yes', MYSQL_DATABASE: joomla}
+        ports: ['3306:3306']
+        options: >-
+          --health-cmd="mysqladmin ping -h localhost" --health-interval=10s --health-timeout=5s --health-retries=10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with: {php-version: '8.3', extensions: 'mysqli,zip,simplexml', coverage: none}
+      - name: Build package
+        run: python3 tools/build.py
+      - name: Download Joomla 6.1.3
+        run: |
+          curl -fL --retry 3 'https://github.com/joomla/joomla-cms/releases/download/6.1.3/Joomla_6.1.3-Stable-Full_Package.zip' -o /tmp/joomla.zip
+          echo 'a49305652503f9344d046d55471f324a07882996132ed967c3b0fe34707ae4a1  /tmp/joomla.zip' | sha256sum --check --strict
+          mkdir joomla && unzip -q /tmp/joomla.zip -d joomla
+      - name: Install Joomla and Competitions
+        run: |
+          cd joomla
+          php installation/joomla.php install --site-name='Competitions Approval CI' --admin-user='CI Admin' --admin-username=admin --admin-password="CompApproval-${GITHUB_RUN_ID}!" --admin-email=admin@example.invalid --db-type=mysqli --db-host=127.0.0.1 --db-user=root --db-pass='' --db-name=joomla --db-prefix=cmp_ --db-encryption=0 --no-interaction
+          VERSION="$(cat "$GITHUB_WORKSPACE/VERSION")"
+          php cli/joomla.php extension:install --path="$GITHUB_WORKSPACE/dist/pkg_xdecarocompetitions_${VERSION}.zip" -vvv
+      - name: Exercise bulk approval states
+        run: |
+          cd joomla
+          cat > player-approval-probe.php <<'PHP'
+          <?php
+          define('_JEXEC', 1);
+          define('JPATH_BASE', __DIR__);
+          require JPATH_BASE . '/includes/defines.php';
+          require JPATH_BASE . '/includes/framework.php';
+
+          use Joomla\CMS\Factory;
+          use Joomla\Database\DatabaseInterface;
+
+          $container = Factory::getContainer();
+          $container->alias('session', 'session.cli')
+              ->alias('JSession', 'session.cli')
+              ->alias(\Joomla\CMS\Session\Session::class, 'session.cli')
+              ->alias(\Joomla\Session\Session::class, 'session.cli')
+              ->alias(\Joomla\Session\SessionInterface::class, 'session.cli');
+          $app = $container->get(\Joomla\Console\Application::class);
+          Factory::$application = $app;
+          $app->createExtensionNamespaceMap();
+
+          $component = $app->bootComponent('com_competitions');
+          $model = $component->getMVCFactory()->createModel('Player', 'Administrator', ['ignore_request' => true]);
+          if (!is_object($model) || !method_exists($model, 'setApprovalStatus')) {
+              fwrite(STDERR, "PlayerModel setApprovalStatus() is unavailable.\n");
+              exit(1);
+          }
+
+          /** @var DatabaseInterface $db */
+          $db = $container->get(DatabaseInterface::class);
+          $ids = [];
+          foreach ([['Approval', 'One'], ['Approval', 'Two']] as [$first, $last]) {
+              $row = (object) [
+                  'first_name' => $first,
+                  'last_name' => $last,
+                  'approval_status' => 'pending',
+                  'state' => 1,
+              ];
+              $db->insertObject('#__xdecarocompetitions_players', $row);
+              $ids[] = (int) $db->insertid();
+          }
+
+          $pks = $ids;
+          if (!$model->setApprovalStatus($pks, 'approved')) {
+              fwrite(STDERR, "Bulk approve returned false.\n");
+              exit(1);
+          }
+          $approved = (int) $db->setQuery(
+              $db->getQuery(true)
+                  ->select('COUNT(*)')
+                  ->from($db->quoteName('#__xdecarocompetitions_players'))
+                  ->whereIn($db->quoteName('id'), $ids)
+                  ->where($db->quoteName('approval_status') . " = 'approved'")
+          )->loadResult();
+          if ($approved !== 2) {
+              fwrite(STDERR, "Bulk approve did not update both players.\n");
+              exit(1);
+          }
+
+          $one = [$ids[0]];
+          if (!$model->setApprovalStatus($one, 'pending')) {
+              fwrite(STDERR, "Pending action returned false.\n");
+              exit(1);
+          }
+          $two = [$ids[1]];
+          if (!$model->setApprovalStatus($two, 'rejected')) {
+              fwrite(STDERR, "Reject action returned false.\n");
+              exit(1);
+          }
+
+          $statuses = $db->setQuery(
+              $db->getQuery(true)
+                  ->select([$db->quoteName('id'), $db->quoteName('approval_status'), $db->quoteName('modified')])
+                  ->from($db->quoteName('#__xdecarocompetitions_players'))
+                  ->whereIn($db->quoteName('id'), $ids)
+                  ->order($db->quoteName('id') . ' ASC')
+          )->loadAssocList();
+
+          if (($statuses[0]['approval_status'] ?? '') !== 'pending'
+              || ($statuses[1]['approval_status'] ?? '') !== 'rejected'
+              || empty($statuses[0]['modified'])
+              || empty($statuses[1]['modified'])) {
+              fwrite(STDERR, "Pending/rejected states or modified timestamps are incorrect.\n");
+              exit(1);
+          }
+
+          $invalidRejected = false;
+          try {
+              $bad = [$ids[0]];
+              $model->setApprovalStatus($bad, 'invalid');
+          } catch (\InvalidArgumentException $e) {
+              $invalidRejected = true;
+          }
+          if (!$invalidRejected) {
+              fwrite(STDERR, "Invalid approval state was not rejected.\n");
+              exit(1);
+          }
+
+          echo "Player approval bulk runtime OK\n";
+          PHP
+          php player-approval-probe.php
+          rm player-approval-probe.php
