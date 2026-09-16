@@ -33,7 +33,7 @@ def stage_extension(source: Path, stage: Path, *, component: bool = False) -> No
 
     shutil.copytree(source, stage)
 
-    # The clean-install Joomla component element is com_competitions.  Keep
+    # The clean-install Joomla component element is com_competitions. Keep
     # xdecaro in the PHP vendor namespace, package, database tables and the
     # companion extension names, but never in the shipped component option.
     for path in stage.rglob("*"):
@@ -69,6 +69,27 @@ def stage_extension(source: Path, stage: Path, *, component: bool = False) -> No
         for legacy in sorted(language_dir.glob("com_xdecarocompetitions*.ini")):
             legacy.rename(language_dir / legacy.name.replace("com_xdecarocompetitions", "com_competitions", 1))
 
+
+def validate_reinstall_safe_schema() -> None:
+    base_sql = (ROOT / "component/admin/sql/install.mysql.utf8mb4.sql").read_text(encoding="utf-8")
+    manifest = (ROOT / "component/xdecarocompetitions.xml").read_text(encoding="utf-8")
+
+    required = [
+        "`person_uuid` CHAR(36) NULL",
+        "UNIQUE KEY `uq_player_person_uuid` (`person_uuid`)",
+        "`photo` VARCHAR(512) NULL",
+    ]
+    for token in required:
+        if token not in base_sql:
+            raise SystemExit(f"fresh-install base schema missing reinstall-safe definition: {token}")
+
+    if "sql/install.1.4.0.mysql.utf8mb4.sql" in manifest:
+        raise SystemExit(
+            "fresh install must not replay the 1.4.0 ALTER migration; preserved 1.4 tables would fail with duplicate columns"
+        )
+
+
+validate_reinstall_safe_schema()
 
 build_root = DIST / "build-stage"
 if build_root.exists():
