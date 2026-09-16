@@ -3,6 +3,7 @@
   <fieldset name="details" label="COM_XDECAROCOMPETITIONS_PLAYER_DETAILS">
     <field name="id" type="hidden" />
     <field name="modified" type="hidden" />
+    <field name="person_uuid" type="hidden" filter="string" />
     <field name="first_name" type="text" label="COM_XDECAROCOMPETITIONS_FIELD_FIRST_NAME" required="true" maxlength="190" />
     <field name="last_name" type="text" label="COM_XDECAROCOMPETITIONS_FIELD_LAST_NAME" required="true" maxlength="190" />
     <field name="external_ref" type="text" label="COM_XDECAROCOMPETITIONS_FIELD_EXTERNAL_REF" description="COM_XDECAROCOMPETITIONS_FIELD_EXTERNAL_REF_DESC" maxlength="100" />
@@ -18,7 +19,6 @@
     >
       <option value="">COM_XDECAROCOMPETITIONS_SELECT_NATIONALITY</option>
     </field>
-    <field name="photo" type="media" label="COM_XDECAROCOMPETITIONS_FIELD_PHOTO" types="images" />
     <field name="approval_status" type="list" label="COM_XDECAROCOMPETITIONS_FIELD_APPROVAL_STATUS" default="pending">
       <option value="pending">COM_XDECAROCOMPETITIONS_PLAYER_PENDING</option>
       <option value="approved">COM_XDECAROCOMPETITIONS_PLAYER_APPROVED</option>

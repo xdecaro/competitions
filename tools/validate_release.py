@@ -5,7 +5,7 @@ import xml.etree.ElementTree as ET
 
 ROOT=Path(__file__).resolve().parents[1]
 VERSION=(ROOT/'VERSION').read_text(encoding='utf-8').strip()
-CURRENT_VERSION='1.3.0'
+CURRENT_VERSION='1.4.1'
 CANONICAL_NAMESPACE='xdecaro\\Component\\Competitions'
 
 def fail(message:str)->None:
@@ -26,12 +26,16 @@ def validate_source()->None:
         if version(path)!=VERSION: fail(f'version mismatch in {path.relative_to(ROOT)}')
     component=ET.parse(ROOT/'component/xdecarocompetitions.xml').getroot()
     if (component.findtext('namespace') or '').strip()!=CANONICAL_NAMESPACE: fail('component namespace is not canonical')
-    install=component.find('./install/sql/file'); uninstall=component.find('./uninstall/sql/file')
-    for node,label in ((install,'install'),(uninstall,'uninstall')):
-        if node is None or (node.get('driver') or '')!='mysql' or (node.get('charset') or '')!='utf8': fail(f'{label} SQL manifest must use driver=mysql charset=utf8')
+    install_files=component.findall('./install/sql/file'); uninstall=component.find('./uninstall/sql/file')
+    if not install_files: fail('component install SQL manifest is missing')
+    for node in install_files:
+        if (node.get('driver') or '')!='mysql' or (node.get('charset') or '')!='utf8': fail('install SQL manifest must use driver=mysql charset=utf8')
+    if uninstall is None or (uninstall.get('driver') or '')!='mysql' or (uninstall.get('charset') or '')!='utf8': fail('uninstall SQL manifest must use driver=mysql charset=utf8')
+    install_paths=[ROOT/'component/admin'/((node.text or '').strip()) for node in install_files]
+    if any(not path.is_file() for path in install_paths): fail('one or more fresh-install SQL files are missing')
     package=ET.parse(ROOT/'package/pkg_xdecarocompetitions.xml').getroot()
     child_ids={(n.get('type'),n.get('id'),n.get('group')) for n in package.findall('./files/file')}
-    required={('component','com_xdecarocompetitions',None),('plugin','xdecarocompetitions','system'),('plugin','competitions','xdecaroanalytics'),('plugin','xdecarocompetitions','task'),('module','mod_xdecarocompetitions_matchtimeline',None),('module','mod_xdecarocompetitions_countriesfederations',None)}
+    required={('component','com_competitions',None),('plugin','xdecarocompetitions','system'),('plugin','competitions','xdecaroanalytics'),('plugin','xdecarocompetitions','task'),('module','mod_xdecarocompetitions_matchtimeline',None),('module','mod_xdecarocompetitions_countriesfederations',None)}
     if not required.issubset(child_ids): fail(f'package child identifiers incomplete: {child_ids}')
     for child in package.findall('./files/file'):
         filename=(child.text or '').strip()
@@ -39,11 +43,20 @@ def validate_source()->None:
     sql=(ROOT/'component/admin/sql/install.mysql.utf8mb4.sql').read_text(encoding='utf-8'); validate_database_namespace(sql,'fresh-install SQL')
     for token in ['#__xdecarocompetitions_tournaments','#__xdecarocompetitions_seasons','#__xdecarocompetitions_teams','#__xdecarocompetitions_participations','#__xdecarocompetitions_matches','#__xdecarocompetitions_match_events','#__xdecarocompetitions_rankings','`match_date` DATE','`status` VARCHAR(32)']:
         if token not in sql: fail(f'fresh-install schema missing {token}')
-    if 'ALTER TABLE' in sql.upper(): fail('fresh-install schema must not replay ALTER statements')
+    if 'ALTER TABLE' in sql.upper(): fail('base fresh-install schema must not replay ALTER statements')
+    extension_sql=(ROOT/'component/admin/sql/install.1.4.0.mysql.utf8mb4.sql').read_text(encoding='utf-8')
+    for token in ['ADD COLUMN `person_uuid` CHAR(36) NULL','ADD UNIQUE KEY `uq_player_person_uuid` (`person_uuid`)','ADD COLUMN `photo` VARCHAR(512) NULL']:
+        if token not in extension_sql: fail(f'1.4.0 fresh-install extension missing {token}')
     update_dir=ROOT/'component/admin/sql/updates/mysql'; update_files=sorted(p.name for p in update_dir.glob('*.sql'))
-    if update_files!=['1.0.0.sql','1.1.0.sql','1.2.0.sql','1.3.0.sql']: fail(f'unexpected schema history: {update_files}')
+    if update_files!=['1.0.0.sql','1.1.0.sql','1.2.0.sql','1.3.0.sql','1.4.0.sql','1.4.1.sql']: fail(f'unexpected schema history: {update_files}')
     marker=(update_dir/'1.3.0.sql').read_text(encoding='utf-8').upper()
     if any(word in marker for word in ['ALTER TABLE','DROP TABLE','TRUNCATE TABLE','DELETE FROM']): fail('1.3.0 marker must be non-destructive')
+    migration=(update_dir/'1.4.0.sql').read_text(encoding='utf-8')
+    for token in ['ADD COLUMN `person_uuid` CHAR(36) NULL','ADD UNIQUE KEY `uq_player_person_uuid` (`person_uuid`)','ADD COLUMN `photo` VARCHAR(512) NULL']:
+        if token not in migration: fail(f'1.4.0 migration missing {token}')
+    if any(word in migration.upper() for word in ['DROP TABLE','TRUNCATE TABLE','DELETE FROM']): fail('1.4.0 migration contains a destructive operation')
+    patch_marker=(update_dir/'1.4.1.sql').read_text(encoding='utf-8').upper()
+    if any(word in patch_marker for word in ['ALTER TABLE','DROP TABLE','TRUNCATE TABLE','DELETE FROM']): fail('1.4.1 marker must be non-destructive')
     asset=json.loads((ROOT/'component/media/joomla.asset.json').read_text(encoding='utf-8'))
     if str(asset.get('version'))!=VERSION: fail('Web Asset registry version mismatch')
     for item in asset.get('assets',[]):
@@ -60,6 +73,13 @@ def validate_source()->None:
         if token not in cross: fail(f'cross-product bridge missing {token}')
     for forbidden in ['#__xdecaronotifications_','#__xdecarotasks_','#__decarofinance_']:
         if forbidden in cross: fail(f'cross-product bridge must not access external tables: {forbidden}')
+    people=(ROOT/'component/admin/src/Service/PeopleIntegrationService.php').read_text(encoding='utf-8')
+    for token in ["bootComponent('com_xdecaropeople')",'getPersonProviderService','searchPeople','getPerson']:
+        if token not in people: fail(f'People integration missing {token}')
+    if '#__xdecaropeople_' in people: fail('People integration must not access People private tables')
+    photo=(ROOT/'component/admin/src/Service/CompetitionPhotoService.php').read_text(encoding='utf-8')
+    for token in ["'roster'","'people'","'legacy'",'profile_document_reference','profile_document_uuid']:
+        if token not in photo: fail(f'competition photo resolver missing {token}')
     analytics=(ROOT/'component/admin/src/Service/AnalyticsSourceService.php').read_text(encoding='utf-8')
     for token in ['core.manage','#__xdecarocompetitions_matches','competitions.matches.upcoming','competitions.rankings.top']:
         if token not in analytics: fail(f'Analytics source missing {token}')
@@ -67,7 +87,7 @@ def validate_source()->None:
     for token in ["m.status='scheduled'",'integration','competition-match-upcoming','competition-match-prepare']:
         if token not in reminder: fail(f'Match reminder missing {token}')
     provider=(ROOT/'component/admin/services/provider.php').read_text(encoding='utf-8')
-    for token in ['CompetitionsComponent','AnalyticsSourceService','CrossProductIntegrationService','MatchReminderService','DatabaseInterface']:
+    for token in ['CompetitionsComponent','AnalyticsSourceService','CrossProductIntegrationService','MatchReminderService','PeopleIntegrationService','CompetitionPhotoService','DatabaseInterface']:
         if token not in provider: fail(f'DI provider missing {token}')
     readme=(ROOT/'README.md').read_text(encoding='utf-8')
     changelog=(ROOT/'CHANGELOG.md').read_text(encoding='utf-8')
@@ -76,11 +96,11 @@ def validate_source()->None:
     for path in list((ROOT/'component').rglob('*.php'))+list((ROOT/'modules').rglob('*.php'))+list((ROOT/'plugins').rglob('*.php')):
         text=path.read_text(encoding='utf-8')
         if 'namespace Xdecaro\\' in text or 'use Xdecaro\\' in text: fail(f'uppercase vendor namespace remains in {path.relative_to(ROOT)}')
-        for forbidden in ['#__xdecaronotifications_','#__xdecarotasks_','#__decarofinance_']:
+        for forbidden in ['#__xdecaronotifications_','#__xdecarotasks_','#__decarofinance_','#__xdecaropeople_']:
             if forbidden in text: fail(f'external table coupling {forbidden} in {path.relative_to(ROOT)}')
 
 def validate_dist()->None:
-    names=[f'com_xdecarocompetitions_{VERSION}.zip',f'plg_system_xdecarocompetitions_{VERSION}.zip',f'plg_xdecaroanalytics_competitions_{VERSION}.zip',f'plg_task_xdecarocompetitions_{VERSION}.zip',f'mod_xdecarocompetitions_matchtimeline_{VERSION}.zip',f'mod_xdecarocompetitions_countriesfederations_{VERSION}.zip',f'pkg_xdecarocompetitions_{VERSION}.zip']
+    names=[f'com_competitions_{VERSION}.zip',f'plg_system_xdecarocompetitions_{VERSION}.zip',f'plg_xdecaroanalytics_competitions_{VERSION}.zip',f'plg_task_xdecarocompetitions_{VERSION}.zip',f'mod_xdecarocompetitions_matchtimeline_{VERSION}.zip',f'mod_xdecarocompetitions_countriesfederations_{VERSION}.zip',f'pkg_xdecarocompetitions_{VERSION}.zip']
     paths=[ROOT/'dist'/n for n in names]
     for path in paths:
         if not path.is_file(): fail(f'missing distribution artifact {path.name}')
@@ -88,9 +108,17 @@ def validate_dist()->None:
             bad=archive.testzip()
             if bad is not None: fail(f'corrupt ZIP member {bad} in {path.name}')
     with zipfile.ZipFile(paths[0]) as archive:
-        required={'xdecarocompetitions.xml','admin/src/Extension/CompetitionsComponent.php','admin/src/Service/AnalyticsSourceService.php','admin/src/Service/CrossProductIntegrationService.php','admin/src/Service/MatchReminderService.php','admin/sql/updates/mysql/1.3.0.sql'}
+        required={'competitions.xml','admin/src/Extension/CompetitionsComponent.php','admin/src/Service/AnalyticsSourceService.php','admin/src/Service/CrossProductIntegrationService.php','admin/src/Service/MatchReminderService.php','admin/src/Service/PeopleIntegrationService.php','admin/src/Service/CompetitionPhotoService.php','admin/src/Controller/PeopleController.php','admin/sql/updates/mysql/1.4.0.sql','admin/sql/updates/mysql/1.4.1.sql','admin/sql/install.1.4.0.mysql.utf8mb4.sql','media/js/people-picker.js','admin/language/en-GB/com_competitions.ini','admin/language/it-IT/com_competitions.ini'}
         missing=required-set(archive.namelist())
         if missing: fail(f'component ZIP missing {sorted(missing)}')
+        if 'xdecarocompetitions.xml' in archive.namelist(): fail('component ZIP still contains legacy manifest name')
+        manifest=(archive.read('competitions.xml')).decode('utf-8')
+        if '<element>com_competitions</element>' not in manifest or 'destination="com_competitions"' not in manifest: fail('built component manifest identity mismatch')
+        for name in archive.namelist():
+            if name.endswith('/'): continue
+            try: text=archive.read(name).decode('utf-8')
+            except UnicodeDecodeError: continue
+            if 'com_xdecarocompetitions' in text: fail(f'legacy component option remains in built component file {name}')
     with zipfile.ZipFile(paths[-1]) as archive:
         required={'pkg_xdecarocompetitions.xml',*names[:-1]}
         missing=required-set(archive.namelist())

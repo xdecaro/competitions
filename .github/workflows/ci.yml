@@ -30,6 +30,10 @@ jobs:
         run: python3 tools/validate_release.py
       - name: Finance bridge contract
         run: php tests/finance-integration-contract.php
+      - name: People roster photo contract
+        run: php tests/people-roster-photo-contract.php
+      - name: People picker asset contract
+        run: php tests/people-picker-asset-contract.php
       - name: Deterministic build
         run: |
           python3 tools/build.py
@@ -39,6 +43,14 @@ jobs:
           python3 tools/build.py
           diff -u /tmp/a.txt dist/SHA256SUMS.txt
           python3 tools/validate_release.py --dist
+      - name: Upload test package
+        uses: actions/upload-artifact@v4
+        with:
+          name: competitions-package
+          path: |
+            dist/pkg_xdecarocompetitions_*.zip
+            dist/SHA256SUMS.txt
+          if-no-files-found: error
 
   joomla-runtime:
     runs-on: ubuntu-latest
@@ -70,10 +82,13 @@ jobs:
       - name: Verify package and schema
         run: |
           MYSQL=(mysql --protocol=TCP -h127.0.0.1 -uroot --batch --skip-column-names joomla)
-          for table in cmp_xdecarocompetitions_tournaments cmp_xdecarocompetitions_seasons cmp_xdecarocompetitions_teams cmp_xdecarocompetitions_participations cmp_xdecarocompetitions_matches cmp_xdecarocompetitions_match_events cmp_xdecarocompetitions_rankings; do
+          for table in cmp_xdecarocompetitions_tournaments cmp_xdecarocompetitions_seasons cmp_xdecarocompetitions_teams cmp_xdecarocompetitions_participations cmp_xdecarocompetitions_players cmp_xdecarocompetitions_rosters cmp_xdecarocompetitions_matches cmp_xdecarocompetitions_match_events cmp_xdecarocompetitions_rankings; do
             test "$("${MYSQL[@]}" -e "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='joomla' AND table_name='${table}';")" = '1'
           done
-          for row in "component|com_xdecarocompetitions|" "plugin|xdecarocompetitions|system" "plugin|competitions|xdecaroanalytics" "plugin|xdecarocompetitions|task"; do
+          test "$("${MYSQL[@]}" -e "SELECT COUNT(*) FROM information_schema.columns WHERE table_schema='joomla' AND table_name='cmp_xdecarocompetitions_players' AND column_name='person_uuid';")" = '1'
+          test "$("${MYSQL[@]}" -e "SELECT COUNT(*) FROM information_schema.statistics WHERE table_schema='joomla' AND table_name='cmp_xdecarocompetitions_players' AND index_name='uq_player_person_uuid' AND non_unique=0;")" = '1'
+          test "$("${MYSQL[@]}" -e "SELECT COUNT(*) FROM information_schema.columns WHERE table_schema='joomla' AND table_name='cmp_xdecarocompetitions_rosters' AND column_name='photo';")" = '1'
+          for row in "component|com_competitions|" "plugin|xdecarocompetitions|system" "plugin|competitions|xdecaroanalytics" "plugin|xdecarocompetitions|task"; do
             IFS='|' read -r type element folder <<< "$row"
             count="$("${MYSQL[@]}" -e "SELECT COUNT(*) FROM cmp_extensions WHERE type='${type}' AND element='${element}' AND folder='${folder}';")"
             test "$count" = '1'
@@ -83,8 +98,9 @@ jobs:
             enabled="$("${MYSQL[@]}" -e "SELECT enabled FROM cmp_extensions WHERE type='plugin' AND folder='${folder}' AND element='${element}' LIMIT 1;")"
             test "$enabled" = '1'
           done
-          schema="$("${MYSQL[@]}" -e "SELECT s.version_id FROM cmp_schemas s JOIN cmp_extensions e ON e.extension_id=s.extension_id WHERE e.type='component' AND e.element='com_xdecarocompetitions' LIMIT 1;")"
-          test "$schema" = '1.3.0'
+          schema="$("${MYSQL[@]}" -e "SELECT s.version_id FROM cmp_schemas s JOIN cmp_extensions e ON e.extension_id=s.extension_id WHERE e.type='component' AND e.element='com_competitions' LIMIT 1;")"
+          VERSION="$(cat "$GITHUB_WORKSPACE/VERSION")"
+          test "$schema" = "$VERSION"
 
       - name: Verify Finance-absent fallback
         run: |
@@ -106,9 +122,22 @@ jobs:
           \Joomla\CMS\Factory::$application = $app;
           $app->createExtensionNamespaceMap();
 
-          $component = $app->bootComponent('com_xdecarocompetitions');
+          $component = $app->bootComponent('com_competitions');
           if (!is_object($component) || !method_exists($component, 'getCrossProductIntegrationService')) {
               fwrite(STDERR, "Competitions public integration service is unavailable.\n");
+              exit(1);
+          }
+          if (!method_exists($component, 'getPeopleIntegrationService') || !method_exists($component, 'getCompetitionPhotoService')) {
+              fwrite(STDERR, "Competitions People/photo service surface is unavailable.\n");
+              exit(1);
+          }
+          if ($component->getPeopleIntegrationService()->isAvailable()) {
+              fwrite(STDERR, "People unexpectedly appears available before installation.\n");
+              exit(1);
+          }
+          $resolved = $component->getCompetitionPhotoService()->resolve('images/edition.jpg', null, 'images/legacy.jpg');
+          if (($resolved['source'] ?? '') !== 'roster' || ($resolved['media'] ?? '') !== 'images/edition.jpg') {
+              fwrite(STDERR, "Roster photo priority is incorrect.\n");
               exit(1);
           }
           $bridge = $component->getCrossProductIntegrationService();
@@ -120,7 +149,7 @@ jobs:
               fwrite(STDERR, "Finance-absent bridge did not return null.\n");
               exit(1);
           }
-          echo "Finance-absent fallback OK\n";
+          echo "People-absent and Finance-absent fallbacks OK\n";
           PHP
           php finance-absent-probe.php
           rm finance-absent-probe.php
@@ -156,7 +185,7 @@ jobs:
           Factory::$application = $app;
           $app->createExtensionNamespaceMap();
 
-          $competitions = $app->bootComponent('com_xdecarocompetitions');
+          $competitions = $app->bootComponent('com_competitions');
           if (!is_object($competitions) || !method_exists($competitions, 'getCrossProductIntegrationService')) {
               fwrite(STDERR, "Competitions integration service is unavailable.\n");
               exit(1);
@@ -201,10 +230,10 @@ jobs:
           $finance = $financeComponent->getFinanceService();
           $obligation = $finance->getObligation($fee1);
           if (!is_array($obligation)
-              || ($obligation['source_component'] ?? '') !== 'com_xdecarocompetitions'
+              || ($obligation['source_component'] ?? '') !== 'com_competitions'
               || ($obligation['source_entity'] ?? '') !== 'participation'
               || (string) ($obligation['source_id'] ?? '') !== (string) $participationId
-              || ($obligation['debtor_component'] ?? '') !== 'com_xdecarocompetitions'
+              || ($obligation['debtor_component'] ?? '') !== 'com_competitions'
               || ($obligation['debtor_entity'] ?? '') !== 'team'
               || (string) ($obligation['debtor_id'] ?? '') !== (string) $teamId
               || abs((float) ($obligation['amount'] ?? 0) - 125.0) > 0.0001) {

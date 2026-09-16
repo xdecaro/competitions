@@ -9,6 +9,8 @@ use Joomla\CMS\MVC\Controller\AdminController;
 
 final class TeamsController extends AdminController
 {
+    protected $option = 'com_xdecarocompetitions';
+
     public function getModel($name = 'Team', $prefix = 'Administrator', $config = ['ignore_request' => true])
     {
         return parent::getModel($name, $prefix, $config);

@@ -113,6 +113,7 @@ final class InformationModel extends BaseDatabaseModel
         $coreIntegration = $this->getCoreIntegration();
         $integrations = [
             $coreIntegration,
+            $this->getPeopleIntegration(),
             $this->getRelatedComponent('Forms by xdecaro', 'com_decaroforms', 'xdecaro/forms', '#__decaroforms_forms'),
             $this->getRelatedComponent('Courses by xdecaro', 'com_decarocourses', 'xdecaro/courses', '#__decarocourses_courses'),
         ];
@@ -257,6 +258,35 @@ final class InformationModel extends BaseDatabaseModel
             'element' => 'pkg_xdecarocore',
             'repository' => 'xdecaro/core',
             'installed' => $package !== null || $versionClassAvailable,
+            'version' => $version,
+            'available_count' => 0,
+            'required' => false,
+            'metric_type' => 'api',
+            'api_available' => $apiAvailable,
+        ];
+    }
+
+    private function getPeopleIntegration(): array
+    {
+        $package = $this->getExtension('package', 'pkg_xdecaropeople');
+        $component = $this->getExtension('component', 'com_xdecaropeople');
+        $version = $this->getManifestVersion($package) ?: $this->getManifestVersion($component);
+        $apiAvailable = false;
+
+        if ($component !== null) {
+            try {
+                $booted = \Joomla\CMS\Factory::getApplication()->bootComponent('com_xdecaropeople');
+                $apiAvailable = is_object($booted) && method_exists($booted, 'getPersonProviderService');
+            } catch (Throwable) {
+                $apiAvailable = false;
+            }
+        }
+
+        return [
+            'name' => 'People by xdecaro',
+            'element' => 'pkg_xdecaropeople',
+            'repository' => 'xdecaro/people',
+            'installed' => $package !== null || $component !== null,
             'version' => $version,
             'available_count' => 0,
             'required' => false,

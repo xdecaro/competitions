@@ -18,12 +18,24 @@ final class PlayerTable extends Table
 
     public function check(): bool
     {
+        $this->person_uuid = strtolower(trim((string) ($this->person_uuid ?? ''))) ?: null;
         $this->first_name = trim((string) $this->first_name);
         $this->last_name = trim((string) $this->last_name);
         $this->external_ref = trim((string) $this->external_ref) ?: null;
         $this->birth_date = trim((string) $this->birth_date) ?: null;
         $this->nationality_code = strtoupper(trim((string) $this->nationality_code)) ?: null;
         $this->approval_status = trim((string) $this->approval_status) ?: 'pending';
+
+        if (!$this->id && $this->person_uuid === null) {
+            $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_PLAYER_PERSON_REQUIRED'));
+            return false;
+        }
+
+        if ($this->person_uuid !== null
+            && !preg_match('/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/', $this->person_uuid)) {
+            $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_PLAYER_PERSON_INVALID'));
+            return false;
+        }
 
         if ($this->first_name === '') {
             $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_PLAYER_FIRST_NAME_REQUIRED'));
@@ -55,6 +67,21 @@ final class PlayerTable extends Table
         }
 
         $db = $this->getDbo();
+
+        if ($this->person_uuid !== null) {
+            $query = $db->getQuery(true)
+                ->select('COUNT(*)')
+                ->from($db->quoteName('#__xdecarocompetitions_players'))
+                ->where($db->quoteName('person_uuid') . ' = :personUuid')
+                ->where($db->quoteName('id') . ' <> :personId')
+                ->bind(':personUuid', $this->person_uuid)
+                ->bind(':personId', $this->id, ParameterType::INTEGER);
+
+            if ((int) $db->setQuery($query)->loadResult() > 0) {
+                $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_PLAYER_PERSON_DUPLICATE'));
+                return false;
+            }
+        }
 
         if ($this->nationality_code !== null) {
             if (strlen($this->nationality_code) > 3) {

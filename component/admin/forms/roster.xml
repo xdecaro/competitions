@@ -23,6 +23,7 @@
     />
     <field name="shirt_number" type="number" label="COM_XDECAROCOMPETITIONS_FIELD_SHIRT_NUMBER" min="0" max="999" />
     <field name="role" type="text" label="COM_XDECAROCOMPETITIONS_FIELD_ROLE" description="COM_XDECAROCOMPETITIONS_FIELD_ROLE_DESC" maxlength="50" />
+    <field name="photo" type="media" label="COM_XDECAROCOMPETITIONS_FIELD_ROSTER_PHOTO" description="COM_XDECAROCOMPETITIONS_FIELD_ROSTER_PHOTO_DESC" types="images" />
     <field name="status" type="list" label="COM_XDECAROCOMPETITIONS_FIELD_ROSTER_STATUS" default="pending">
       <option value="pending">COM_XDECAROCOMPETITIONS_ROSTER_PENDING</option>
       <option value="approved">COM_XDECAROCOMPETITIONS_ROSTER_APPROVED</option>
