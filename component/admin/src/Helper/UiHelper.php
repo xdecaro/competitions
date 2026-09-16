@@ -23,6 +23,7 @@ final class UiHelper
         $syncStyleName = 'com_xdecarocompetitions.live-sync-style.runtime';
         $syncScriptName = 'com_xdecarocompetitions.live-sync.runtime';
         $scopeScriptName = 'com_xdecarocompetitions.scope.runtime';
+        $peopleScriptName = 'com_xdecarocompetitions.people-picker.runtime';
 
         if (!$wa->assetExists('style', $styleName)) {
             $wa->registerStyle($styleName, 'com_xdecarocompetitions/admin.css', ['version' => self::VERSION]);
@@ -69,6 +70,15 @@ final class UiHelper
             );
         }
 
+        if (!$wa->assetExists('script', $peopleScriptName)) {
+            $wa->registerScript(
+                $peopleScriptName,
+                'com_xdecarocompetitions/js/people-picker.js',
+                ['version' => self::VERSION],
+                ['defer' => true]
+            );
+        }
+
         $token = Session::getFormToken();
         $document->addScriptOptions('com_xdecarocompetitions.filterbar', [
             'strings' => [
@@ -106,5 +116,6 @@ final class UiHelper
         $wa->useScript($filterScriptName);
         $wa->useScript($syncScriptName);
         $wa->useScript($scopeScriptName);
+        $wa->useScript($peopleScriptName);
     }
 }
