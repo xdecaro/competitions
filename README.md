@@ -24,10 +24,10 @@ Version 1.4.0 links Competitions players to the canonical People identity regist
 Photo ownership is explicit:
 
 1. a roster photo belongs to the player’s participation in that team/edition;
-2. otherwise Competitions uses the person’s People profile-document reference when available;
+2. otherwise Competitions resolves the person’s People profile-document reference when available;
 3. otherwise an existing legacy player photo can still be used as a compatibility fallback.
 
-Competitions does not copy People profile images or access People private tables.
+Competitions does not copy People profile images or access People private tables. The People fallback is deliberately represented as a Documents entity reference; a consumer that needs image bytes or a public URL must resolve that reference through a public Documents API rather than reading Documents storage directly.
 
 ## Architecture
 
