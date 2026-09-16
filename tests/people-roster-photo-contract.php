@@ -16,6 +16,7 @@ $files = [
     'playerForm' => $root . '/component/admin/forms/player.xml',
     'rosterForm' => $root . '/component/admin/forms/roster.xml',
     'playerModel' => $root . '/component/admin/src/Model/PlayerModel.php',
+    'informationModel' => $root . '/component/admin/src/Model/InformationModel.php',
     'playerTable' => $root . '/component/admin/src/Table/PlayerTable.php',
     'rosterTable' => $root . '/component/admin/src/Table/RosterTable.php',
     'people' => $root . '/component/admin/src/Service/PeopleIntegrationService.php',
@@ -36,6 +37,7 @@ $manifest = (string) file_get_contents($files['manifest']);
 $playerForm = (string) file_get_contents($files['playerForm']);
 $rosterForm = (string) file_get_contents($files['rosterForm']);
 $playerModel = (string) file_get_contents($files['playerModel']);
+$informationModel = (string) file_get_contents($files['informationModel']);
 $playerTable = (string) file_get_contents($files['playerTable']);
 $rosterTable = (string) file_get_contents($files['rosterTable']);
 $people = (string) file_get_contents($files['people']);
@@ -103,6 +105,15 @@ foreach ([
     if (!str_contains($playerModel, $token)) {
         $fail('Server-side People identity hydration missing: ' . $token);
     }
+}
+
+foreach (['getPeopleIntegration', "bootComponent('com_xdecaropeople')", 'getPersonProviderService'] as $token) {
+    if (!str_contains($informationModel, $token)) {
+        $fail('People diagnostics integration missing: ' . $token);
+    }
+}
+if (str_contains($informationModel, '#__xdecaropeople_')) {
+    $fail('People diagnostics must not inspect People private tables.');
 }
 
 foreach ([
