@@ -146,4 +146,24 @@ foreach (['people.search', 'data-competitions-people-search', 'data-competitions
     }
 }
 
+$controllerDir = $root . '/component/admin/src/Controller';
+$controllerFiles = glob($controllerDir . '/*Controller.php') ?: [];
+
+foreach ($controllerFiles as $controllerPath) {
+    $controllerCode = (string) file_get_contents($controllerPath);
+    $usesInheritedRedirects = str_contains($controllerCode, 'extends FormController')
+        || str_contains($controllerCode, 'extends AdminController');
+
+    if (!$usesInheritedRedirects) {
+        continue;
+    }
+
+    if (!preg_match('/protected\s+\$option\s*=\s*[\'\"]com_xdecarocompetitions[\'\"]\s*;/', $controllerCode)) {
+        $fail(
+            basename($controllerPath)
+            . ' must pin $option to com_xdecarocompetitions so Joomla does not infer com_competitions in redirects.'
+        );
+    }
+}
+
 fwrite(STDOUT, "Competitions People + roster edition photo contract OK\n");
