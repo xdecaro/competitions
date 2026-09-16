@@ -7,6 +7,8 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\Controller\AdminController;
 final class MatchesController extends AdminController
 {
+    protected $option = 'com_xdecarocompetitions';
+
     public function getModel($name = 'Match', $prefix = 'Administrator', $config = ['ignore_request' => true]) { return parent::getModel($name, $prefix, $config); }
     public function publish(): void { if (!Factory::getApplication()->getIdentity()->authorise('core.edit.state', 'com_xdecarocompetitions')) throw new \RuntimeException(Text::_('JERROR_ALERTNOAUTHOR'), 403); parent::publish(); }
     public function delete(): void { if (!Factory::getApplication()->getIdentity()->authorise('core.delete', 'com_xdecarocompetitions')) throw new \RuntimeException(Text::_('JERROR_ALERTNOAUTHOR'), 403); parent::delete(); }

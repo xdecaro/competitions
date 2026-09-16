@@ -9,6 +9,8 @@ use Joomla\CMS\MVC\Controller\AdminController;
 
 final class SeasonsController extends AdminController
 {
+    protected $option = 'com_xdecarocompetitions';
+
     public function getModel($name = 'Season', $prefix = 'Administrator', $config = ['ignore_request' => true])
     {
         return parent::getModel($name, $prefix, $config);

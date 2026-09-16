@@ -8,6 +8,8 @@ use Joomla\CMS\MVC\Controller\FormController;
 
 final class SeasonController extends FormController
 {
+    protected $option = 'com_xdecarocompetitions';
+
     protected function allowAdd($data = []): bool
     {
         return Factory::getApplication()->getIdentity()->authorise('core.create', 'com_xdecarocompetitions');
