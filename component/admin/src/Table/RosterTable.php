@@ -22,6 +22,7 @@ final class RosterTable extends Table
         $this->player_id = (int) $this->player_id;
         $this->shirt_number = trim((string) $this->shirt_number) === '' ? null : (int) $this->shirt_number;
         $this->role = trim((string) $this->role) ?: null;
+        $this->photo = trim((string) ($this->photo ?? '')) ?: null;
         $this->status = trim((string) $this->status) ?: 'pending';
         $this->review_note = trim((string) $this->review_note) ?: null;
 
