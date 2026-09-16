@@ -1,0 +1,19 @@
+name: Competitions public branding and messages
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - fix/competitions-public-branding-messages
+
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+      - name: Public branding and approval messages contract
+        run: php tests/public-branding-messages-contract.php
