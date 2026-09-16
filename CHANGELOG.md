@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.5.0 - 2026-09-17
+
+- Added the public read-only `PersonHistoryService` keyed by People `person_uuid`.
+- Added Core capability `competitions.people_history` v1 so People can discover the history provider without private-table coupling.
+- Returns normalized competition, season, team, role, shirt number and roster status history ordered newest first.
+- Added contract and Joomla 6.1.3 runtime coverage for multi-season history and public service registration.
+- Added a non-destructive 1.5.0 schema marker; no database structure changes are required.
+
 ## 1.4.4 - 2026-09-16
 
 - Added bulk player approval actions to the administrator Players toolbar: Approve, Pending and Reject.
