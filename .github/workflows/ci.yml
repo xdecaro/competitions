@@ -86,7 +86,7 @@ jobs:
           test "$("${MYSQL[@]}" -e "SELECT COUNT(*) FROM information_schema.columns WHERE table_schema='joomla' AND table_name='cmp_xdecarocompetitions_players' AND column_name='person_uuid';")" = '1'
           test "$("${MYSQL[@]}" -e "SELECT COUNT(*) FROM information_schema.statistics WHERE table_schema='joomla' AND table_name='cmp_xdecarocompetitions_players' AND index_name='uq_player_person_uuid' AND non_unique=0;")" = '1'
           test "$("${MYSQL[@]}" -e "SELECT COUNT(*) FROM information_schema.columns WHERE table_schema='joomla' AND table_name='cmp_xdecarocompetitions_rosters' AND column_name='photo';")" = '1'
-          for row in "component|com_xdecarocompetitions|" "plugin|xdecarocompetitions|system" "plugin|competitions|xdecaroanalytics" "plugin|xdecarocompetitions|task"; do
+          for row in "component|com_competitions|" "plugin|xdecarocompetitions|system" "plugin|competitions|xdecaroanalytics" "plugin|xdecarocompetitions|task"; do
             IFS='|' read -r type element folder <<< "$row"
             count="$("${MYSQL[@]}" -e "SELECT COUNT(*) FROM cmp_extensions WHERE type='${type}' AND element='${element}' AND folder='${folder}';")"
             test "$count" = '1'
@@ -96,7 +96,7 @@ jobs:
             enabled="$("${MYSQL[@]}" -e "SELECT enabled FROM cmp_extensions WHERE type='plugin' AND folder='${folder}' AND element='${element}' LIMIT 1;")"
             test "$enabled" = '1'
           done
-          schema="$("${MYSQL[@]}" -e "SELECT s.version_id FROM cmp_schemas s JOIN cmp_extensions e ON e.extension_id=s.extension_id WHERE e.type='component' AND e.element='com_xdecarocompetitions' LIMIT 1;")"
+          schema="$("${MYSQL[@]}" -e "SELECT s.version_id FROM cmp_schemas s JOIN cmp_extensions e ON e.extension_id=s.extension_id WHERE e.type='component' AND e.element='com_competitions' LIMIT 1;")"
           test "$schema" = '1.4.0'
 
       - name: Verify Finance-absent fallback
@@ -119,7 +119,7 @@ jobs:
           \Joomla\CMS\Factory::$application = $app;
           $app->createExtensionNamespaceMap();
 
-          $component = $app->bootComponent('com_xdecarocompetitions');
+          $component = $app->bootComponent('com_competitions');
           if (!is_object($component) || !method_exists($component, 'getCrossProductIntegrationService')) {
               fwrite(STDERR, "Competitions public integration service is unavailable.\n");
               exit(1);
@@ -182,7 +182,7 @@ jobs:
           Factory::$application = $app;
           $app->createExtensionNamespaceMap();
 
-          $competitions = $app->bootComponent('com_xdecarocompetitions');
+          $competitions = $app->bootComponent('com_competitions');
           if (!is_object($competitions) || !method_exists($competitions, 'getCrossProductIntegrationService')) {
               fwrite(STDERR, "Competitions integration service is unavailable.\n");
               exit(1);
@@ -227,10 +227,10 @@ jobs:
           $finance = $financeComponent->getFinanceService();
           $obligation = $finance->getObligation($fee1);
           if (!is_array($obligation)
-              || ($obligation['source_component'] ?? '') !== 'com_xdecarocompetitions'
+              || ($obligation['source_component'] ?? '') !== 'com_competitions'
               || ($obligation['source_entity'] ?? '') !== 'participation'
               || (string) ($obligation['source_id'] ?? '') !== (string) $participationId
-              || ($obligation['debtor_component'] ?? '') !== 'com_xdecarocompetitions'
+              || ($obligation['debtor_component'] ?? '') !== 'com_competitions'
               || ($obligation['debtor_entity'] ?? '') !== 'team'
               || (string) ($obligation['debtor_id'] ?? '') !== (string) $teamId
               || abs((float) ($obligation['amount'] ?? 0) - 125.0) > 0.0001) {
