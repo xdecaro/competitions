@@ -35,7 +35,7 @@ def validate_source()->None:
     if any(not path.is_file() for path in install_paths): fail('one or more fresh-install SQL files are missing')
     package=ET.parse(ROOT/'package/pkg_xdecarocompetitions.xml').getroot()
     child_ids={(n.get('type'),n.get('id'),n.get('group')) for n in package.findall('./files/file')}
-    required={('component','com_xdecarocompetitions',None),('plugin','xdecarocompetitions','system'),('plugin','competitions','xdecaroanalytics'),('plugin','xdecarocompetitions','task'),('module','mod_xdecarocompetitions_matchtimeline',None),('module','mod_xdecarocompetitions_countriesfederations',None)}
+    required={('component','com_competitions',None),('plugin','xdecarocompetitions','system'),('plugin','competitions','xdecaroanalytics'),('plugin','xdecarocompetitions','task'),('module','mod_xdecarocompetitions_matchtimeline',None),('module','mod_xdecarocompetitions_countriesfederations',None)}
     if not required.issubset(child_ids): fail(f'package child identifiers incomplete: {child_ids}')
     for child in package.findall('./files/file'):
         filename=(child.text or '').strip()
@@ -98,7 +98,7 @@ def validate_source()->None:
             if forbidden in text: fail(f'external table coupling {forbidden} in {path.relative_to(ROOT)}')
 
 def validate_dist()->None:
-    names=[f'com_xdecarocompetitions_{VERSION}.zip',f'plg_system_xdecarocompetitions_{VERSION}.zip',f'plg_xdecaroanalytics_competitions_{VERSION}.zip',f'plg_task_xdecarocompetitions_{VERSION}.zip',f'mod_xdecarocompetitions_matchtimeline_{VERSION}.zip',f'mod_xdecarocompetitions_countriesfederations_{VERSION}.zip',f'pkg_xdecarocompetitions_{VERSION}.zip']
+    names=[f'com_competitions_{VERSION}.zip',f'plg_system_xdecarocompetitions_{VERSION}.zip',f'plg_xdecaroanalytics_competitions_{VERSION}.zip',f'plg_task_xdecarocompetitions_{VERSION}.zip',f'mod_xdecarocompetitions_matchtimeline_{VERSION}.zip',f'mod_xdecarocompetitions_countriesfederations_{VERSION}.zip',f'pkg_xdecarocompetitions_{VERSION}.zip']
     paths=[ROOT/'dist'/n for n in names]
     for path in paths:
         if not path.is_file(): fail(f'missing distribution artifact {path.name}')
@@ -106,9 +106,17 @@ def validate_dist()->None:
             bad=archive.testzip()
             if bad is not None: fail(f'corrupt ZIP member {bad} in {path.name}')
     with zipfile.ZipFile(paths[0]) as archive:
-        required={'xdecarocompetitions.xml','admin/src/Extension/CompetitionsComponent.php','admin/src/Service/AnalyticsSourceService.php','admin/src/Service/CrossProductIntegrationService.php','admin/src/Service/MatchReminderService.php','admin/src/Service/PeopleIntegrationService.php','admin/src/Service/CompetitionPhotoService.php','admin/src/Controller/PeopleController.php','admin/sql/updates/mysql/1.4.0.sql','admin/sql/install.1.4.0.mysql.utf8mb4.sql','media/js/people-picker.js'}
+        required={'competitions.xml','admin/src/Extension/CompetitionsComponent.php','admin/src/Service/AnalyticsSourceService.php','admin/src/Service/CrossProductIntegrationService.php','admin/src/Service/MatchReminderService.php','admin/src/Service/PeopleIntegrationService.php','admin/src/Service/CompetitionPhotoService.php','admin/src/Controller/PeopleController.php','admin/sql/updates/mysql/1.4.0.sql','admin/sql/install.1.4.0.mysql.utf8mb4.sql','media/js/people-picker.js','admin/language/en-GB/com_competitions.ini','admin/language/it-IT/com_competitions.ini'}
         missing=required-set(archive.namelist())
         if missing: fail(f'component ZIP missing {sorted(missing)}')
+        if 'xdecarocompetitions.xml' in archive.namelist(): fail('component ZIP still contains legacy manifest name')
+        manifest=(archive.read('competitions.xml')).decode('utf-8')
+        if '<element>com_competitions</element>' not in manifest or 'destination="com_competitions"' not in manifest: fail('built component manifest identity mismatch')
+        for name in archive.namelist():
+            if name.endswith('/'): continue
+            try: text=archive.read(name).decode('utf-8')
+            except UnicodeDecodeError: continue
+            if 'com_xdecarocompetitions' in text: fail(f'legacy component option remains in built component file {name}')
     with zipfile.ZipFile(paths[-1]) as archive:
         required={'pkg_xdecarocompetitions.xml',*names[:-1]}
         missing=required-set(archive.namelist())
