@@ -11,9 +11,11 @@ use Joomla\DI\Container;
 use Joomla\DI\ServiceProviderInterface;
 use xdecaro\Component\Competitions\Administrator\Extension\CompetitionsComponent;
 use xdecaro\Component\Competitions\Administrator\Service\AnalyticsSourceService;
+use xdecaro\Component\Competitions\Administrator\Service\CompetitionPhotoService;
 use xdecaro\Component\Competitions\Administrator\Service\CoreIntegrationService;
 use xdecaro\Component\Competitions\Administrator\Service\CrossProductIntegrationService;
 use xdecaro\Component\Competitions\Administrator\Service\MatchReminderService;
+use xdecaro\Component\Competitions\Administrator\Service\PeopleIntegrationService;
 
 return new class () implements ServiceProviderInterface {
     public function register(Container $container): void
@@ -25,6 +27,8 @@ return new class () implements ServiceProviderInterface {
         $container->share(CrossProductIntegrationService::class, static fn (): CrossProductIntegrationService => new CrossProductIntegrationService());
         $container->share(AnalyticsSourceService::class, static fn (Container $container): AnalyticsSourceService => new AnalyticsSourceService($container->get(DatabaseInterface::class)));
         $container->share(MatchReminderService::class, static fn (Container $container): MatchReminderService => new MatchReminderService($container->get(DatabaseInterface::class), $container->get(CrossProductIntegrationService::class)));
+        $container->share(PeopleIntegrationService::class, static fn (): PeopleIntegrationService => new PeopleIntegrationService());
+        $container->share(CompetitionPhotoService::class, static fn (): CompetitionPhotoService => new CompetitionPhotoService());
 
         $container->set(
             ComponentInterface::class,
@@ -35,6 +39,8 @@ return new class () implements ServiceProviderInterface {
                 $component->setCrossProductIntegrationService($container->get(CrossProductIntegrationService::class));
                 $component->setAnalyticsSourceService($container->get(AnalyticsSourceService::class));
                 $component->setMatchReminderService($container->get(MatchReminderService::class));
+                $component->setPeopleIntegrationService($container->get(PeopleIntegrationService::class));
+                $component->setCompetitionPhotoService($container->get(CompetitionPhotoService::class));
                 return $component;
             }
         );
