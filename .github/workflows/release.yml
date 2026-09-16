@@ -30,6 +30,7 @@ jobs:
           find component modules plugins package tests -name '*.php' -print0 | xargs -0 -n1 php -l
           find component modules plugins -name '*.js' -print0 | xargs -0 -n1 node --check
           php tests/people-picker-asset-contract.php
+          php tests/people-picker-profile-contract.php
           php tests/people-roster-photo-contract.php
           python3 tools/validate_release.py
       - name: Build twice and verify determinism
@@ -67,4 +68,4 @@ jobs:
             "dist/mod_xdecarocompetitions_countriesfederations_${VERSION}.zip" \
             "dist/pkg_xdecarocompetitions_${VERSION}.zip" \
             "dist/SHA256SUMS.txt" --target main --title "Competitions by xdecaro ${VERSION}" \
-            --notes "Competitions ${VERSION}: People-linked player identity through the public People provider, edition/team-specific roster photos with roster → People → legacy fallback, and a Joomla 6 asset-path fix that restores the People autocomplete list. Existing Finance, Notifications, Tasks and Analytics integrations are retained without cross-product private-table coupling."
+            --notes "Competitions ${VERSION}: after selecting a People identity, the player editor now prefills birth date and nationality through a targeted authorised People profile lookup while keeping autocomplete search non-sensitive. People-linked identity, roster photos, Finance, Notifications, Tasks and Analytics integrations remain unchanged."

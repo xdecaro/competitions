@@ -19,6 +19,23 @@
     return meta ? `${person.display_name || person.uuid} — ${meta}` : (person.display_name || person.uuid);
   };
 
+  const requestJson = async (task, params) => {
+    const url = new URL(endpoint(task), window.location.href);
+    Object.entries(params || {}).forEach(([key, value]) => url.searchParams.set(key, String(value ?? '')));
+    const token = tokenName();
+    if (token) url.searchParams.set(token, '1');
+
+    const response = await fetch(url.toString(), {
+      headers: { Accept: 'application/json' },
+    });
+    const payload = await response.json();
+    if (!response.ok || payload?.success === false) {
+      throw new Error(payload?.message || `HTTP ${response.status}`);
+    }
+
+    return payload?.data;
+  };
+
   const init = (picker) => {
     const input = picker.querySelector('[data-competitions-people-search]');
     const results = picker.querySelector('[data-competitions-people-results]');
@@ -31,7 +48,7 @@
 
     const clear = () => results.replaceChildren();
 
-    const selectPerson = (person) => {
+    const selectPerson = async (person) => {
       target.value = String(person.uuid || '').toLowerCase();
       target.dispatchEvent(new Event('change', { bubbles: true }));
 
@@ -46,6 +63,25 @@
         summary.hidden = false;
       }
       clear();
+
+      try {
+        const profile = await requestJson('people.profile', { uuid: person.uuid });
+        const birthDate = document.getElementById('jform_birth_date');
+        const nationality = document.getElementById('jform_nationality_code');
+
+        if (birthDate) {
+          birthDate.value = profile?.birth_date || '';
+          birthDate.dispatchEvent(new Event('input', { bubbles: true }));
+          birthDate.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+
+        if (nationality) {
+          nationality.value = profile?.nationality_code || '';
+          nationality.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+      } catch (error) {
+        showError(error?.message);
+      }
     };
 
     const render = (rows) => {

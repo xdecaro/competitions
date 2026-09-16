@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.4.2 - 2026-09-16
+
+- Added a targeted People profile lookup after selecting a person in the player editor.
+- Automatically prefills player birth date and nationality from People when the current Joomla user is authorised to view sensitive People data.
+- Keeps the autocomplete search itself non-sensitive; sensitive fields are requested only for the selected person.
+- Added a RED/GREEN contract covering the profile endpoint and the `birth_date` / `nationality_code` field mapping.
+- Added a non-destructive 1.4.2 schema marker; no database structure changes are required.
+
 ## 1.4.1 - 2026-09-16
 
 - Fixed the Joomla 6 WebAsset URI for `people-picker.js`; the player People autocomplete is loaded from the standard component `js` media folder again.

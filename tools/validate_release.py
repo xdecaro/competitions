@@ -5,7 +5,7 @@ import xml.etree.ElementTree as ET
 
 ROOT=Path(__file__).resolve().parents[1]
 VERSION=(ROOT/'VERSION').read_text(encoding='utf-8').strip()
-CURRENT_VERSION='1.4.1'
+CURRENT_VERSION='1.4.2'
 CANONICAL_NAMESPACE='xdecaro\\Component\\Competitions'
 
 def fail(message:str)->None:
@@ -48,15 +48,16 @@ def validate_source()->None:
     for token in ['ADD COLUMN `person_uuid` CHAR(36) NULL','ADD UNIQUE KEY `uq_player_person_uuid` (`person_uuid`)','ADD COLUMN `photo` VARCHAR(512) NULL']:
         if token not in extension_sql: fail(f'1.4.0 fresh-install extension missing {token}')
     update_dir=ROOT/'component/admin/sql/updates/mysql'; update_files=sorted(p.name for p in update_dir.glob('*.sql'))
-    if update_files!=['1.0.0.sql','1.1.0.sql','1.2.0.sql','1.3.0.sql','1.4.0.sql','1.4.1.sql']: fail(f'unexpected schema history: {update_files}')
+    if update_files!=['1.0.0.sql','1.1.0.sql','1.2.0.sql','1.3.0.sql','1.4.0.sql','1.4.1.sql','1.4.2.sql']: fail(f'unexpected schema history: {update_files}')
     marker=(update_dir/'1.3.0.sql').read_text(encoding='utf-8').upper()
     if any(word in marker for word in ['ALTER TABLE','DROP TABLE','TRUNCATE TABLE','DELETE FROM']): fail('1.3.0 marker must be non-destructive')
     migration=(update_dir/'1.4.0.sql').read_text(encoding='utf-8')
     for token in ['ADD COLUMN `person_uuid` CHAR(36) NULL','ADD UNIQUE KEY `uq_player_person_uuid` (`person_uuid`)','ADD COLUMN `photo` VARCHAR(512) NULL']:
         if token not in migration: fail(f'1.4.0 migration missing {token}')
     if any(word in migration.upper() for word in ['DROP TABLE','TRUNCATE TABLE','DELETE FROM']): fail('1.4.0 migration contains a destructive operation')
-    patch_marker=(update_dir/'1.4.1.sql').read_text(encoding='utf-8').upper()
-    if any(word in patch_marker for word in ['ALTER TABLE','DROP TABLE','TRUNCATE TABLE','DELETE FROM']): fail('1.4.1 marker must be non-destructive')
+    for patch_version in ['1.4.1','1.4.2']:
+        patch_marker=(update_dir/f'{patch_version}.sql').read_text(encoding='utf-8').upper()
+        if any(word in patch_marker for word in ['ALTER TABLE','DROP TABLE','TRUNCATE TABLE','DELETE FROM']): fail(f'{patch_version} marker must be non-destructive')
     asset=json.loads((ROOT/'component/media/joomla.asset.json').read_text(encoding='utf-8'))
     if str(asset.get('version'))!=VERSION: fail('Web Asset registry version mismatch')
     for item in asset.get('assets',[]):
@@ -108,7 +109,7 @@ def validate_dist()->None:
             bad=archive.testzip()
             if bad is not None: fail(f'corrupt ZIP member {bad} in {path.name}')
     with zipfile.ZipFile(paths[0]) as archive:
-        required={'competitions.xml','admin/src/Extension/CompetitionsComponent.php','admin/src/Service/AnalyticsSourceService.php','admin/src/Service/CrossProductIntegrationService.php','admin/src/Service/MatchReminderService.php','admin/src/Service/PeopleIntegrationService.php','admin/src/Service/CompetitionPhotoService.php','admin/src/Controller/PeopleController.php','admin/sql/updates/mysql/1.4.0.sql','admin/sql/updates/mysql/1.4.1.sql','admin/sql/install.1.4.0.mysql.utf8mb4.sql','media/js/people-picker.js','admin/language/en-GB/com_competitions.ini','admin/language/it-IT/com_competitions.ini'}
+        required={'competitions.xml','admin/src/Extension/CompetitionsComponent.php','admin/src/Service/AnalyticsSourceService.php','admin/src/Service/CrossProductIntegrationService.php','admin/src/Service/MatchReminderService.php','admin/src/Service/PeopleIntegrationService.php','admin/src/Service/CompetitionPhotoService.php','admin/src/Controller/PeopleController.php','admin/sql/updates/mysql/1.4.0.sql','admin/sql/updates/mysql/1.4.1.sql','admin/sql/updates/mysql/1.4.2.sql','admin/sql/install.1.4.0.mysql.utf8mb4.sql','media/js/people-picker.js','admin/language/en-GB/com_competitions.ini','admin/language/it-IT/com_competitions.ini'}
         missing=required-set(archive.namelist())
         if missing: fail(f'component ZIP missing {sorted(missing)}')
         if 'xdecarocompetitions.xml' in archive.namelist(): fail('component ZIP still contains legacy manifest name')
