@@ -6,6 +6,7 @@ defined('_JEXEC') or die;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\Controller\AdminController;
+use xdecaro\Component\Competitions\Administrator\Helper\LanguageHelper;
 
 final class PlayersController extends AdminController
 {
@@ -51,6 +52,7 @@ final class PlayersController extends AdminController
 
     private function updateApprovalStatus(string $status, string $messageKey): void
     {
+        LanguageHelper::load();
         $app = Factory::getApplication();
 
         if (!$app->getIdentity()->authorise('core.edit.state', 'com_xdecarocompetitions')) {
