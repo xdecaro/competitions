@@ -1,0 +1,2 @@
+-- Competitions 1.5.1
+-- No schema changes. Public branding and approval-message language loading fix.
