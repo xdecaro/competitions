@@ -1,6 +1,6 @@
-# Competitions by xdecaro
+# Competitions
 
-Competitions by xdecaro is the competition-management component in the xdecaro Joomla ecosystem.
+Competitions is the competition-management component in the xdecaro Joomla ecosystem.
 
 ## Stable technical identity
 
@@ -17,9 +17,11 @@ Competitions by xdecaro is the competition-management component in the xdecaro J
 
 ## Current version
 
-**1.5.0**
+**1.5.1**
 
-Version 1.5.0 adds a public read-only person-history provider keyed by the existing People `person_uuid`. Competitions advertises the `competitions.people_history` v1 capability through Core, allowing People to show competition, season, team, role, shirt number and roster status history without reading Competitions private tables or duplicating competition data.
+Version 1.5.1 fixes translated player-approval confirmation messages by loading the Competitions language fragments in the approval controller, and standardizes the public product name to `Competitions` in Joomla update metadata and future GitHub releases. Technical xdecaro identifiers remain unchanged.
+
+Version 1.5.0 added a public read-only person-history provider keyed by the existing People `person_uuid`. Competitions advertises the `competitions.people_history` v1 capability through Core, allowing People to show competition, season, team, role, shirt number and roster status history without reading Competitions private tables or duplicating competition data.
 
 Photo ownership is explicit:
 
@@ -77,11 +79,11 @@ When Core `CapabilityRegistry` is available, Competitions declares analytics, No
 
 The current Competitions 1.x line targets Joomla 6 and PHP 8.3+. Compatibility with earlier Joomla versions is not claimed until runtime-tested.
 
-CI performs a real Joomla 6.1.3 installation of the built package. The 1.5.0 gate validates the People provider boundary, People UUID schema, roster photo schema, People picker WebAsset path, selected sensitive-profile autofill contract, public person-history provider/runtime, bulk player approval actions and the existing Finance bridge regression coverage.
+CI performs a real Joomla 6.1.3 installation of the built package. The 1.5.1 gate validates public branding, approval-message language loading, the People provider boundary, People UUID schema, roster photo schema, People picker WebAsset path, selected sensitive-profile autofill contract, public person-history provider/runtime, bulk player approval actions and the existing Finance bridge regression coverage.
 
 ## Data and update policy
 
-Fresh installations create only `#__xdecarocompetitions_*` tables. Version 1.4.0 adds nullable unique `person_uuid` to players and a nullable edition/team `photo` to rosters. Version 1.5.0 does not change the database schema; it adds a public read-only service over the existing indexed UUID and history graph.
+Fresh installations create only `#__xdecarocompetitions_*` tables. Version 1.4.0 adds nullable unique `person_uuid` to players and a nullable edition/team `photo` to rosters. Versions 1.5.0 and 1.5.1 do not change the database schema.
 
 Existing player records are not auto-linked or auto-merged. Linking to People must be explicit or performed by a separately verified migration workflow.
 
