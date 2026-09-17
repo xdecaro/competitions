@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.5.1 - 2026-09-17
+
+- Fixed player approval confirmation messages so Approve, Pending and Reject show translated text instead of raw Joomla language keys.
+- The approval controller now loads the existing Competitions language fragments before translating redirect messages.
+- Standardized public branding from `Competitions by xdecaro` to `Competitions` in Joomla update metadata, README and future GitHub release titles.
+- Technical xdecaro component/package identifiers, namespaces, artifact names and repository URLs remain unchanged.
+- Added a non-destructive 1.5.1 schema marker; no database structure changes are required.
+
 ## 1.5.0 - 2026-09-17
 
 - Added the public read-only `PersonHistoryService` keyed by People `person_uuid`.
