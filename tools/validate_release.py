@@ -81,7 +81,7 @@ def validate_source()->None:
     expected=f'https://github.com/xdecaro/competitions/releases/download/v{VERSION}/pkg_xdecarocompetitions_{VERSION}.zip'
     if (feed.findtext('./downloads/downloadurl') or '').strip()!=expected: fail('update feed download URL mismatch')
     core=(ROOT/'component/admin/src/Service/CoreIntegrationService.php').read_text(encoding='utf-8')
-    for token in ["COMPONENT = 'com_xdecarocompetitions'",'CapabilityRegistry','competitions.analytics.provider','competitions.notifications.bridge','competitions.tasks.bridge','competitions.finance.bridge','competitions.match-reminders']:
+    for token in ["COMPONENT = 'com_xdecarocompetitions'",'CapabilityRegistry','competitions.analytics.provider','competitions.notifications.bridge','competitions.tasks.bridge','competitions.finance.bridge','competitions.match-reminders','competitions.organizations.bridge']:
         if token not in core: fail(f'Core integration missing {token}')
     cross=(ROOT/'component/admin/src/Service/CrossProductIntegrationService.php').read_text(encoding='utf-8')
     for token in ["bootComponent('com_xdecaronotifications')","bootComponent('com_xdecarotasks')","bootComponent('com_decarofinance')",'getNotificationService','getTaskService','getFinanceService','createParticipationFeeObligation','getOrCreateTeamDepositAccount','creditTeamDeposit','chargeTeamDeposit','getTeamDepositBalance','throw $exception','Log::ERROR']:
