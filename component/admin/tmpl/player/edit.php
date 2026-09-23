@@ -62,6 +62,8 @@ $personUuid = strtolower(trim((string) ($this->item->person_uuid ?? '')));
             <?= $this->form->renderFieldset('details'); ?>
         </div>
     </div>
+    <?= $this->form->getInput('id'); ?>
+    <?= $this->form->getInput('modified'); ?>
     <input type="hidden" name="task" value="">
     <?= HTMLHelper::_('form.token'); ?>
 </form>
