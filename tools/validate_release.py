@@ -29,6 +29,7 @@ def validate_source()->None:
         if not path.is_file(): fail(f'missing manifest {path.relative_to(ROOT)}')
         if version(path)!=VERSION: fail(f'version mismatch in {path.relative_to(ROOT)}')
     component=ET.parse(ROOT/'component/xdecarocompetitions.xml').getroot()
+    if (component.findtext('scriptfile') or '').strip()!='script.php': fail('component installer scriptfile is missing')
     if (component.findtext('namespace') or '').strip()!=CANONICAL_NAMESPACE: fail('component namespace is not canonical')
     install_files=component.findall('./install/sql/file'); uninstall=component.find('./uninstall/sql/file')
     if not install_files: fail('component install SQL manifest is missing')
@@ -132,7 +133,7 @@ def validate_dist()->None:
             bad=archive.testzip()
             if bad is not None: fail(f'corrupt ZIP member {bad} in {path.name}')
     with zipfile.ZipFile(paths[0]) as archive:
-        required={'competitions.xml','admin/src/Extension/CompetitionsComponent.php','admin/src/Service/AnalyticsSourceService.php','admin/src/Service/CrossProductIntegrationService.php','admin/src/Service/MatchReminderService.php','admin/src/Service/PeopleIntegrationService.php','admin/src/Service/OrganizationsIntegrationService.php','admin/src/Field/FederationOrganizationField.php','admin/src/Service/CompetitionPhotoService.php','admin/src/Controller/PeopleController.php','admin/sql/updates/mysql/1.4.0.sql',f'admin/sql/updates/mysql/{VERSION}.sql','admin/sql/install.1.4.0.mysql.utf8mb4.sql','media/js/people-picker.js','admin/language/en-GB/com_competitions.ini','admin/language/it-IT/com_competitions.ini'}
+        required={'competitions.xml','script.php','admin/src/Extension/CompetitionsComponent.php','admin/src/Service/AnalyticsSourceService.php','admin/src/Service/CrossProductIntegrationService.php','admin/src/Service/MatchReminderService.php','admin/src/Service/PeopleIntegrationService.php','admin/src/Service/OrganizationsIntegrationService.php','admin/src/Field/FederationOrganizationField.php','admin/src/Service/CompetitionPhotoService.php','admin/src/Controller/PeopleController.php','admin/sql/updates/mysql/1.4.0.sql',f'admin/sql/updates/mysql/{VERSION}.sql','admin/sql/install.1.4.0.mysql.utf8mb4.sql','media/js/people-picker.js','admin/language/en-GB/com_competitions.ini','admin/language/it-IT/com_competitions.ini'}
         missing=required-set(archive.namelist())
         if missing: fail(f'component ZIP missing {sorted(missing)}')
         if 'xdecarocompetitions.xml' in archive.namelist(): fail('component ZIP still contains legacy manifest name')
