@@ -72,4 +72,4 @@ jobs:
             "dist/mod_xdecarocompetitions_countriesfederations_${VERSION}.zip" \
             "dist/pkg_xdecarocompetitions_${VERSION}.zip" \
             "dist/SHA256SUMS.txt" --target main --title "Competitions ${VERSION}" \
-            --notes "Competitions ${VERSION}: links Competition federations to canonical Organizations federation records through the public Organizations provider while preserving existing Competition federation IDs and history."
+            --notes "Competitions ${VERSION}: fixes the administrator live-sync edit-page reload loop, restores optimistic-lock fields in all edit forms, and adds regression coverage."
