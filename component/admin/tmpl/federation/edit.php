@@ -13,48 +13,81 @@ HTMLHelper::_('behavior.formvalidator');
 
 $isNew = empty($this->item->id);
 $isLinked = !empty($this->item->organization_uuid);
-$showLocalIdentity = !$this->organizationsAvailable || (!$isNew && !$isLinked);
+$showLinkPicker = $this->organizationsAvailable && !$isLinked;
+$showLocalIdentity = !$isLinked && (!$this->organizationsAvailable || !$isNew);
+$organizationName = trim((string) ($this->organizationData['name'] ?? $this->item->name ?? ''));
+$organizationCode = trim((string) ($this->organizationData['code'] ?? $this->item->short_name ?? ''));
 ?>
 <form action="index.php?option=com_xdecarocompetitions&layout=edit&id=<?= (int) $this->item->id; ?>" method="post" name="adminForm" id="federation-form" class="form-validate competitions-admin">
     <div class="card">
         <div class="card-body">
-            <?php if ($this->organizationsAvailable) : ?>
-                <?= $this->form->renderField('organization_uuid'); ?>
-            <?php elseif ($isLinked) : ?>
-                <input type="hidden" name="jform[organization_uuid]" value="<?= $this->escape((string) $this->item->organization_uuid); ?>">
-                <div class="alert alert-warning" role="status">
-                    <?= Text::_('COM_XDECAROCOMPETITIONS_FEDERATION_ORGANIZATIONS_OFFLINE_SNAPSHOT'); ?>
-                </div>
-            <?php endif; ?>
-
-            <?= $this->form->renderField('country_id'); ?>
-
-            <?php if ($this->organizationsAvailable && $isLinked && $this->organizationData) : ?>
+            <?php if ($showLinkPicker) : ?>
                 <div class="card mb-3">
                     <div class="card-body">
-                        <div class="d-flex flex-wrap justify-content-between gap-2 align-items-start">
-                            <div>
-                                <div class="fw-semibold"><?= $this->escape((string) ($this->organizationData['name'] ?? $this->item->name)); ?></div>
-                                <?php if (!empty($this->organizationData['code'])) : ?>
-                                    <div class="text-muted"><?= $this->escape((string) $this->organizationData['code']); ?></div>
-                                <?php endif; ?>
+                        <div class="d-flex flex-wrap justify-content-between align-items-start gap-3">
+                            <div class="flex-grow-1">
+                                <?= $this->form->renderField('organization_uuid'); ?>
                             </div>
-                            <?php if (!empty($this->organizationData['id'])) : ?>
-                                <a class="btn btn-sm btn-outline-primary" href="<?= Route::_('index.php?option=com_xdecaroorganizations&task=organization.edit&id=' . (int) $this->organizationData['id']); ?>">
-                                    <?= Text::_('COM_XDECAROCOMPETITIONS_OPEN_IN_ORGANIZATIONS'); ?>
-                                </a>
+                            <?php if ($isNew) : ?>
+                                <div class="pt-4">
+                                    <a
+                                        class="btn btn-outline-primary"
+                                        href="<?= Route::_('index.php?option=com_xdecaroorganizations&task=organization.add'); ?>"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                    >
+                                        <?= Text::_('COM_XDECAROCOMPETITIONS_CREATE_FEDERATION_IN_ORGANIZATIONS'); ?>
+                                    </a>
+                                </div>
                             <?php endif; ?>
                         </div>
-                        <div class="small text-muted mt-2">
-                            <?= Text::_('COM_XDECAROCOMPETITIONS_FEDERATION_CANONICAL_NOTE'); ?>
+                        <div class="small text-muted">
+                            <?= Text::_($isNew
+                                ? 'COM_XDECAROCOMPETITIONS_FEDERATION_NEW_LINK_NOTE'
+                                : 'COM_XDECAROCOMPETITIONS_FEDERATION_LEGACY_LINK_NOTE'); ?>
                         </div>
                     </div>
                 </div>
-            <?php elseif ($this->organizationsAvailable && $isNew) : ?>
-                <div class="alert alert-info" role="status">
-                    <?= Text::_('COM_XDECAROCOMPETITIONS_FEDERATION_SELECT_CANONICAL_NOTE'); ?>
-                </div>
+            <?php elseif ($isLinked) : ?>
+                <input type="hidden" name="jform[organization_uuid]" value="<?= $this->escape((string) $this->item->organization_uuid); ?>">
+
+                <?php if ($this->organizationsAvailable) : ?>
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <div class="d-flex flex-wrap justify-content-between gap-2 align-items-start">
+                                <div>
+                                    <div class="small text-muted mb-1">
+                                        <?= Text::_('COM_XDECAROCOMPETITIONS_FEDERATION_LINKED_TO_ORGANIZATIONS'); ?>
+                                    </div>
+                                    <div class="fw-semibold"><?= $this->escape($organizationName ?: '—'); ?></div>
+                                    <?php if ($organizationCode !== '') : ?>
+                                        <div class="text-muted"><?= $this->escape($organizationCode); ?></div>
+                                    <?php endif; ?>
+                                </div>
+                                <?php if (!empty($this->organizationData['id'])) : ?>
+                                    <a
+                                        class="btn btn-sm btn-outline-primary"
+                                        href="<?= Route::_('index.php?option=com_xdecaroorganizations&task=organization.edit&id=' . (int) $this->organizationData['id']); ?>"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                    >
+                                        <?= Text::_('COM_XDECAROCOMPETITIONS_OPEN_IN_ORGANIZATIONS'); ?>
+                                    </a>
+                                <?php endif; ?>
+                            </div>
+                            <div class="small text-muted mt-2">
+                                <?= Text::_('COM_XDECAROCOMPETITIONS_FEDERATION_LINK_LOCKED_NOTE'); ?>
+                            </div>
+                        </div>
+                    </div>
+                <?php else : ?>
+                    <div class="alert alert-warning" role="status">
+                        <?= Text::_('COM_XDECAROCOMPETITIONS_FEDERATION_ORGANIZATIONS_OFFLINE_SNAPSHOT'); ?>
+                    </div>
+                <?php endif; ?>
             <?php endif; ?>
+
+            <?= $this->form->renderField('country_id'); ?>
 
             <?php if ($showLocalIdentity) : ?>
                 <?= $this->form->renderField('name'); ?>

@@ -72,4 +72,4 @@ jobs:
             "dist/mod_xdecarocompetitions_countriesfederations_${VERSION}.zip" \
             "dist/pkg_xdecarocompetitions_${VERSION}.zip" \
             "dist/SHA256SUMS.txt" --target main --title "Competitions ${VERSION}" \
-            --notes "Competitions ${VERSION}: fixes the administrator live-sync edit-page reload loop, restores optimistic-lock fields in all edit forms, and adds regression coverage."
+            --notes "Competitions ${VERSION}: simplifies federation creation/linking with Organizations, hides the selector after the first link, and makes canonical federation links immutable from the normal editor."
