@@ -88,6 +88,7 @@ final class TeamModel extends BaseAdminModel
             }
         }
 
+        $updatePlaceholders = [];
         $query = $db->getQuery(true)
             ->update($db->quoteName('#__xdecarocompetitions_teams'))
             ->set($db->quoteName('approval_status') . ' = :approvalStatus')
