@@ -1,16 +1,19 @@
 <?php
 defined('_JEXEC') or die;
 
+use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Router\Route;
 
 HTMLHelper::_('behavior.formvalidator');
 
+Factory::getApplication()->getDocument()->getWebAssetManager()
+    ->useScript('com_xdecarocompetitions.team-edit');
+
 $isNew = empty($this->item->id);
 $isLinked = !empty($this->item->organization_uuid);
 $teamType = strtolower(trim((string) ($this->item->team_type ?? 'club'))) ?: 'club';
-$showLocalIdentity = !$isLinked && (!$this->organizationsAvailable || !$isNew || $teamType === 'national');
 $organizationName = trim((string) ($this->organizationData['name'] ?? $this->item->name ?? ''));
 $organizationCode = trim((string) ($this->organizationData['code'] ?? $this->item->short_name ?? ''));
 ?>
@@ -65,7 +68,7 @@ $organizationCode = trim((string) ($this->organizationData['code'] ?? $this->ite
                 <?= $this->form->renderField('team_type'); ?>
 
                 <?php if ($this->organizationsAvailable) : ?>
-                    <div class="card mb-3">
+                    <div class="card mb-3" data-team-organization-link>
                         <div class="card-body">
                             <?= $this->form->renderField('organization_uuid'); ?>
                             <div class="small text-muted">
@@ -81,14 +84,21 @@ $organizationCode = trim((string) ($this->organizationData['code'] ?? $this->ite
             <?= $this->form->renderField('federation_id'); ?>
             <?= $this->form->renderField('owner_user_id'); ?>
 
-            <?php if ($showLocalIdentity) : ?>
-                <?= $this->form->renderField('name'); ?>
-                <?= $this->form->renderField('short_name'); ?>
-                <?= $this->form->renderField('logo'); ?>
-                <?= $this->form->renderField('city'); ?>
-                <?= $this->form->renderField('email'); ?>
-                <?= $this->form->renderField('phone'); ?>
-                <?= $this->form->renderField('website'); ?>
+            <?php if (!$isLinked) : ?>
+                <div
+                    data-team-local-identity
+                    data-team-existing-legacy="<?= !$isNew ? '1' : '0'; ?>"
+                    data-team-link-available="<?= $this->organizationsAvailable ? '1' : '0'; ?>"
+                    <?= $isNew && $this->organizationsAvailable && $teamType === 'club' ? 'hidden' : ''; ?>
+                >
+                    <?= $this->form->renderField('name'); ?>
+                    <?= $this->form->renderField('short_name'); ?>
+                    <?= $this->form->renderField('logo'); ?>
+                    <?= $this->form->renderField('city'); ?>
+                    <?= $this->form->renderField('email'); ?>
+                    <?= $this->form->renderField('phone'); ?>
+                    <?= $this->form->renderField('website'); ?>
+                </div>
             <?php endif; ?>
 
             <?= $this->form->renderField('alias'); ?>
