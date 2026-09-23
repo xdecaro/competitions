@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.5.9 - 2026-09-24
+
+- Added bulk team approval actions to the main Joomla toolbar: Approve, Pending and Reject.
+- Approval actions require `core.edit.state`, validate the Joomla CSRF token and operate only on explicitly selected team rows.
+- Approving a team is blocked when its federation is not determined, so a Club with a missing/invalid Organizations sports affiliation cannot be approved accidentally.
+- Bulk approval changes update live-sync timestamps/events so concurrently opened team records stay consistent.
+- Added Italian/English validation messages and a dedicated regression contract.
+- No database structure changes are required.
+
 ## 1.5.8 - 2026-09-24
 
 - Club federation assignment is now derived automatically from the club's active `sports_affiliation` in Organizations instead of being selected manually in Competitions.

@@ -34,6 +34,7 @@ jobs:
           php tests/people-roster-photo-contract.php
           php tests/organizations-federation-contract.php
           php tests/organizations-team-contract.php
+          php tests/team-approval-toolbar-contract.php
           php tests/federation-link-persistence-contract.php
           php tests/live-sync-edit-lock-contract.php
           php tests/people-history-contract.php
@@ -74,4 +75,4 @@ jobs:
             "dist/mod_xdecarocompetitions_countriesfederations_${VERSION}.zip" \
             "dist/pkg_xdecarocompetitions_${VERSION}.zip" \
             "dist/SHA256SUMS.txt" --target main --title "Competitions ${VERSION}" \
-            --notes "Competitions ${VERSION}: derives Club federations from active Organizations sports affiliations, removes manual federation choice for linked Clubs, and keeps explicit undetermined/ambiguous states."
+            --notes "Competitions ${VERSION}: adds bulk team approval actions to the Joomla toolbar with ACL, CSRF and federation validation."

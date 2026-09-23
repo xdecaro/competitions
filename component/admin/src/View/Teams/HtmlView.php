@@ -48,6 +48,27 @@ final class HtmlView extends BaseHtmlView
         }
 
         if ($user->authorise('core.edit.state', 'com_xdecarocompetitions')) {
+            ToolbarHelper::custom(
+                'teams.approve',
+                'checkmark',
+                'checkmark',
+                Text::_('COM_XDECAROCOMPETITIONS_TOOLBAR_APPROVE'),
+                true
+            );
+            ToolbarHelper::custom(
+                'teams.pending',
+                'clock',
+                'clock',
+                Text::_('COM_XDECAROCOMPETITIONS_TOOLBAR_PENDING'),
+                true
+            );
+            ToolbarHelper::custom(
+                'teams.reject',
+                'cancel',
+                'cancel',
+                Text::_('COM_XDECAROCOMPETITIONS_TOOLBAR_REJECT'),
+                true
+            );
             ToolbarHelper::publish('teams.publish', 'JTOOLBAR_PUBLISH', true);
             ToolbarHelper::unpublish('teams.unpublish', 'JTOOLBAR_UNPUBLISH', true);
         }

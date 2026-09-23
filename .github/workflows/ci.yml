@@ -36,6 +36,8 @@ jobs:
         run: php tests/organizations-federation-contract.php
       - name: Organizations team contract
         run: php tests/organizations-team-contract.php
+      - name: Team approval toolbar contract
+        run: php tests/team-approval-toolbar-contract.php
       - name: Federation link persistence contract
         run: php tests/federation-link-persistence-contract.php
       - name: Live-sync edit lock contract
