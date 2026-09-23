@@ -18,6 +18,7 @@ $checks = [
     [str_contains($form, 'type="FederationOrganization"'), 'Federation form must use the Organizations picker'],
     [str_contains($form, 'COM_XDECAROCOMPETITIONS_SELECT_COUNTRY'), 'Country must have an explicit empty selection'],
     [!preg_match('/name="name"[^>]*required="true"/', $form), 'Canonical linked federation name must not block client validation'],
+    [str_contains($model, 'public function save($data): bool'), 'FederationModel save signature must match BaseAdminModel'],
     [str_contains($model, "\$data['organization_uuid']"), 'Federation model must persist the stable Organizations UUID'],
     [str_contains($model, "\$organization['name']"), 'Federation model must refresh canonical name snapshot'],
     [str_contains($model, "\$organization['code']"), 'Federation model must refresh canonical code snapshot'],

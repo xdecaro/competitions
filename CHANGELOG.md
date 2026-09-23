@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.5.3 - 2026-09-23
+
+- Fixed the PHP fatal compile error in the federation editor introduced in 1.5.2.
+- `FederationModel::save($data)` now declares the required `: bool` return type and is compatible with `BaseAdminModel::save($data): bool`.
+- Added a contract check so future federation model changes cannot silently reintroduce the incompatible method signature.
+- Added a non-destructive 1.5.3 schema marker; no database changes are required.
+
 ## 1.5.2 - 2026-09-23
 
 - Linked Competition federations to canonical Organizations records through nullable unique `organization_uuid` references.

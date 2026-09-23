@@ -131,6 +131,11 @@ jobs:
               fwrite(STDERR, "Competitions public integration service is unavailable.\n");
               exit(1);
           }
+          $federationModel = $component->getMVCFactory()->createModel('Federation', 'Administrator');
+          if (!$federationModel instanceof \xdecaro\Component\Competitions\Administrator\Model\FederationModel) {
+              fwrite(STDERR, "FederationModel could not be loaded through Joomla MVC.\n");
+              exit(1);
+          }
           if (!method_exists($component, 'getPeopleIntegrationService') || !method_exists($component, 'getOrganizationsIntegrationService') || !method_exists($component, 'getCompetitionPhotoService')) {
               fwrite(STDERR, "Competitions People/photo service surface is unavailable.\n");
               exit(1);
