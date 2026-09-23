@@ -152,15 +152,23 @@
         bootstrapped = true;
 
         if (isEditing && payload.current_modified) {
-          const renderedModified = String(modifiedField?.value || '__competitions_unmodified__');
           const serverModified = String(payload.current_modified);
 
-          if (renderedModified !== serverModified) {
-            if (dirty) {
-              conflict = true;
-              showConflict();
-            } else {
-              scheduleReload();
+          // A missing lock field must never cause an automatic reload loop.
+          // Edit templates render this field server-side; this is a defensive
+          // fallback for stale/custom layouts.
+          if (!modifiedField) {
+            injectHidden(form, 'jform[modified]', serverModified);
+          } else {
+            const renderedModified = String(modifiedField.value || '__competitions_unmodified__');
+
+            if (renderedModified !== serverModified) {
+              if (dirty) {
+                conflict = true;
+                showConflict();
+              } else {
+                scheduleReload();
+              }
             }
           }
         }

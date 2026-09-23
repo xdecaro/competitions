@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.5.4 - 2026-09-23
+
+- Fixed the administrator edit-page reload loop caused by live-sync comparing the database `modified` timestamp with a lock field that edit templates were not rendering.
+- All Competitions edit templates now submit the hidden `jform[id]` and `jform[modified]` fields required by optimistic locking.
+- Added a defensive live-sync fallback so a missing lock field cannot trigger an automatic infinite reload loop.
+- Bumped the runtime administrator asset version so browsers receive the corrected live-sync JavaScript immediately.
+- Added regression coverage for every Competitions edit template and the live-sync fallback.
+- Added a non-destructive 1.5.4 schema marker; no database changes are required.
+
 ## 1.5.3 - 2026-09-23
 
 - Fixed the PHP fatal compile error in the federation editor introduced in 1.5.2.

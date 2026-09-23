@@ -7,5 +7,7 @@ HTMLHelper::_('behavior.formvalidator');
 <form action="index.php?option=com_xdecarocompetitions&layout=edit&id=<?= (int) $this->item->id; ?>" method="post" name="adminForm" id="season-form" class="form-validate competitions-admin">
     <div class="card mb-3"><div class="card-body"><?= $this->form->renderFieldset('details'); ?></div></div>
     <div class="card"><div class="card-header"><strong><?= Text::_('COM_XDECAROCOMPETITIONS_ORGANIZATION_ASSIGNMENTS'); ?></strong></div><div class="card-body"><p class="text-muted"><?= Text::_('COM_XDECAROCOMPETITIONS_ORGANIZATION_ASSIGNMENTS_DESC'); ?></p><?= $this->form->renderFieldset('organizations'); ?></div></div>
+    <?= $this->form->getInput('id'); ?>
+    <?= $this->form->getInput('modified'); ?>
     <input type="hidden" name="task" value=""><?= HTMLHelper::_('form.token'); ?>
 </form>
