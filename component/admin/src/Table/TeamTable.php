@@ -65,13 +65,15 @@ final class TeamTable extends Table
             return false;
         }
 
-        if ($this->federation_id <= 0) {
-            $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_TEAM_FEDERATION_REQUIRED'));
+        if (!in_array($this->team_type, TournamentScopeHelper::TEAM_TYPES, true)) {
+            $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_TEAM_TYPE_INVALID'));
             return false;
         }
 
-        if (!in_array($this->team_type, TournamentScopeHelper::TEAM_TYPES, true)) {
-            $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_TEAM_TYPE_INVALID'));
+        $linkedClub = $this->team_type === 'club' && $this->organization_uuid !== null;
+
+        if ($this->federation_id <= 0 && !$linkedClub) {
+            $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_TEAM_FEDERATION_REQUIRED'));
             return false;
         }
 
@@ -92,31 +94,37 @@ final class TeamTable extends Table
 
         $db = $this->getDbo();
 
-        $query = $db->getQuery(true)
-            ->select([
-                $db->quoteName('c.id', 'country_id'),
-                $db->quoteName('c.code'),
-                $db->quoteName('c.iso3'),
-            ])
-            ->from($db->quoteName('#__xdecarocompetitions_federations', 'f'))
-            ->innerJoin(
-                $db->quoteName('#__xdecarocompetitions_countries', 'c')
-                . ' ON ' . $db->quoteName('c.id') . ' = ' . $db->quoteName('f.country_id')
-            )
-            ->where($db->quoteName('f.id') . ' = :federationId')
-            ->where($db->quoteName('f.state') . ' <> -2')
-            ->where($db->quoteName('c.state') . ' <> -2')
-            ->bind(':federationId', $this->federation_id, ParameterType::INTEGER);
+        $country = null;
 
-        $country = $db->setQuery($query)->loadObject();
+        if ($this->federation_id > 0) {
+            $query = $db->getQuery(true)
+                ->select([
+                    $db->quoteName('c.id', 'country_id'),
+                    $db->quoteName('c.code'),
+                    $db->quoteName('c.iso3'),
+                ])
+                ->from($db->quoteName('#__xdecarocompetitions_federations', 'f'))
+                ->innerJoin(
+                    $db->quoteName('#__xdecarocompetitions_countries', 'c')
+                    . ' ON ' . $db->quoteName('c.id') . ' = ' . $db->quoteName('f.country_id')
+                )
+                ->where($db->quoteName('f.id') . ' = :federationId')
+                ->where($db->quoteName('f.state') . ' <> -2')
+                ->where($db->quoteName('c.state') . ' <> -2')
+                ->bind(':federationId', $this->federation_id, ParameterType::INTEGER);
 
-        if (!$country) {
-            $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_TEAM_FEDERATION_INVALID'));
-            return false;
+            $country = $db->setQuery($query)->loadObject();
+
+            if (!$country) {
+                $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_TEAM_FEDERATION_INVALID'));
+                return false;
+            }
+
+            $legacyCountryCode = strtoupper(trim((string) ($country->iso3 ?: $country->code)));
+            $this->country_code = strlen($legacyCountryCode) <= 3 ? $legacyCountryCode : null;
+        } else {
+            $this->country_code = null;
         }
-
-        $legacyCountryCode = strtoupper(trim((string) ($country->iso3 ?: $country->code)));
-        $this->country_code = strlen($legacyCountryCode) <= 3 ? $legacyCountryCode : null;
 
         if ($this->id) {
             $query = $db->getQuery(true)
@@ -131,7 +139,14 @@ final class TeamTable extends Table
                 ->where($db->quoteName('s.state') . ' <> -2')
                 ->bind(':teamId', $this->id, ParameterType::INTEGER);
 
-            foreach (array_map('intval', $db->setQuery($query)->loadColumn() ?: []) as $tournamentId) {
+            $tournamentIds = array_map('intval', $db->setQuery($query)->loadColumn() ?: []);
+
+            if (!$country && $tournamentIds) {
+                $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_TEAM_FEDERATION_UNDETERMINED_PARTICIPATIONS'));
+                return false;
+            }
+
+            foreach ($tournamentIds as $tournamentId) {
                 try {
                     TournamentScopeHelper::assertTeamAttributesEligible(
                         $db,
