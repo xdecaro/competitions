@@ -10,9 +10,9 @@ use Throwable;
 /**
  * Optional read-only bridge to Organizations.
  *
- * Competitions never queries Organizations private tables. The canonical
- * organization UUID is stored locally while federation identity fields remain
- * compatibility snapshots for existing Competitions relations.
+ * Competitions never queries Organizations private tables. Canonical
+ * Organizations UUIDs are stored locally while federation/team identity fields
+ * remain compatibility snapshots for existing Competitions relations.
  */
 final class OrganizationsIntegrationService
 {
@@ -56,6 +56,62 @@ final class OrganizationsIntegrationService
                 $e
             );
         }
+    }
+
+    public function searchClubs(string $search = '', int $limit = 200): array
+    {
+        try {
+            $filters = ['type' => 'club'];
+            $search = trim($search);
+
+            if ($search !== '') {
+                $filters['search'] = $search;
+            }
+
+            $rows = (array) $this->provider()->searchOrganizations(
+                $filters,
+                max(1, min(200, $limit)),
+                false
+            );
+
+            return array_values(array_filter(
+                $rows,
+                static fn ($row): bool => is_array($row)
+                    && strtolower((string) ($row['type'] ?? '')) === 'club'
+                    && !empty($row['uuid'])
+            ));
+        } catch (Throwable $e) {
+            throw new RuntimeException(
+                'Organizations club search is unavailable: ' . $e->getMessage(),
+                (int) $e->getCode(),
+                $e
+            );
+        }
+    }
+
+    public function getClub(string $uuid): ?array
+    {
+        $uuid = strtolower(trim($uuid));
+
+        if ($uuid === '') {
+            return null;
+        }
+
+        try {
+            $row = $this->provider()->getOrganization($uuid, false);
+        } catch (Throwable $e) {
+            throw new RuntimeException(
+                'Organizations club lookup is unavailable: ' . $e->getMessage(),
+                (int) $e->getCode(),
+                $e
+            );
+        }
+
+        if (!is_array($row) || strtolower((string) ($row['type'] ?? '')) !== 'club') {
+            return null;
+        }
+
+        return $row;
     }
 
     public function getFederation(string $uuid): ?array

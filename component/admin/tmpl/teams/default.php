@@ -108,6 +108,9 @@ $teamTypeLabels = [
                         </a>
                         <div class="d-flex flex-wrap gap-1 mt-1">
                             <span class="competitions-badge <?= $teamType[1]; ?>"><?= Text::_($teamType[0]); ?></span>
+                            <?php if (!empty($item->organization_uuid)) : ?>
+                                <span class="badge text-bg-success"><?= Text::_('COM_XDECAROCOMPETITIONS_SOURCE_ORGANIZATIONS'); ?></span>
+                            <?php endif; ?>
                         </div>
                         <?php if ($item->short_name || $item->city) : ?>
                             <div class="small text-muted mt-1">
