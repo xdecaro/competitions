@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <updates><update>
   <name>Competitions</name><description>Competitions package for Joomla 6.</description>
-  <element>pkg_xdecarocompetitions</element><type>package</type><client>site</client><version>1.5.2</version>
-  <downloads><downloadurl type="full" format="zip">https://github.com/xdecaro/competitions/releases/download/v1.5.2/pkg_xdecarocompetitions_1.5.2.zip</downloadurl></downloads>
+  <element>pkg_xdecarocompetitions</element><type>package</type><client>site</client><version>1.5.3</version>
+  <downloads><downloadurl type="full" format="zip">https://github.com/xdecaro/competitions/releases/download/v1.5.3/pkg_xdecarocompetitions_1.5.3.zip</downloadurl></downloads>
   <tags><tag>stable</tag></tags><sha256>503b0e3c8f4931b08c77ae6837f828e503f8809370de3b79931e523721dfaa01</sha256>
   <maintainer>Luca De Caro</maintainer><maintainerurl>https://github.com/xdecaro/competitions</maintainerurl>
   <targetplatform name="joomla" version="6\.[0-9]+" /><php_minimum>8.3.0</php_minimum>
