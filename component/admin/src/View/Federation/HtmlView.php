@@ -8,12 +8,15 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\View\HtmlView as BaseHtmlView;
 use Joomla\CMS\Toolbar\ToolbarHelper;
 use xdecaro\Component\Competitions\Administrator\Helper\UiHelper;
+use xdecaro\Component\Competitions\Administrator\Service\OrganizationsIntegrationService;
 
 final class HtmlView extends BaseHtmlView
 {
     public $form;
     public $item;
     public $state;
+    public bool $organizationsAvailable = false;
+    public ?array $organizationData = null;
 
     public function display($tpl = null): void
     {
@@ -27,6 +30,17 @@ final class HtmlView extends BaseHtmlView
         $this->form = $this->get('Form');
         $this->item = $this->get('Item');
         $this->state = $this->get('State');
+
+        $organizations = new OrganizationsIntegrationService();
+        $this->organizationsAvailable = $organizations->isAvailable();
+
+        if ($this->organizationsAvailable && !empty($this->item->organization_uuid)) {
+            try {
+                $this->organizationData = $organizations->getFederation((string) $this->item->organization_uuid);
+            } catch (\Throwable) {
+                $this->organizationData = null;
+            }
+        }
 
         if (count($errors = $this->get('Errors'))) {
             throw new \RuntimeException(implode("\n", $errors));
