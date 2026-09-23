@@ -49,7 +49,7 @@ final class SyncController extends BaseController
             ? LiveSyncHelper::currentModified($db, $entity, $entityId)
             : null;
         $presence = $isEditing && $entity !== '' && $entityId > 0
-            ? LiveSyncHelper::listPresence($db, $entity, $entityId, $clientId)
+            ? LiveSyncHelper::listPresence($db, $entity, $entityId, $clientId, (int) $identity->id)
             : [];
 
         $payload = [
