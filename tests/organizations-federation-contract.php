@@ -22,7 +22,7 @@ $checks = [
     [str_contains($model, "\$data['organization_uuid']"), 'Federation model must persist the stable Organizations UUID'],
     [str_contains($model, "\$organization['name']"), 'Federation model must refresh canonical name snapshot'],
     [str_contains($model, "\$organization['code']"), 'Federation model must refresh canonical code snapshot'],
-    [str_contains($model, "if ($existingUuid !== '')"), 'Existing canonical federation link must be immutable from the edit form'],
+    [str_contains($model, "if (\$existingUuid !== '')"), 'Existing canonical federation link must be immutable from the edit form'],
     [str_contains($model, "\$organizationUuid = \$existingUuid"), 'Existing canonical federation UUID must be preserved server-side'],
     [str_contains(file_get_contents($root . '/component/admin/tmpl/federation/edit.php'), '$showLinkPicker = $this->organizationsAvailable && !$isLinked;'), 'Link picker must disappear after a federation is linked'],
     [str_contains(file_get_contents($root . '/component/admin/tmpl/federation/edit.php'), 'COM_XDECAROCOMPETITIONS_CREATE_FEDERATION_IN_ORGANIZATIONS'), 'New federation editor must offer creation in Organizations'],
