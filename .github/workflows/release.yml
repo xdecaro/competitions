@@ -70,4 +70,4 @@ jobs:
             "dist/mod_xdecarocompetitions_countriesfederations_${VERSION}.zip" \
             "dist/pkg_xdecarocompetitions_${VERSION}.zip" \
             "dist/SHA256SUMS.txt" --target main --title "Competitions ${VERSION}" \
-            --notes "Competitions ${VERSION}: fixes translated player-approval confirmation messages and standardizes public branding to Competitions. Technical xdecaro component, package, namespace and artifact identifiers remain unchanged."
+            --notes "Competitions ${VERSION}: links Competition federations to canonical Organizations federation records through the public Organizations provider while preserving existing Competition federation IDs and history."
