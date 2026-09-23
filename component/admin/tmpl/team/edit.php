@@ -70,7 +70,23 @@ $organizationCode = trim((string) ($this->organizationData['code'] ?? $this->ite
                 <?php if ($this->organizationsAvailable) : ?>
                     <div class="card mb-3" data-team-organization-link>
                         <div class="card-body">
-                            <?= $this->form->renderField('organization_uuid'); ?>
+                            <div class="d-flex flex-wrap justify-content-between align-items-start gap-3">
+                                <div class="flex-grow-1">
+                                    <?= $this->form->renderField('organization_uuid'); ?>
+                                </div>
+                                <?php if ($isNew) : ?>
+                                    <div class="pt-4">
+                                        <a
+                                            class="btn btn-outline-primary"
+                                            href="<?= Route::_('index.php?option=com_xdecaroorganizations&task=organization.add'); ?>"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                        >
+                                            <?= Text::_('COM_XDECAROCOMPETITIONS_CREATE_TEAM_IN_ORGANIZATIONS'); ?>
+                                        </a>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
                             <div class="small text-muted">
                                 <?= Text::_($isNew
                                     ? 'COM_XDECAROCOMPETITIONS_TEAM_NEW_LINK_NOTE'
