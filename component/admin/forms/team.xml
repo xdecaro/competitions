@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<form>
+<form addfieldprefix="xdecaro\Component\Competitions\Administrator\Field">
   <fieldset name="details" label="COM_XDECAROCOMPETITIONS_TEAM_DETAILS">
     <field name="id" type="hidden" />
     <field name="modified" type="hidden" />
-    <field name="name" type="text" label="COM_XDECAROCOMPETITIONS_FIELD_NAME" required="true" maxlength="190" />
+    <field name="organization_uuid" type="TeamOrganization" label="COM_XDECAROCOMPETITIONS_FIELD_TEAM_ORGANIZATION" description="COM_XDECAROCOMPETITIONS_FIELD_TEAM_ORGANIZATION_DESC" showon="team_type:club" />
+    <field name="team_type" type="list" label="COM_XDECAROCOMPETITIONS_FIELD_TEAM_TYPE" default="club" required="true">
+      <option value="club">COM_XDECAROCOMPETITIONS_TEAM_TYPE_CLUB</option>
+      <option value="national">COM_XDECAROCOMPETITIONS_TEAM_TYPE_NATIONAL</option>
+    </field>
+    <field name="name" type="text" label="COM_XDECAROCOMPETITIONS_FIELD_NAME" maxlength="190" />
     <field name="short_name" type="text" label="COM_XDECAROCOMPETITIONS_FIELD_SHORT_NAME" maxlength="100" />
     <field name="alias" type="text" label="JFIELD_ALIAS_LABEL" description="COM_XDECAROCOMPETITIONS_TEAM_ALIAS_DESC" maxlength="190" />
     <field
@@ -15,10 +20,6 @@
       key_field="value"
       value_field="text"
     />
-    <field name="team_type" type="list" label="COM_XDECAROCOMPETITIONS_FIELD_TEAM_TYPE" default="club" required="true">
-      <option value="club">COM_XDECAROCOMPETITIONS_TEAM_TYPE_CLUB</option>
-      <option value="national">COM_XDECAROCOMPETITIONS_TEAM_TYPE_NATIONAL</option>
-    </field>
     <field
       name="owner_user_id"
       type="user"
