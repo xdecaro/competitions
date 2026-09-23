@@ -1,0 +1,2 @@
+-- Competitions 1.5.5
+-- No database structure changes are required.
