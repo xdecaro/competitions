@@ -3,11 +3,13 @@ namespace xdecaro\Component\Competitions\Administrator\Model;
 
 defined('_JEXEC') or die;
 
+use InvalidArgumentException;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Form\Form;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Table\Table;
 use Joomla\Database\ParameterType;
+use xdecaro\Component\Competitions\Administrator\Helper\LiveSyncHelper;
 use xdecaro\Component\Competitions\Administrator\Service\OrganizationsIntegrationService;
 
 final class TeamModel extends BaseAdminModel
@@ -24,6 +26,96 @@ final class TeamModel extends BaseAdminModel
             'team',
             ['control' => 'jform', 'load_data' => $loadData]
         );
+    }
+
+    public function setApprovalStatus(&$pks, string $status): bool
+    {
+        $status = strtolower(trim($status));
+
+        if (!in_array($status, ['pending', 'approved', 'rejected'], true)) {
+            throw new InvalidArgumentException('Invalid team approval status: ' . $status);
+        }
+
+        $ids = array_values(array_unique(array_filter(array_map('intval', (array) $pks))));
+
+        if (!$ids) {
+            $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_NO_TEAMS_SELECTED'));
+            return false;
+        }
+
+        $db = $this->getDatabase();
+        $placeholders = [];
+
+        foreach ($ids as $index => $id) {
+            $placeholder = ':teamId' . $index;
+            $placeholders[] = $placeholder;
+        }
+
+        if ($status === 'approved') {
+            $query = $db->getQuery(true)
+                ->select([
+                    $db->quoteName('id'),
+                    $db->quoteName('name'),
+                    $db->quoteName('federation_id'),
+                ])
+                ->from($db->quoteName('#__xdecarocompetitions_teams'))
+                ->where($db->quoteName('id') . ' IN (' . implode(',', $placeholders) . ')')
+                ->where($db->quoteName('state') . ' <> -2');
+
+            foreach ($ids as $index => $id) {
+                $query->bind(':teamId' . $index, $ids[$index], ParameterType::INTEGER);
+            }
+
+            $rows = $db->setQuery($query)->loadObjectList() ?: [];
+
+            if (count($rows) !== count($ids)) {
+                $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_TEAM_APPROVAL_INVALID_SELECTION'));
+                return false;
+            }
+
+            foreach ($rows as $row) {
+                if ((int) ($row->federation_id ?? 0) <= 0) {
+                    $name = trim((string) ($row->name ?? ''));
+
+                    $this->setError(
+                        Text::sprintf(
+                            'COM_XDECAROCOMPETITIONS_ERROR_TEAM_APPROVAL_FEDERATION_REQUIRED',
+                            $name !== '' ? $name : ('#' . (int) $row->id)
+                        )
+                    );
+                    return false;
+                }
+            }
+        }
+
+        $query = $db->getQuery(true)
+            ->update($db->quoteName('#__xdecarocompetitions_teams'))
+            ->set($db->quoteName('approval_status') . ' = :approvalStatus')
+            ->bind(':approvalStatus', $status);
+
+        foreach ($ids as $index => $id) {
+            $placeholder = ':updateTeamId' . $index;
+            $updatePlaceholders[] = $placeholder;
+            $query->bind($placeholder, $ids[$index], ParameterType::INTEGER);
+        }
+
+        $query->where($db->quoteName('id') . ' IN (' . implode(',', $updatePlaceholders) . ')');
+        $db->setQuery($query)->execute();
+
+        LiveSyncHelper::touchModified(
+            $db,
+            'team',
+            $ids,
+            (int) Factory::getApplication()->getIdentity()->id
+        );
+
+        foreach ($ids as $id) {
+            LiveSyncHelper::record($db, 'team', $id, 'update');
+        }
+
+        $pks = $ids;
+
+        return true;
     }
 
     protected function loadFormData()
