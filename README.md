@@ -81,7 +81,7 @@ Competitions runtime code never accesses `#__decarofinance_*`.
 
 Notifications and Tasks are optional best-effort integrations through their public Joomla component services. Competitions also exposes an ACL-protected Analytics source through `plg_xdecaroanalytics_competitions` and can schedule upcoming-match reminders through the Joomla Scheduled Tasks plugin.
 
-When Core `CapabilityRegistry` is available, Competitions declares analytics, Notifications, Tasks, Finance, match-reminder and People-history capabilities. Core itself contains no competition or finance business logic.
+When Core `CapabilityRegistry` is available, Competitions declares analytics, Notifications, Tasks, Finance, match-reminder, People-history and Organizations-bridge capabilities. Core itself contains no competition or finance business logic.
 
 ## Joomla baseline
 
