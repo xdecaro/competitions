@@ -24,6 +24,29 @@ final class FederationTable extends Table
         $this->website = trim((string) $this->website) ?: null;
         $this->email = trim((string) $this->email) ?: null;
         $this->country_id = (int) $this->country_id;
+        $this->organization_uuid = strtolower(trim((string) $this->organization_uuid)) ?: null;
+
+        if ($this->organization_uuid !== null
+            && !preg_match('/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/', $this->organization_uuid)) {
+            $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_FEDERATION_ORGANIZATION_INVALID'));
+            return false;
+        }
+
+        if ($this->organization_uuid !== null) {
+            $db = $this->getDbo();
+            $query = $db->getQuery(true)
+                ->select('COUNT(*)')
+                ->from($db->quoteName('#__xdecarocompetitions_federations'))
+                ->where($db->quoteName('organization_uuid') . ' = :organizationUuid')
+                ->where($db->quoteName('id') . ' <> :id')
+                ->bind(':organizationUuid', $this->organization_uuid)
+                ->bind(':id', $this->id, ParameterType::INTEGER);
+
+            if ((int) $db->setQuery($query)->loadResult() > 0) {
+                $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_FEDERATION_ORGANIZATION_DUPLICATE'));
+                return false;
+            }
+        }
 
         if ($this->name === '') {
             $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_FEDERATION_NAME_REQUIRED'));
