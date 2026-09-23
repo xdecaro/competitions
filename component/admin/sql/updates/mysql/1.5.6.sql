@@ -1,0 +1,3 @@
+-- Competitions 1.5.6
+-- Runtime installer repair ensures the federation organization_uuid column and unique index exist on historical upgrades.
+-- No destructive database operation is performed here.
