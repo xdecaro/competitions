@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.5.7 - 2026-09-23
+
+- Linked Competition club teams to canonical Organizations records of type `club` through a nullable unique `organization_uuid`.
+- New Club teams use the Organizations picker instead of duplicating club identity data; a shortcut opens Organizations to create a missing club first.
+- Existing legacy Club teams remain editable and can be linked once without changing their Competition team ID or historical participations, rosters, matches or coefficients.
+- Once linked, a Club team keeps its canonical Organizations UUID and cannot be swapped or converted into a National team from the normal editor.
+- Linked club name, short name, logo, email, phone and website are refreshed from Organizations while Competition keeps federation assignment, manager, approval state, alias, ordering and participation lifecycle.
+- National representative teams remain Competition-native records and do not require an Organizations club.
+- Added the Organizations badge to linked teams in the list and a direct "Open in Organizations" action in the team editor.
+- Added a non-destructive 1.5.7 schema migration plus installer repair for historical installations.
+- Added JavaScript/UI handling so switching a new team between Club and National shows only the appropriate identity workflow.
+- Added source, distribution and Joomla 6.1.3 runtime regression coverage for the team Organizations schema and integration boundary.
+
 ## 1.5.6 - 2026-09-23
 
 - Fixed federation-to-Organizations links that appeared selected during editing but reopened empty because historical installations could be missing the `organization_uuid` schema column/index.
