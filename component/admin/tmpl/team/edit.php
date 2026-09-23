@@ -68,7 +68,7 @@ $organizationCode = trim((string) ($this->organizationData['code'] ?? $this->ite
                 <?= $this->form->renderField('team_type'); ?>
 
                 <?php if ($this->organizationsAvailable) : ?>
-                    <div class="card mb-3" data-team-organization-link>
+                    <div class="card mb-3" data-team-organization-link <?= $teamType !== 'club' ? 'hidden' : ''; ?>>
                         <div class="card-body">
                             <div class="d-flex flex-wrap justify-content-between align-items-start gap-3">
                                 <div class="flex-grow-1">
