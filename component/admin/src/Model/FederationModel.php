@@ -31,7 +31,7 @@ final class FederationModel extends BaseAdminModel
         return $data;
     }
 
-    public function save($data)
+    public function save($data): bool
     {
         $id = (int) ($data['id'] ?? 0);
         $organizationUuid = strtolower(trim((string) ($data['organization_uuid'] ?? '')));
