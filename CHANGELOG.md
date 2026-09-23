@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.5.6 - 2026-09-23
+
+- Fixed federation-to-Organizations links that appeared selected during editing but reopened empty because historical installations could be missing the `organization_uuid` schema column/index.
+- Added a component installer repair that runs on install/update and restores the nullable `organization_uuid` column plus its unique index when missing.
+- Federation saves now verify that the schema exists and confirm that the selected Organizations UUID was really persisted before reporting success.
+- Added explicit administrator errors instead of silently accepting an unpersisted federation link.
+- Live edit presence no longer reports another session belonging to the same Joomla user, removing misleading "In modifica anche da ..." notices for yourself.
+- Added CI coverage for schema repair, federation-link persistence contracts and same-user presence filtering.
+- Added a non-destructive 1.5.6 schema marker.
+
 ## 1.5.5 - 2026-09-23
 
 - Simplified federation linking UX: the Organizations selector is shown only while creating a new federation or while linking an existing legacy federation for the first time.

@@ -33,6 +33,7 @@ jobs:
           php tests/people-picker-profile-contract.php
           php tests/people-roster-photo-contract.php
           php tests/organizations-federation-contract.php
+          php tests/federation-link-persistence-contract.php
           php tests/live-sync-edit-lock-contract.php
           php tests/people-history-contract.php
           php tests/public-branding-messages-contract.php
@@ -72,4 +73,4 @@ jobs:
             "dist/mod_xdecarocompetitions_countriesfederations_${VERSION}.zip" \
             "dist/pkg_xdecarocompetitions_${VERSION}.zip" \
             "dist/SHA256SUMS.txt" --target main --title "Competitions ${VERSION}" \
-            --notes "Competitions ${VERSION}: simplifies federation creation/linking with Organizations, hides the selector after the first link, and makes canonical federation links immutable from the normal editor."
+            --notes "Competitions ${VERSION}: fixes federation Organizations UUID persistence on historical upgrades, verifies saved links, and hides same-user live-edit presence."

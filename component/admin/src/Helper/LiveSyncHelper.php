@@ -286,7 +286,7 @@ final class LiveSyncHelper
         }
     }
 
-    public static function listPresence(DatabaseInterface $db, string $entity, int $entityId, string $clientId): array
+    public static function listPresence(DatabaseInterface $db, string $entity, int $entityId, string $clientId, int $currentUserId = 0): array
     {
         $entity = self::normalizeEntity($entity);
         $clientId = self::sanitizeClientId($clientId);
@@ -319,6 +319,11 @@ final class LiveSyncHelper
         if ($clientId !== '') {
             $query->where($db->quoteName('s.client_id') . ' <> :clientId')
                 ->bind(':clientId', $clientId);
+        }
+
+        if ($currentUserId > 0) {
+            $query->where($db->quoteName('s.user_id') . ' <> :currentUserId')
+                ->bind(':currentUserId', $currentUserId, ParameterType::INTEGER);
         }
 
         try {

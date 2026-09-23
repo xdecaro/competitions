@@ -51,6 +51,11 @@ final class FederationModel extends BaseAdminModel
             }
         }
 
+        if ($organizationUuid !== '' && !$this->hasOrganizationUuidColumn()) {
+            $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_FEDERATION_LINK_SCHEMA_MISSING'));
+            return false;
+        }
+
         $integration = new OrganizationsIntegrationService();
         $available = $integration->isAvailable();
 
@@ -85,7 +90,20 @@ final class FederationModel extends BaseAdminModel
             return false;
         }
 
-        return parent::save($data);
+        if (!parent::save($data)) {
+            return false;
+        }
+
+        if ($organizationUuid !== '') {
+            $savedId = (int) $this->getState($this->getName() . '.id');
+
+            if ($savedId <= 0 || !$this->persistOrganizationUuid($savedId, $organizationUuid)) {
+                $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_FEDERATION_LINK_NOT_PERSISTED'));
+                return false;
+            }
+        }
+
+        return true;
     }
 
     protected function prepareTable($table): void
@@ -93,6 +111,35 @@ final class FederationModel extends BaseAdminModel
         if (!$table->id && (int) $table->ordering === 0) {
             $table->ordering = $table->getNextOrder();
         }
+    }
+
+    private function hasOrganizationUuidColumn(): bool
+    {
+        $table = $this->getDatabase()->replacePrefix('#__xdecarocompetitions_federations');
+        $columns = $this->getDatabase()->getTableColumns($table, false);
+
+        return array_key_exists('organization_uuid', $columns);
+    }
+
+    private function persistOrganizationUuid(int $id, string $uuid): bool
+    {
+        $db = $this->getDatabase();
+        $query = $db->getQuery(true)
+            ->update($db->quoteName('#__xdecarocompetitions_federations'))
+            ->set($db->quoteName('organization_uuid') . ' = :organizationUuid')
+            ->where($db->quoteName('id') . ' = :id')
+            ->bind(':organizationUuid', $uuid)
+            ->bind(':id', $id, \Joomla\Database\ParameterType::INTEGER);
+
+        $db->setQuery($query)->execute();
+
+        $query = $db->getQuery(true)
+            ->select($db->quoteName('organization_uuid'))
+            ->from($db->quoteName('#__xdecarocompetitions_federations'))
+            ->where($db->quoteName('id') . ' = :id')
+            ->bind(':id', $id, \Joomla\Database\ParameterType::INTEGER);
+
+        return strtolower(trim((string) $db->setQuery($query, 0, 1)->loadResult())) === $uuid;
     }
 
     private function snapshotText(mixed $value, int $maxLength): ?string

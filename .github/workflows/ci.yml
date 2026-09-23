@@ -34,6 +34,8 @@ jobs:
         run: php tests/people-roster-photo-contract.php
       - name: Organizations federation contract
         run: php tests/organizations-federation-contract.php
+      - name: Federation link persistence contract
+        run: php tests/federation-link-persistence-contract.php
       - name: Live-sync edit lock contract
         run: php tests/live-sync-edit-lock-contract.php
       - name: People picker asset contract
@@ -107,6 +109,39 @@ jobs:
           schema="$("${MYSQL[@]}" -e "SELECT s.version_id FROM cmp_schemas s JOIN cmp_extensions e ON e.extension_id=s.extension_id WHERE e.type='component' AND e.element='com_competitions' LIMIT 1;")"
           VERSION="$(cat "$GITHUB_WORKSPACE/VERSION")"
           test "$schema" = "$VERSION"
+
+      - name: Exercise federation link schema repair
+        run: |
+          MYSQL=(mysql --protocol=TCP -h127.0.0.1 -uroot --batch --skip-column-names joomla)
+          "${MYSQL[@]}" -e "ALTER TABLE cmp_xdecarocompetitions_federations DROP INDEX uq_competitions_federations_organization_uuid, DROP COLUMN organization_uuid;"
+          test "$("${MYSQL[@]}" -e "SELECT COUNT(*) FROM information_schema.columns WHERE table_schema='joomla' AND table_name='cmp_xdecarocompetitions_federations' AND column_name='organization_uuid';")" = '0'
+          cd joomla
+          cat > federation-schema-repair-probe.php <<'PHP'
+          <?php
+          define('_JEXEC', 1);
+          define('JPATH_BASE', __DIR__);
+          require JPATH_BASE . '/includes/defines.php';
+          require JPATH_BASE . '/includes/framework.php';
+
+          $container = \Joomla\CMS\Factory::getContainer();
+          $container->alias('session', 'session.cli')
+              ->alias('JSession', 'session.cli')
+              ->alias(\Joomla\CMS\Session\Session::class, 'session.cli')
+              ->alias(\Joomla\Session\Session::class, 'session.cli')
+              ->alias(\Joomla\Session\SessionInterface::class, 'session.cli');
+          $app = $container->get(\Joomla\Console\Application::class);
+          \Joomla\CMS\Factory::$application = $app;
+          require getenv('GITHUB_WORKSPACE') . '/component/script.php';
+
+          $installer = new com_xdecarocompetitionsInstallerScript();
+          $installer->postflight('update', null);
+          echo "Federation schema repair executed\n";
+          PHP
+          php federation-schema-repair-probe.php
+          rm federation-schema-repair-probe.php
+          cd ..
+          test "$("${MYSQL[@]}" -e "SELECT COUNT(*) FROM information_schema.columns WHERE table_schema='joomla' AND table_name='cmp_xdecarocompetitions_federations' AND column_name='organization_uuid';")" = '1'
+          test "$("${MYSQL[@]}" -e "SELECT COUNT(*) FROM information_schema.statistics WHERE table_schema='joomla' AND table_name='cmp_xdecarocompetitions_federations' AND index_name='uq_competitions_federations_organization_uuid' AND non_unique=0;")" = '1'
 
       - name: Verify Finance-absent fallback
         run: |
