@@ -19,7 +19,9 @@
       query="SELECT f.id AS value, CONCAT(f.name, ' — ', c.name, ' (', c.code, ')') AS text FROM #__xdecarocompetitions_federations AS f INNER JOIN #__xdecarocompetitions_countries AS c ON c.id = f.country_id WHERE f.state &lt;&gt; -2 AND c.state &lt;&gt; -2 ORDER BY c.name ASC, f.name ASC"
       key_field="value"
       value_field="text"
-    />
+    >
+      <option value="">COM_XDECAROCOMPETITIONS_SELECT_FEDERATION</option>
+    </field>
     <field
       name="owner_user_id"
       type="user"
