@@ -68,6 +68,8 @@ $showLocalIdentity = !$this->organizationsAvailable || (!$isNew && !$isLinked);
             <?= $this->form->renderField('ordering'); ?>
         </div>
     </div>
+    <?= $this->form->getInput('id'); ?>
+    <?= $this->form->getInput('modified'); ?>
     <input type="hidden" name="task" value="">
     <?= HTMLHelper::_('form.token'); ?>
 </form>
