@@ -10,6 +10,7 @@ $table = file_get_contents($root . '/component/admin/src/Table/TeamTable.php');
 $template = file_get_contents($root . '/component/admin/tmpl/team/edit.php');
 $asset = file_get_contents($root . '/component/media/joomla.asset.json');
 $script = file_get_contents($root . '/component/media/team-edit.js');
+$scope = file_get_contents($root . '/component/admin/src/Helper/TournamentScopeHelper.php');
 $schema = file_get_contents($root . '/component/admin/sql/install.mysql.utf8mb4.sql');
 $migration = file_get_contents($root . '/component/admin/sql/updates/mysql/1.5.7.sql');
 $installer = file_get_contents($root . '/component/script.php');
@@ -44,6 +45,8 @@ $checks = [
     [!preg_match('/name="federation_id"[^>]*required="true"/', $form), 'Manual federation must not be required for canonical Club teams'],
     [str_contains($asset, 'com_xdecarocompetitions.team-edit'), 'Team editor JavaScript asset must be registered'],
     [str_contains($script, "isClub"), 'Team editor JavaScript must switch club/national identity UI'],
+    [str_contains($script, 'manualFederation.hidden = isClub'), 'Team editor must hide manual federation for canonical Clubs'],
+    [str_contains($scope, 'COM_XDECAROCOMPETITIONS_ERROR_PARTICIPATION_TEAM_FEDERATION_UNDETERMINED'), 'Participation scope must reject teams without a derived federation'],
     [str_contains($schema, 'UNIQUE KEY `uq_competitions_teams_organization_uuid` (`organization_uuid`)'), 'Fresh install schema must include unique team Organizations UUID'],
     [str_contains($migration, 'ALTER TABLE `#__xdecarocompetitions_teams`'), '1.5.7 migration must target teams'],
     [str_contains($migration, 'ADD COLUMN `organization_uuid` CHAR(36) NULL'), '1.5.7 migration must add team organization_uuid'],
