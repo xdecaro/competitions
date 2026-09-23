@@ -33,6 +33,7 @@ jobs:
           php tests/people-picker-profile-contract.php
           php tests/people-roster-photo-contract.php
           php tests/organizations-federation-contract.php
+          php tests/federation-link-persistence-contract.php
           php tests/live-sync-edit-lock-contract.php
           php tests/people-history-contract.php
           php tests/public-branding-messages-contract.php
