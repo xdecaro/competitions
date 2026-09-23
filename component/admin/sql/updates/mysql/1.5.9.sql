@@ -1,0 +1,3 @@
+-- Competitions 1.5.9
+-- No database structure changes are required.
+-- Team approval workflow adds only administrator toolbar actions and server-side validation.
