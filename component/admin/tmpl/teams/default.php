@@ -119,10 +119,17 @@ $teamTypeLabels = [
                         <?php endif; ?>
                     </td>
                     <td data-label="<?= Text::_('COM_XDECAROCOMPETITIONS_FIELD_FEDERATION'); ?>">
-                        <div><?= $this->escape($item->federation_name ?: '—'); ?></div>
-                        <div class="small text-muted">
-                            <?= $this->escape(($item->country_name ?: '—') . ($item->resolved_country_code ? ' (' . $item->resolved_country_code . ')' : '')); ?>
-                        </div>
+                        <?php if (!empty($item->federation_name)) : ?>
+                            <div><?= $this->escape($item->federation_name); ?></div>
+                            <div class="small text-muted">
+                                <?= $this->escape(($item->country_name ?: '—') . ($item->resolved_country_code ? ' (' . $item->resolved_country_code . ')' : '')); ?>
+                            </div>
+                        <?php elseif (!empty($item->organization_uuid) && (string) $item->team_type === 'club') : ?>
+                            <div class="text-muted"><?= Text::_('COM_XDECAROCOMPETITIONS_TEAM_FEDERATION_UNDETERMINED'); ?></div>
+                            <div class="small text-muted"><?= Text::_('COM_XDECAROCOMPETITIONS_TEAM_FEDERATION_UNDETERMINED_SHORT'); ?></div>
+                        <?php else : ?>
+                            <span class="text-muted">—</span>
+                        <?php endif; ?>
                     </td>
                     <td class="d-none d-xl-table-cell" data-label="<?= Text::_('COM_XDECAROCOMPETITIONS_FIELD_TEAM_MANAGER'); ?>">
                         <?php if ($item->manager_name) : ?>
