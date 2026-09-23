@@ -10,6 +10,7 @@
   <description>COM_XDECAROCOMPETITIONS_XML_DESCRIPTION</description>
   <targetplatform name="joomla" version="6.*" />
   <namespace path="src">xdecaro\Component\Competitions</namespace>
+  <scriptfile>script.php</scriptfile>
 
   <files folder="site"><folder>src</folder></files>
   <administration>
