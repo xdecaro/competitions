@@ -15,6 +15,8 @@ HTMLHelper::_('behavior.formvalidator');
             <?= $this->form->renderFieldset('details'); ?>
         </div>
     </div>
+    <?= $this->form->getInput('id'); ?>
+    <?= $this->form->getInput('modified'); ?>
     <input type="hidden" name="task" value="">
     <?= HTMLHelper::_('form.token'); ?>
 </form>
