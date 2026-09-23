@@ -62,6 +62,7 @@ CREATE TABLE IF NOT EXISTS `#__xdecarocompetitions_federations` (
 
 CREATE TABLE IF NOT EXISTS `#__xdecarocompetitions_teams` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `organization_uuid` CHAR(36) DEFAULT NULL,
   `owner_user_id` INT UNSIGNED NOT NULL DEFAULT 0,
   `federation_id` INT UNSIGNED NOT NULL DEFAULT 0,
   `team_type` VARCHAR(20) NOT NULL DEFAULT 'club',
@@ -85,6 +86,7 @@ CREATE TABLE IF NOT EXISTS `#__xdecarocompetitions_teams` (
   `modified` DATETIME DEFAULT NULL,
   `modified_by` INT UNSIGNED NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
+  UNIQUE KEY `uq_competitions_teams_organization_uuid` (`organization_uuid`),
   UNIQUE KEY `idx_competitions_teams_alias` (`alias`),
   KEY `idx_competitions_teams_owner` (`owner_user_id`),
   KEY `idx_competitions_teams_federation` (`federation_id`),

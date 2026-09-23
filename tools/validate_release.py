@@ -46,7 +46,7 @@ def validate_source()->None:
         filename=(child.text or '').strip()
         if not filename.endswith(f'_{VERSION}.zip'): fail(f'package child filename is not versioned for {VERSION}: {filename}')
     sql=(ROOT/'component/admin/sql/install.mysql.utf8mb4.sql').read_text(encoding='utf-8'); validate_database_namespace(sql,'fresh-install SQL')
-    for token in ['#__xdecarocompetitions_tournaments','#__xdecarocompetitions_seasons','#__xdecarocompetitions_teams','#__xdecarocompetitions_participations','#__xdecarocompetitions_matches','#__xdecarocompetitions_match_events','#__xdecarocompetitions_rankings','`organization_uuid` CHAR(36) DEFAULT NULL','UNIQUE KEY `uq_competitions_federations_organization_uuid` (`organization_uuid`)','`match_date` DATE','`status` VARCHAR(32)']:
+    for token in ['#__xdecarocompetitions_tournaments','#__xdecarocompetitions_seasons','#__xdecarocompetitions_teams','#__xdecarocompetitions_participations','#__xdecarocompetitions_matches','#__xdecarocompetitions_match_events','#__xdecarocompetitions_rankings','`organization_uuid` CHAR(36) DEFAULT NULL','UNIQUE KEY `uq_competitions_federations_organization_uuid` (`organization_uuid`)','UNIQUE KEY `uq_competitions_teams_organization_uuid` (`organization_uuid`)','`match_date` DATE','`status` VARCHAR(32)']:
         if token not in sql: fail(f'fresh-install schema missing {token}')
     if 'ALTER TABLE' in sql.upper(): fail('base fresh-install schema must not replay ALTER statements')
     extension_sql=(ROOT/'component/admin/sql/install.1.4.0.mysql.utf8mb4.sql').read_text(encoding='utf-8')
@@ -69,8 +69,12 @@ def validate_source()->None:
     for token in ['ALTER TABLE `#__xdecarocompetitions_federations`','ADD COLUMN `organization_uuid` CHAR(36) NULL','ADD UNIQUE KEY `uq_competitions_federations_organization_uuid` (`organization_uuid`)']:
         if token not in federation_migration: fail(f'1.5.2 federation migration missing {token}')
     if any(word in federation_migration.upper() for word in ['DROP TABLE','DROP COLUMN','TRUNCATE TABLE','DELETE FROM']): fail('1.5.2 federation migration contains a destructive operation')
+    team_migration=(update_dir/'1.5.7.sql').read_text(encoding='utf-8')
+    for token in ['ALTER TABLE `#__xdecarocompetitions_teams`','ADD COLUMN `organization_uuid` CHAR(36) NULL','ADD UNIQUE KEY `uq_competitions_teams_organization_uuid` (`organization_uuid`)']:
+        if token not in team_migration: fail(f'1.5.7 team migration missing {token}')
+    if any(word in team_migration.upper() for word in ['DROP TABLE','DROP COLUMN','TRUNCATE TABLE','DELETE FROM']): fail('1.5.7 team migration contains a destructive operation')
     for patch in update_files:
-        if version_key(patch) <= (1,4,0) or patch == '1.5.2.sql': continue
+        if version_key(patch) <= (1,4,0) or patch in {'1.5.2.sql','1.5.7.sql'}: continue
         patch_marker=(update_dir/patch).read_text(encoding='utf-8').upper()
         if any(word in patch_marker for word in ['ALTER TABLE','DROP TABLE','TRUNCATE TABLE','DELETE FROM']): fail(f'{patch} marker must be non-destructive')
     ui_helper=(ROOT/'component/admin/src/Helper/UiHelper.php').read_text(encoding='utf-8')
@@ -96,12 +100,15 @@ def validate_source()->None:
         if token not in people: fail(f'People integration missing {token}')
     if '#__xdecaropeople_' in people: fail('People integration must not access People private tables')
     organizations=(ROOT/'component/admin/src/Service/OrganizationsIntegrationService.php').read_text(encoding='utf-8')
-    for token in ["bootComponent('com_xdecaroorganizations')",'getOrganizationProviderService','searchOrganizations',"'type' => 'federation'",'getOrganization']:
+    for token in ["bootComponent('com_xdecaroorganizations')",'getOrganizationProviderService','searchOrganizations',"'type' => 'federation'","'type' => 'club'",'getOrganization','searchClubs','getClub']:
         if token not in organizations: fail(f'Organizations integration missing {token}')
     if '#__xdecaroorganizations_' in organizations: fail('Organizations integration must not access Organizations private tables')
     federation_form=(ROOT/'component/admin/forms/federation.xml').read_text(encoding='utf-8')
     for token in ['type="FederationOrganization"','name="organization_uuid"','COM_XDECAROCOMPETITIONS_SELECT_COUNTRY']:
         if token not in federation_form: fail(f'Federation Organizations form missing {token}')
+    team_form=(ROOT/'component/admin/forms/team.xml').read_text(encoding='utf-8')
+    for token in ['type="TeamOrganization"','name="organization_uuid"','name="team_type"']:
+        if token not in team_form: fail(f'Team Organizations form missing {token}')
     photo=(ROOT/'component/admin/src/Service/CompetitionPhotoService.php').read_text(encoding='utf-8')
     for token in ["'roster'","'people'","'legacy'",'profile_document_reference','profile_document_uuid']:
         if token not in photo: fail(f'competition photo resolver missing {token}')
@@ -133,7 +140,7 @@ def validate_dist()->None:
             bad=archive.testzip()
             if bad is not None: fail(f'corrupt ZIP member {bad} in {path.name}')
     with zipfile.ZipFile(paths[0]) as archive:
-        required={'competitions.xml','script.php','admin/src/Extension/CompetitionsComponent.php','admin/src/Service/AnalyticsSourceService.php','admin/src/Service/CrossProductIntegrationService.php','admin/src/Service/MatchReminderService.php','admin/src/Service/PeopleIntegrationService.php','admin/src/Service/OrganizationsIntegrationService.php','admin/src/Field/FederationOrganizationField.php','admin/src/Service/CompetitionPhotoService.php','admin/src/Controller/PeopleController.php','admin/sql/updates/mysql/1.4.0.sql',f'admin/sql/updates/mysql/{VERSION}.sql','admin/sql/install.1.4.0.mysql.utf8mb4.sql','media/js/people-picker.js','admin/language/en-GB/com_competitions.ini','admin/language/it-IT/com_competitions.ini'}
+        required={'competitions.xml','script.php','admin/src/Extension/CompetitionsComponent.php','admin/src/Service/AnalyticsSourceService.php','admin/src/Service/CrossProductIntegrationService.php','admin/src/Service/MatchReminderService.php','admin/src/Service/PeopleIntegrationService.php','admin/src/Service/OrganizationsIntegrationService.php','admin/src/Field/FederationOrganizationField.php','admin/src/Field/TeamOrganizationField.php','admin/src/Service/CompetitionPhotoService.php','admin/src/Controller/PeopleController.php','admin/sql/updates/mysql/1.4.0.sql',f'admin/sql/updates/mysql/{VERSION}.sql','admin/sql/install.1.4.0.mysql.utf8mb4.sql','media/js/people-picker.js','media/team-edit.js','admin/language/en-GB/com_competitions.ini','admin/language/it-IT/com_competitions.ini'}
         missing=required-set(archive.namelist())
         if missing: fail(f'component ZIP missing {sorted(missing)}')
         if 'xdecarocompetitions.xml' in archive.namelist(): fail('component ZIP still contains legacy manifest name')
