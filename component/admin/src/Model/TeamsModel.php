@@ -6,6 +6,8 @@ defined('_JEXEC') or die;
 use Joomla\CMS\MVC\Model\ListModel;
 use Joomla\Database\ParameterType;
 use Joomla\Database\QueryInterface;
+use Throwable;
+use xdecaro\Component\Competitions\Administrator\Service\OrganizationsIntegrationService;
 
 final class TeamsModel extends ListModel
 {
@@ -138,6 +140,53 @@ final class TeamsModel extends ListModel
             ->order($db->quoteName('a.name') . ' ASC');
 
         return $query;
+    }
+
+    public function getItems()
+    {
+        $items = parent::getItems();
+
+        if (!$items) {
+            return $items;
+        }
+
+        $integration = new OrganizationsIntegrationService();
+
+        if (!$integration->isAvailable()) {
+            return $items;
+        }
+
+        foreach ($items as $item) {
+            $uuid = strtolower(trim((string) ($item->organization_uuid ?? '')));
+
+            if ($uuid === '') {
+                continue;
+            }
+
+            try {
+                $organization = $integration->getClub($uuid);
+            } catch (Throwable) {
+                $organization = null;
+            }
+
+            if (!$organization) {
+                continue;
+            }
+
+            $item->organization_id = (int) ($organization['id'] ?? 0);
+            $item->name = (string) ($organization['name'] ?? $item->name);
+            $item->short_name = (string) ($organization['code'] ?? $item->short_name);
+            $item->logo = (string) ($organization['logo'] ?? $item->logo);
+            $item->email = (string) ($organization['email'] ?? $item->email);
+            $item->phone = (string) ($organization['phone'] ?? $item->phone);
+            $item->website = (string) ($organization['website'] ?? $item->website);
+
+            if (array_key_exists('city', $organization)) {
+                $item->city = (string) ($organization['city'] ?? $item->city);
+            }
+        }
+
+        return $items;
     }
 
     public function getFederationOptions(): array
