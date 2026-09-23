@@ -32,6 +32,8 @@ jobs:
         run: php tests/finance-integration-contract.php
       - name: People roster photo contract
         run: php tests/people-roster-photo-contract.php
+      - name: Organizations federation contract
+        run: php tests/organizations-federation-contract.php
       - name: People picker asset contract
         run: php tests/people-picker-asset-contract.php
       - name: Deterministic build
@@ -88,6 +90,8 @@ jobs:
           test "$("${MYSQL[@]}" -e "SELECT COUNT(*) FROM information_schema.columns WHERE table_schema='joomla' AND table_name='cmp_xdecarocompetitions_players' AND column_name='person_uuid';")" = '1'
           test "$("${MYSQL[@]}" -e "SELECT COUNT(*) FROM information_schema.statistics WHERE table_schema='joomla' AND table_name='cmp_xdecarocompetitions_players' AND index_name='uq_player_person_uuid' AND non_unique=0;")" = '1'
           test "$("${MYSQL[@]}" -e "SELECT COUNT(*) FROM information_schema.columns WHERE table_schema='joomla' AND table_name='cmp_xdecarocompetitions_rosters' AND column_name='photo';")" = '1'
+          test "$("${MYSQL[@]}" -e "SELECT COUNT(*) FROM information_schema.columns WHERE table_schema='joomla' AND table_name='cmp_xdecarocompetitions_federations' AND column_name='organization_uuid';")" = '1'
+          test "$("${MYSQL[@]}" -e "SELECT COUNT(*) FROM information_schema.statistics WHERE table_schema='joomla' AND table_name='cmp_xdecarocompetitions_federations' AND index_name='uq_competitions_federations_organization_uuid' AND non_unique=0;")" = '1'
           for row in "component|com_competitions|" "plugin|xdecarocompetitions|system" "plugin|competitions|xdecaroanalytics" "plugin|xdecarocompetitions|task"; do
             IFS='|' read -r type element folder <<< "$row"
             count="$("${MYSQL[@]}" -e "SELECT COUNT(*) FROM cmp_extensions WHERE type='${type}' AND element='${element}' AND folder='${folder}';")"
@@ -127,8 +131,12 @@ jobs:
               fwrite(STDERR, "Competitions public integration service is unavailable.\n");
               exit(1);
           }
-          if (!method_exists($component, 'getPeopleIntegrationService') || !method_exists($component, 'getCompetitionPhotoService')) {
+          if (!method_exists($component, 'getPeopleIntegrationService') || !method_exists($component, 'getOrganizationsIntegrationService') || !method_exists($component, 'getCompetitionPhotoService')) {
               fwrite(STDERR, "Competitions People/photo service surface is unavailable.\n");
+              exit(1);
+          }
+          if ($component->getOrganizationsIntegrationService()->isAvailable()) {
+              fwrite(STDERR, "Organizations unexpectedly appears available before installation.\n");
               exit(1);
           }
           if ($component->getPeopleIntegrationService()->isAvailable()) {

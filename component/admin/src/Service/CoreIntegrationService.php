@@ -35,6 +35,7 @@ final class CoreIntegrationService
             new Capability(self::COMPONENT, 'competitions.finance.bridge', '1'),
             new Capability(self::COMPONENT, 'competitions.match-reminders', '1'),
             new Capability(self::COMPONENT, 'competitions.people_history', '1'),
+            new Capability(self::COMPONENT, 'competitions.organizations.bridge', '1'),
         ];
     }
 

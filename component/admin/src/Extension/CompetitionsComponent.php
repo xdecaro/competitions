@@ -11,6 +11,7 @@ use xdecaro\Component\Competitions\Administrator\Service\CoreIntegrationService;
 use xdecaro\Component\Competitions\Administrator\Service\CrossProductIntegrationService;
 use xdecaro\Component\Competitions\Administrator\Service\MatchReminderService;
 use xdecaro\Component\Competitions\Administrator\Service\PeopleIntegrationService;
+use xdecaro\Component\Competitions\Administrator\Service\OrganizationsIntegrationService;
 use xdecaro\Component\Competitions\Administrator\Service\PersonHistoryService;
 
 /** Public, provider-owned service surface for optional xdecaro integrations. */
@@ -21,6 +22,7 @@ final class CompetitionsComponent extends MVCComponent
     private ?AnalyticsSourceService $analytics = null;
     private ?MatchReminderService $matchReminders = null;
     private ?PeopleIntegrationService $people = null;
+    private ?OrganizationsIntegrationService $organizations = null;
     private ?CompetitionPhotoService $photos = null;
     private ?PersonHistoryService $personHistory = null;
 
@@ -29,6 +31,7 @@ final class CompetitionsComponent extends MVCComponent
     public function setAnalyticsSourceService(AnalyticsSourceService $service): void { $this->analytics = $service; }
     public function setMatchReminderService(MatchReminderService $service): void { $this->matchReminders = $service; }
     public function setPeopleIntegrationService(PeopleIntegrationService $service): void { $this->people = $service; }
+    public function setOrganizationsIntegrationService(OrganizationsIntegrationService $service): void { $this->organizations = $service; }
     public function setCompetitionPhotoService(CompetitionPhotoService $service): void { $this->photos = $service; }
     public function setPersonHistoryService(PersonHistoryService $service): void { $this->personHistory = $service; }
 
@@ -55,6 +58,11 @@ final class CompetitionsComponent extends MVCComponent
     public function getPeopleIntegrationService(): PeopleIntegrationService
     {
         return $this->people ?? throw new RuntimeException('Competitions People integration service is unavailable.');
+    }
+
+    public function getOrganizationsIntegrationService(): OrganizationsIntegrationService
+    {
+        return $this->organizations ?? throw new RuntimeException('Competitions Organizations integration service is unavailable.');
     }
 
     public function getCompetitionPhotoService(): CompetitionPhotoService

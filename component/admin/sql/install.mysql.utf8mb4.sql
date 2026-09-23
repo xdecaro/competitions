@@ -41,6 +41,7 @@ INSERT IGNORE INTO `#__xdecarocompetitions_countries` (`name`, `code`, `iso2`, `
 
 CREATE TABLE IF NOT EXISTS `#__xdecarocompetitions_federations` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `organization_uuid` CHAR(36) DEFAULT NULL,
   `country_id` INT UNSIGNED NOT NULL DEFAULT 0,
   `name` VARCHAR(190) NOT NULL,
   `short_name` VARCHAR(100) DEFAULT NULL,
@@ -54,6 +55,7 @@ CREATE TABLE IF NOT EXISTS `#__xdecarocompetitions_federations` (
   `modified` DATETIME DEFAULT NULL,
   `modified_by` INT UNSIGNED NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
+  UNIQUE KEY `uq_competitions_federations_organization_uuid` (`organization_uuid`),
   KEY `idx_competitions_federations_country_id` (`country_id`),
   KEY `idx_competitions_federations_state` (`state`, `ordering`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

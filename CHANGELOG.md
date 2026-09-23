@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.5.2 - 2026-09-23
+
+- Linked Competition federations to canonical Organizations records through nullable unique `organization_uuid` references.
+- Added an Organizations-only federation picker using `bootComponent('com_xdecaroorganizations')->getOrganizationProviderService()`; no Organizations private tables are read.
+- New linked federations synchronize name, code, logo, website and email from Organizations while preserving the local Competition federation ID used by teams, coefficients and history.
+- Existing unlinked federations remain supported for backward compatibility; an existing link is preserved when Organizations is temporarily unavailable.
+- Kept the Competition country explicit because tournament scope and team eligibility depend on the local country taxonomy; the editor now requires an explicit country choice instead of silently selecting the first country.
+- Added a non-destructive 1.5.2 schema migration adding only the nullable UUID column and unique index.
+
 ## 1.5.1 - 2026-09-17
 
 - Fixed player approval confirmation messages so Approve, Pending and Reject show translated text instead of raw Joomla language keys.

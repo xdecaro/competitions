@@ -15,6 +15,7 @@ use xdecaro\Component\Competitions\Administrator\Service\CompetitionPhotoService
 use xdecaro\Component\Competitions\Administrator\Service\CoreIntegrationService;
 use xdecaro\Component\Competitions\Administrator\Service\CrossProductIntegrationService;
 use xdecaro\Component\Competitions\Administrator\Service\MatchReminderService;
+use xdecaro\Component\Competitions\Administrator\Service\OrganizationsIntegrationService;
 use xdecaro\Component\Competitions\Administrator\Service\PeopleIntegrationService;
 use xdecaro\Component\Competitions\Administrator\Service\PersonHistoryService;
 
@@ -29,6 +30,7 @@ return new class () implements ServiceProviderInterface {
         $container->share(AnalyticsSourceService::class, static fn (Container $container): AnalyticsSourceService => new AnalyticsSourceService($container->get(DatabaseInterface::class)));
         $container->share(MatchReminderService::class, static fn (Container $container): MatchReminderService => new MatchReminderService($container->get(DatabaseInterface::class), $container->get(CrossProductIntegrationService::class)));
         $container->share(PeopleIntegrationService::class, static fn (): PeopleIntegrationService => new PeopleIntegrationService());
+        $container->share(OrganizationsIntegrationService::class, static fn (): OrganizationsIntegrationService => new OrganizationsIntegrationService());
         $container->share(CompetitionPhotoService::class, static fn (): CompetitionPhotoService => new CompetitionPhotoService());
         $container->share(PersonHistoryService::class, static fn (Container $container): PersonHistoryService => new PersonHistoryService($container->get(DatabaseInterface::class)));
 
@@ -42,6 +44,7 @@ return new class () implements ServiceProviderInterface {
                 $component->setAnalyticsSourceService($container->get(AnalyticsSourceService::class));
                 $component->setMatchReminderService($container->get(MatchReminderService::class));
                 $component->setPeopleIntegrationService($container->get(PeopleIntegrationService::class));
+                $component->setOrganizationsIntegrationService($container->get(OrganizationsIntegrationService::class));
                 $component->setCompetitionPhotoService($container->get(CompetitionPhotoService::class));
                 $component->setPersonHistoryService($container->get(PersonHistoryService::class));
                 return $component;
