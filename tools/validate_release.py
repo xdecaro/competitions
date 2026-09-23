@@ -100,7 +100,7 @@ def validate_source()->None:
         if token not in people: fail(f'People integration missing {token}')
     if '#__xdecaropeople_' in people: fail('People integration must not access People private tables')
     organizations=(ROOT/'component/admin/src/Service/OrganizationsIntegrationService.php').read_text(encoding='utf-8')
-    for token in ["bootComponent('com_xdecaroorganizations')",'getOrganizationProviderService','searchOrganizations',"'type' => 'federation'","'type' => 'club'",'getOrganization','searchClubs','getClub']:
+    for token in ["bootComponent('com_xdecaroorganizations')",'getOrganizationProviderService','searchOrganizations',"'type' => 'federation'","'type' => 'club'",'getOrganization','searchClubs','getClub','getAffiliations','sports_affiliation','getActiveSportsFederations']:
         if token not in organizations: fail(f'Organizations integration missing {token}')
     if '#__xdecaroorganizations_' in organizations: fail('Organizations integration must not access Organizations private tables')
     federation_form=(ROOT/'component/admin/forms/federation.xml').read_text(encoding='utf-8')
