@@ -16,6 +16,10 @@ $isLinked = !empty($this->item->organization_uuid);
 $teamType = strtolower(trim((string) ($this->item->team_type ?? 'club'))) ?: 'club';
 $organizationName = trim((string) ($this->organizationData['name'] ?? $this->item->name ?? ''));
 $organizationCode = trim((string) ($this->organizationData['code'] ?? $this->item->short_name ?? ''));
+$sportsAffiliationCount = count($this->sportsFederationAffiliations);
+$sportsAffiliation = $sportsAffiliationCount === 1 ? $this->sportsFederationAffiliations[0] : null;
+$derivedFederationName = trim((string) ($sportsAffiliation['target_name'] ?? ''));
+$derivedFederationCode = trim((string) ($sportsAffiliation['target_code'] ?? ''));
 ?>
 <form
     action="index.php?option=com_xdecarocompetitions&layout=edit&id=<?= (int) $this->item->id; ?>"
@@ -97,7 +101,66 @@ $organizationCode = trim((string) ($this->organizationData['code'] ?? $this->ite
                 <?php endif; ?>
             <?php endif; ?>
 
-            <?= $this->form->renderField('federation_id'); ?>
+            <?php if ($isLinked) : ?>
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <div class="small text-muted mb-1">
+                            <?= Text::_('COM_XDECAROCOMPETITIONS_FIELD_FEDERATION'); ?>
+                        </div>
+
+                        <?php if (!$this->organizationsAvailable || !$this->sportsAffiliationsReadable) : ?>
+                            <div class="fw-semibold">
+                                <?= Text::_('COM_XDECAROCOMPETITIONS_TEAM_FEDERATION_UNAVAILABLE'); ?>
+                            </div>
+                            <div class="small text-muted mt-1">
+                                <?= Text::_('COM_XDECAROCOMPETITIONS_TEAM_FEDERATION_UNAVAILABLE_DESC'); ?>
+                            </div>
+                        <?php elseif ($sportsAffiliationCount === 0) : ?>
+                            <div class="fw-semibold">
+                                <?= Text::_('COM_XDECAROCOMPETITIONS_TEAM_FEDERATION_UNDETERMINED'); ?>
+                            </div>
+                            <div class="small text-muted mt-1">
+                                <?= Text::_('COM_XDECAROCOMPETITIONS_TEAM_FEDERATION_UNDETERMINED_DESC'); ?>
+                            </div>
+                        <?php elseif ($sportsAffiliationCount > 1) : ?>
+                            <div class="fw-semibold text-danger">
+                                <?= Text::_('COM_XDECAROCOMPETITIONS_TEAM_FEDERATION_AMBIGUOUS'); ?>
+                            </div>
+                            <div class="small text-muted mt-1">
+                                <?= Text::_('COM_XDECAROCOMPETITIONS_TEAM_FEDERATION_AMBIGUOUS_DESC'); ?>
+                            </div>
+                        <?php elseif ((int) ($this->item->federation_id ?? 0) <= 0) : ?>
+                            <div class="fw-semibold">
+                                <?= $this->escape($derivedFederationName ?: Text::_('COM_XDECAROCOMPETITIONS_TEAM_FEDERATION_UNDETERMINED')); ?>
+                                <?php if ($derivedFederationCode !== '') : ?>
+                                    <span class="text-muted"> (<?= $this->escape($derivedFederationCode); ?>)</span>
+                                <?php endif; ?>
+                            </div>
+                            <div class="small text-muted mt-1">
+                                <?= Text::_('COM_XDECAROCOMPETITIONS_TEAM_FEDERATION_NOT_MAPPED_DESC'); ?>
+                            </div>
+                        <?php else : ?>
+                            <div class="fw-semibold">
+                                <?= $this->escape($derivedFederationName ?: '—'); ?>
+                                <?php if ($derivedFederationCode !== '') : ?>
+                                    <span class="text-muted"> (<?= $this->escape($derivedFederationCode); ?>)</span>
+                                <?php endif; ?>
+                            </div>
+                            <div class="small text-muted mt-1">
+                                <?= Text::_('COM_XDECAROCOMPETITIONS_TEAM_FEDERATION_DERIVED_DESC'); ?>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            <?php else : ?>
+                <div
+                    data-team-manual-federation
+                    <?= $isNew && $this->organizationsAvailable && $teamType === 'club' ? 'hidden' : ''; ?>
+                >
+                    <?= $this->form->renderField('federation_id'); ?>
+                </div>
+            <?php endif; ?>
+
             <?= $this->form->renderField('owner_user_id'); ?>
 
             <?php if (!$isLinked) : ?>
