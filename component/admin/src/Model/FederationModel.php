@@ -40,6 +40,15 @@ final class FederationModel extends BaseAdminModel
         if ($id > 0) {
             $existing = $this->getItem($id);
             $existingUuid = strtolower(trim((string) ($existing->organization_uuid ?? '')));
+
+            // Once a Competition federation is linked to its canonical
+            // Organizations record, the relation is immutable from this form.
+            // This prevents accidental federation swaps while preserving the
+            // local Competition federation ID used by teams/history.
+            if ($existingUuid !== '') {
+                $organizationUuid = $existingUuid;
+                $data['organization_uuid'] = $existingUuid;
+            }
         }
 
         $integration = new OrganizationsIntegrationService();
