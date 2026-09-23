@@ -34,6 +34,8 @@ jobs:
         run: php tests/people-roster-photo-contract.php
       - name: Organizations federation contract
         run: php tests/organizations-federation-contract.php
+      - name: Live-sync edit lock contract
+        run: php tests/live-sync-edit-lock-contract.php
       - name: People picker asset contract
         run: php tests/people-picker-asset-contract.php
       - name: Deterministic build
