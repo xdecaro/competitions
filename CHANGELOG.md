@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.5.8 - 2026-09-24
+
+- Club federation assignment is now derived automatically from the club's active `sports_affiliation` in Organizations instead of being selected manually in Competitions.
+- Competitions consumes only the public Organizations `getAffiliations()` provider and still does not access Organizations private tables.
+- A linked Club with no active sports affiliation is saved as `Federazione non determinata`; Competitions does not guess a federation.
+- If more than one active sports federation affiliation exists, saving is blocked until the ambiguity is corrected in Organizations.
+- If the affiliated federation exists in Organizations but is not linked in Competitions → Federations, the Club remains without a Competition federation mapping and the editor explains what must be fixed.
+- Linked Club editors no longer show the manual Federation selector; they show the derived federation and its source.
+- Manual Federation selection remains available for National teams and legacy teams not yet linked to Organizations.
+- Teams with an undetermined federation cannot be used for new/approved participations; existing participations prevent silently clearing a previously determined federation.
+- The team list now shows an explicit `Federazione non determinata` state instead of an ambiguous dash.
+- Added regression coverage for the Organizations affiliation provider, derived federation mapping, ambiguity handling and Club/National UI separation.
+- No database structure changes are required.
+
 ## 1.5.7 - 2026-09-23
 
 - Linked Competition club teams to canonical Organizations records of type `club` through a nullable unique `organization_uuid`.

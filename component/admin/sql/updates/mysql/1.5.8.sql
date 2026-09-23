@@ -1,0 +1,3 @@
+-- Competitions 1.5.8
+-- No database structure changes are required.
+-- Club federation assignment is now derived from the active sports affiliation in Organizations.

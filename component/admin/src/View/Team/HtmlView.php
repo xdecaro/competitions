@@ -17,6 +17,8 @@ final class HtmlView extends BaseHtmlView
     public $state;
     public bool $organizationsAvailable = false;
     public ?array $organizationData = null;
+    public array $sportsFederationAffiliations = [];
+    public bool $sportsAffiliationsReadable = false;
 
     public function display($tpl = null): void
     {
@@ -40,6 +42,16 @@ final class HtmlView extends BaseHtmlView
                 $this->organizationData = $organizations->getClub((string) $this->item->organization_uuid);
             } catch (\Throwable) {
                 $this->organizationData = null;
+            }
+
+            try {
+                $this->sportsFederationAffiliations = $organizations->getActiveSportsFederations(
+                    (string) $this->item->organization_uuid
+                );
+                $this->sportsAffiliationsReadable = true;
+            } catch (\Throwable) {
+                $this->sportsFederationAffiliations = [];
+                $this->sportsAffiliationsReadable = false;
             }
         }
 

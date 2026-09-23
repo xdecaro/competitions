@@ -107,6 +107,15 @@ final class TeamModel extends BaseAdminModel
                     if (array_key_exists('city', $organization)) {
                         $data['city'] = $this->snapshotText($organization['city'], 190);
                     }
+
+                    try {
+                        $data['federation_id'] = $this->resolveClubFederationId(
+                            $integration,
+                            (string) $data['organization_uuid']
+                        );
+                    } catch (\RuntimeException) {
+                        return false;
+                    }
                 } elseif ($id <= 0 || $organizationUuid !== $existingUuid) {
                     $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_TEAM_ORGANIZATIONS_UNAVAILABLE'));
                     return false;
@@ -172,6 +181,43 @@ final class TeamModel extends BaseAdminModel
             ->bind(':id', $id, ParameterType::INTEGER);
 
         return strtolower(trim((string) $db->setQuery($query, 0, 1)->loadResult())) === $uuid;
+    }
+
+    private function resolveClubFederationId(
+        OrganizationsIntegrationService $integration,
+        string $clubUuid
+    ): int {
+        try {
+            $affiliations = $integration->getActiveSportsFederations($clubUuid);
+        } catch (\Throwable) {
+            $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_TEAM_AFFILIATIONS_UNAVAILABLE'));
+            throw new \RuntimeException((string) $this->getError());
+        }
+
+        if (count($affiliations) > 1) {
+            $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_TEAM_AFFILIATION_AMBIGUOUS'));
+            throw new \RuntimeException((string) $this->getError());
+        }
+
+        if (!$affiliations) {
+            return 0;
+        }
+
+        $targetUuid = strtolower(trim((string) ($affiliations[0]['target_uuid'] ?? '')));
+
+        if ($targetUuid === '') {
+            return 0;
+        }
+
+        $db = $this->getDatabase();
+        $query = $db->getQuery(true)
+            ->select($db->quoteName('id'))
+            ->from($db->quoteName('#__xdecarocompetitions_federations'))
+            ->where($db->quoteName('organization_uuid') . ' = :organizationUuid')
+            ->where($db->quoteName('state') . ' <> -2')
+            ->bind(':organizationUuid', $targetUuid);
+
+        return (int) $db->setQuery($query, 0, 1)->loadResult();
     }
 
     private function snapshotText(mixed $value, int $maxLength): ?string

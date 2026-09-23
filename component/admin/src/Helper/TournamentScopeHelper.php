@@ -159,21 +159,26 @@ final class TournamentScopeHelper
         $query = $db->getQuery(true)
             ->select([
                 $db->quoteName('tm.team_type'),
+                $db->quoteName('tm.federation_id'),
                 $db->quoteName('f.country_id'),
             ])
             ->from($db->quoteName('#__xdecarocompetitions_teams', 'tm'))
-            ->innerJoin(
+            ->leftJoin(
                 $db->quoteName('#__xdecarocompetitions_federations', 'f')
                 . ' ON ' . $db->quoteName('f.id') . ' = ' . $db->quoteName('tm.federation_id')
+                . ' AND ' . $db->quoteName('f.state') . ' <> -2'
             )
             ->where($db->quoteName('tm.id') . ' = :teamId')
             ->where($db->quoteName('tm.state') . ' <> -2')
-            ->where($db->quoteName('f.state') . ' <> -2')
             ->bind(':teamId', $teamId, ParameterType::INTEGER);
         $team = $db->setQuery($query, 0, 1)->loadObject();
 
         if (!$team) {
             throw new \RuntimeException(Text::_('COM_XDECAROCOMPETITIONS_ERROR_PARTICIPATION_TEAM_INVALID'));
+        }
+
+        if ((int) $team->federation_id <= 0 || (int) $team->country_id <= 0) {
+            throw new \RuntimeException(Text::_('COM_XDECAROCOMPETITIONS_ERROR_PARTICIPATION_TEAM_FEDERATION_UNDETERMINED'));
         }
 
         self::assertTeamAttributesEligible(

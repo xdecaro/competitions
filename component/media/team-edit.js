@@ -11,6 +11,7 @@
     const typeField = form.querySelector('[name="jform[team_type]"]');
     const linkCard = form.querySelector('[data-team-organization-link]');
     const localIdentity = form.querySelector('[data-team-local-identity]');
+    const manualFederation = form.querySelector('[data-team-manual-federation]');
 
     if (!typeField || !localIdentity) {
       return;
@@ -28,10 +29,19 @@
 
       if (!linkAvailable || existingLegacy) {
         localIdentity.hidden = false;
+
+        if (manualFederation) {
+          manualFederation.hidden = false;
+        }
+
         return;
       }
 
       localIdentity.hidden = isClub;
+
+      if (manualFederation) {
+        manualFederation.hidden = isClub;
+      }
     };
 
     typeField.addEventListener('change', sync);

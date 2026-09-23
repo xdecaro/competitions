@@ -89,6 +89,68 @@ final class OrganizationsIntegrationService
         }
     }
 
+    /**
+     * Resolve active sports federation affiliations for a canonical club.
+     *
+     * @return array<int, array<string, mixed>>
+     */
+    public function getActiveSportsFederations(string $clubUuid): array
+    {
+        $clubUuid = strtolower(trim($clubUuid));
+
+        if ($clubUuid === '') {
+            return [];
+        }
+
+        $provider = $this->provider();
+
+        if (!method_exists($provider, 'getAffiliations')) {
+            throw new RuntimeException('Organizations affiliations provider is unavailable.');
+        }
+
+        try {
+            $rows = (array) $provider->getAffiliations($clubUuid, true);
+        } catch (Throwable $e) {
+            throw new RuntimeException(
+                'Organizations affiliation lookup is unavailable: ' . $e->getMessage(),
+                (int) $e->getCode(),
+                $e
+            );
+        }
+
+        $result = [];
+        $seen = [];
+
+        foreach ($rows as $row) {
+            if (!is_array($row)) {
+                continue;
+            }
+
+            if ((int) ($row['state'] ?? 0) !== 1) {
+                continue;
+            }
+
+            if (strtolower(trim((string) ($row['relation_type'] ?? ''))) !== 'sports_affiliation') {
+                continue;
+            }
+
+            if (strtolower(trim((string) ($row['target_type'] ?? ''))) !== 'federation') {
+                continue;
+            }
+
+            $targetUuid = strtolower(trim((string) ($row['target_uuid'] ?? '')));
+
+            if ($targetUuid === '' || isset($seen[$targetUuid])) {
+                continue;
+            }
+
+            $seen[$targetUuid] = true;
+            $result[] = $row;
+        }
+
+        return $result;
+    }
+
     public function getClub(string $uuid): ?array
     {
         $uuid = strtolower(trim($uuid));
