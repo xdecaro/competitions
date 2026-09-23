@@ -126,6 +126,10 @@ final class OrganizationsIntegrationService
                 continue;
             }
 
+            if ((int) ($row['state'] ?? 0) !== 1) {
+                continue;
+            }
+
             if (strtolower(trim((string) ($row['relation_type'] ?? ''))) !== 'sports_affiliation') {
                 continue;
             }
