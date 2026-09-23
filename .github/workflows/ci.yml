@@ -34,6 +34,8 @@ jobs:
         run: php tests/people-roster-photo-contract.php
       - name: Organizations federation contract
         run: php tests/organizations-federation-contract.php
+      - name: Organizations team contract
+        run: php tests/organizations-team-contract.php
       - name: Federation link persistence contract
         run: php tests/federation-link-persistence-contract.php
       - name: Live-sync edit lock contract
@@ -96,6 +98,8 @@ jobs:
           test "$("${MYSQL[@]}" -e "SELECT COUNT(*) FROM information_schema.columns WHERE table_schema='joomla' AND table_name='cmp_xdecarocompetitions_rosters' AND column_name='photo';")" = '1'
           test "$("${MYSQL[@]}" -e "SELECT COUNT(*) FROM information_schema.columns WHERE table_schema='joomla' AND table_name='cmp_xdecarocompetitions_federations' AND column_name='organization_uuid';")" = '1'
           test "$("${MYSQL[@]}" -e "SELECT COUNT(*) FROM information_schema.statistics WHERE table_schema='joomla' AND table_name='cmp_xdecarocompetitions_federations' AND index_name='uq_competitions_federations_organization_uuid' AND non_unique=0;")" = '1'
+          test "$("${MYSQL[@]}" -e "SELECT COUNT(*) FROM information_schema.columns WHERE table_schema='joomla' AND table_name='cmp_xdecarocompetitions_teams' AND column_name='organization_uuid';")" = '1'
+          test "$("${MYSQL[@]}" -e "SELECT COUNT(*) FROM information_schema.statistics WHERE table_schema='joomla' AND table_name='cmp_xdecarocompetitions_teams' AND index_name='uq_competitions_teams_organization_uuid' AND non_unique=0;")" = '1'
           for row in "component|com_competitions|" "plugin|xdecarocompetitions|system" "plugin|competitions|xdecaroanalytics" "plugin|xdecarocompetitions|task"; do
             IFS='|' read -r type element folder <<< "$row"
             count="$("${MYSQL[@]}" -e "SELECT COUNT(*) FROM cmp_extensions WHERE type='${type}' AND element='${element}' AND folder='${folder}';")"
@@ -110,11 +114,13 @@ jobs:
           VERSION="$(cat "$GITHUB_WORKSPACE/VERSION")"
           test "$schema" = "$VERSION"
 
-      - name: Exercise federation link schema repair
+      - name: Exercise Organizations link schema repair
         run: |
           MYSQL=(mysql --protocol=TCP -h127.0.0.1 -uroot --batch --skip-column-names joomla)
           "${MYSQL[@]}" -e "ALTER TABLE cmp_xdecarocompetitions_federations DROP INDEX uq_competitions_federations_organization_uuid, DROP COLUMN organization_uuid;"
           test "$("${MYSQL[@]}" -e "SELECT COUNT(*) FROM information_schema.columns WHERE table_schema='joomla' AND table_name='cmp_xdecarocompetitions_federations' AND column_name='organization_uuid';")" = '0'
+          "${MYSQL[@]}" -e "ALTER TABLE cmp_xdecarocompetitions_teams DROP INDEX uq_competitions_teams_organization_uuid, DROP COLUMN organization_uuid;"
+          test "$("${MYSQL[@]}" -e "SELECT COUNT(*) FROM information_schema.columns WHERE table_schema='joomla' AND table_name='cmp_xdecarocompetitions_teams' AND column_name='organization_uuid';")" = '0'
           cd joomla
           cat > federation-schema-repair-probe.php <<'PHP'
           <?php
@@ -135,13 +141,15 @@ jobs:
 
           $installer = new com_xdecarocompetitionsInstallerScript();
           $installer->postflight('update', null);
-          echo "Federation schema repair executed\n";
+          echo "Organizations link schema repair executed\n";
           PHP
           php federation-schema-repair-probe.php
           rm federation-schema-repair-probe.php
           cd ..
           test "$("${MYSQL[@]}" -e "SELECT COUNT(*) FROM information_schema.columns WHERE table_schema='joomla' AND table_name='cmp_xdecarocompetitions_federations' AND column_name='organization_uuid';")" = '1'
           test "$("${MYSQL[@]}" -e "SELECT COUNT(*) FROM information_schema.statistics WHERE table_schema='joomla' AND table_name='cmp_xdecarocompetitions_federations' AND index_name='uq_competitions_federations_organization_uuid' AND non_unique=0;")" = '1'
+          test "$("${MYSQL[@]}" -e "SELECT COUNT(*) FROM information_schema.columns WHERE table_schema='joomla' AND table_name='cmp_xdecarocompetitions_teams' AND column_name='organization_uuid';")" = '1'
+          test "$("${MYSQL[@]}" -e "SELECT COUNT(*) FROM information_schema.statistics WHERE table_schema='joomla' AND table_name='cmp_xdecarocompetitions_teams' AND index_name='uq_competitions_teams_organization_uuid' AND non_unique=0;")" = '1'
 
       - name: Verify Finance-absent fallback
         run: |
