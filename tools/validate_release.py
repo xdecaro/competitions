@@ -72,6 +72,8 @@ def validate_source()->None:
         if version_key(patch) <= (1,4,0) or patch == '1.5.2.sql': continue
         patch_marker=(update_dir/patch).read_text(encoding='utf-8').upper()
         if any(word in patch_marker for word in ['ALTER TABLE','DROP TABLE','TRUNCATE TABLE','DELETE FROM']): fail(f'{patch} marker must be non-destructive')
+    ui_helper=(ROOT/'component/admin/src/Helper/UiHelper.php').read_text(encoding='utf-8')
+    if f"private const VERSION = '{VERSION}';" not in ui_helper: fail('runtime administrator asset version mismatch')
     asset=json.loads((ROOT/'component/media/joomla.asset.json').read_text(encoding='utf-8'))
     if str(asset.get('version'))!=VERSION: fail('Web Asset registry version mismatch')
     for item in asset.get('assets',[]):
