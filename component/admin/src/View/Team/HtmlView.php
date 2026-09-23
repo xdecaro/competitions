@@ -17,6 +17,8 @@ final class HtmlView extends BaseHtmlView
     public $state;
     public bool $organizationsAvailable = false;
     public ?array $organizationData = null;
+    public array $sportsFederationAffiliations = [];
+    public bool $sportsAffiliationsReadable = false;
 
     public function display($tpl = null): void
     {
@@ -38,8 +40,14 @@ final class HtmlView extends BaseHtmlView
         if ($this->organizationsAvailable && !empty($this->item->organization_uuid)) {
             try {
                 $this->organizationData = $organizations->getClub((string) $this->item->organization_uuid);
+                $this->sportsFederationAffiliations = $organizations->getActiveSportsFederations(
+                    (string) $this->item->organization_uuid
+                );
+                $this->sportsAffiliationsReadable = true;
             } catch (\Throwable) {
                 $this->organizationData = null;
+                $this->sportsFederationAffiliations = [];
+                $this->sportsAffiliationsReadable = false;
             }
         }
 
