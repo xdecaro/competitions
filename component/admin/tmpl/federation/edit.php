@@ -14,7 +14,7 @@ HTMLHelper::_('behavior.formvalidator');
 $isNew = empty($this->item->id);
 $isLinked = !empty($this->item->organization_uuid);
 $showLinkPicker = $this->organizationsAvailable && !$isLinked;
-$showLocalIdentity = !$this->organizationsAvailable || (!$isNew && !$isLinked);
+$showLocalIdentity = !$isLinked && (!$this->organizationsAvailable || !$isNew);
 $organizationName = trim((string) ($this->organizationData['name'] ?? $this->item->name ?? ''));
 $organizationCode = trim((string) ($this->organizationData['code'] ?? $this->item->short_name ?? ''));
 ?>
