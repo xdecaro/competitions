@@ -74,4 +74,4 @@ jobs:
             "dist/mod_xdecarocompetitions_countriesfederations_${VERSION}.zip" \
             "dist/pkg_xdecarocompetitions_${VERSION}.zip" \
             "dist/SHA256SUMS.txt" --target main --title "Competitions ${VERSION}" \
-            --notes "Competitions ${VERSION}: fixes federation Organizations UUID persistence on historical upgrades, verifies saved links, and hides same-user live-edit presence."
+            --notes "Competitions ${VERSION}: links club teams to canonical Organizations club records while preserving Competition team IDs, history and national-team independence."
