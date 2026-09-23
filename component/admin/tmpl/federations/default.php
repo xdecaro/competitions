@@ -59,6 +59,9 @@ $listDirn = $this->escape($this->state->get('list.direction'));
                         <a class="fw-semibold" href="<?= Route::_('index.php?option=com_xdecarocompetitions&task=federation.edit&id=' . (int) $item->id); ?>">
                             <?= $this->escape($item->name); ?>
                         </a>
+                        <?php if (!empty($item->organization_uuid)) : ?>
+                            <span class="badge text-bg-success ms-1"><?= Text::_('COM_XDECAROCOMPETITIONS_FEDERATION_SOURCE_ORGANIZATIONS'); ?></span>
+                        <?php endif; ?>
                         <?php if ($item->email) : ?><div class="small text-muted"><?= $this->escape($item->email); ?></div><?php endif; ?>
                     </td>
                     <td><?= $this->escape($item->short_name ?: '—'); ?></td>
