@@ -17,9 +17,9 @@ Competitions is the competition-management component in the xdecaro Joomla ecosy
 
 ## Current version
 
-**1.5.4**
+**1.5.5**
 
-Version 1.5.4 fixes the administrator edit-page live-sync reload loop by rendering the optimistic-lock `id` and `modified` fields in every edit form and adding a JavaScript guard against reload loops when a custom/stale layout omits the lock field.
+Version 1.5.5 simplifies federation management: new or legacy-unlinked federations can be linked once to a canonical Organizations federation, while already-linked federations no longer expose a mutable selector. Federation identity remains owned by Organizations; Competitions keeps its own sport-country/state/ordering data and compatibility snapshots.
 
 Version 1.5.0 added a public read-only person-history provider keyed by the existing People `person_uuid`. Competitions advertises the `competitions.people_history` v1 capability through Core, allowing People to show competition, season, team, role, shirt number and roster status history without reading Competitions private tables or duplicating competition data.
 
@@ -87,11 +87,11 @@ When Core `CapabilityRegistry` is available, Competitions declares analytics, No
 
 The current Competitions 1.x line targets Joomla 6 and PHP 8.3+. Compatibility with earlier Joomla versions is not claimed until runtime-tested.
 
-CI performs a real Joomla 6.1.3 installation of the built package. The 1.5.4 gate validates all edit-form live-sync lock fields, the live-sync reload-loop guard, the federation model method signature, the Organizations public-provider boundary, stable federation UUID schema/migration, public branding, approval-message language loading, the People provider boundary, People UUID schema, roster photo schema, People picker WebAsset path, selected sensitive-profile autofill contract, public person-history provider/runtime, bulk player approval actions and the existing Finance bridge regression coverage.
+CI performs a real Joomla 6.1.3 installation of the built package. The 1.5.5 gate validates one-time federation linking and immutable canonical links, all edit-form live-sync lock fields, the live-sync reload-loop guard, the federation model method signature, the Organizations public-provider boundary, stable federation UUID schema/migration, public branding, approval-message language loading, the People provider boundary, People UUID schema, roster photo schema, People picker WebAsset path, selected sensitive-profile autofill contract, public person-history provider/runtime, bulk player approval actions and the existing Finance bridge regression coverage.
 
 ## Data and update policy
 
-Fresh installations create only `#__xdecarocompetitions_*` tables. Version 1.4.0 adds nullable unique `person_uuid` to players and a nullable edition/team `photo` to rosters. Versions 1.5.0 and 1.5.1 do not change the database schema. Version 1.5.2 adds a nullable unique `organization_uuid` to federations; existing federation rows remain valid and unlinked. Versions 1.5.3 and 1.5.4 change no database structure.
+Fresh installations create only `#__xdecarocompetitions_*` tables. Version 1.4.0 adds nullable unique `person_uuid` to players and a nullable edition/team `photo` to rosters. Versions 1.5.0 and 1.5.1 do not change the database schema. Version 1.5.2 adds a nullable unique `organization_uuid` to federations; existing federation rows remain valid and unlinked. Versions 1.5.3, 1.5.4 and 1.5.5 change no database structure.
 
 Existing player records are not auto-linked or auto-merged. Linking to People must be explicit or performed by a separately verified migration workflow.
 
