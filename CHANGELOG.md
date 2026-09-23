@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.5.5 - 2026-09-23
+
+- Simplified federation linking UX: the Organizations selector is shown only while creating a new federation or while linking an existing legacy federation for the first time.
+- After a federation is linked, the selector disappears and the editor shows only the active Organizations link with an "Open in Organizations" action.
+- Existing canonical federation links are immutable from the normal Competitions edit form, preventing accidental swaps that could corrupt team/history semantics.
+- Added a "Create in Organizations" action for new Competition federations instead of encouraging duplicate local federation identity data.
+- Renamed the confusing "Organizzazione federazione" label to the clearer "Collega federazione".
+- Linked federation identity fields remain owned by Organizations; Competitions keeps only compatibility snapshots plus its own sport-country/state/ordering data.
+- Added regression coverage for one-time linking and link immutability.
+- Added a non-destructive 1.5.5 schema marker; no database changes are required.
+
 ## 1.5.4 - 2026-09-23
 
 - Fixed the administrator edit-page reload loop caused by live-sync comparing the database `modified` timestamp with a lock field that edit templates were not rendering.
