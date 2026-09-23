@@ -6,6 +6,7 @@ defined('_JEXEC') or die;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\Controller\AdminController;
+use xdecaro\Component\Competitions\Administrator\Helper\LanguageHelper;
 
 final class TeamsController extends AdminController
 {
@@ -23,6 +24,21 @@ final class TeamsController extends AdminController
         }
 
         parent::publish();
+    }
+
+    public function approve(): void
+    {
+        $this->updateApprovalStatus('approved', 'COM_XDECAROCOMPETITIONS_APPROVAL_UPDATED_APPROVED');
+    }
+
+    public function pending(): void
+    {
+        $this->updateApprovalStatus('pending', 'COM_XDECAROCOMPETITIONS_APPROVAL_UPDATED_PENDING');
+    }
+
+    public function reject(): void
+    {
+        $this->updateApprovalStatus('rejected', 'COM_XDECAROCOMPETITIONS_APPROVAL_UPDATED_REJECTED');
     }
 
     public function delete(): void
