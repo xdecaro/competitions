@@ -24,6 +24,8 @@ HTMLHelper::_('behavior.formvalidator');
         </div>
     </div>
 
+    <?= $this->form->getInput('id'); ?>
+    <?= $this->form->getInput('modified'); ?>
     <input type="hidden" name="task" value="">
     <?= HTMLHelper::_('form.token'); ?>
 </form>
