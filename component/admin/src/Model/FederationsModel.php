@@ -6,6 +6,8 @@ defined('_JEXEC') or die;
 use Joomla\CMS\MVC\Model\ListModel;
 use Joomla\Database\ParameterType;
 use Joomla\Database\QueryInterface;
+use Throwable;
+use xdecaro\Component\Competitions\Administrator\Service\OrganizationsIntegrationService;
 
 final class FederationsModel extends ListModel
 {
@@ -13,6 +15,7 @@ final class FederationsModel extends ListModel
     {
         $config['filter_fields'] ??= [
             'id', 'a.id',
+            'organization_uuid', 'a.organization_uuid',
             'name', 'a.name',
             'short_name', 'a.short_name',
             'country_name', 'c.name',
@@ -76,6 +79,59 @@ final class FederationsModel extends ListModel
             ->order($db->quoteName('a.name') . ' ASC');
 
         return $query;
+    }
+
+    public function getItems()
+    {
+        $items = parent::getItems();
+
+        if (!$items) {
+            return $items;
+        }
+
+        $integration = new OrganizationsIntegrationService();
+
+        if (!$integration->isAvailable()) {
+            return $items;
+        }
+
+        try {
+            $organizations = $integration->searchFederations('', 200);
+            $byUuid = [];
+
+            foreach ($organizations as $organization) {
+                $uuid = strtolower(trim((string) ($organization['uuid'] ?? '')));
+
+                if ($uuid !== '') {
+                    $byUuid[$uuid] = $organization;
+                }
+            }
+
+            foreach ($items as $item) {
+                $uuid = strtolower(trim((string) ($item->organization_uuid ?? '')));
+
+                if ($uuid === '') {
+                    continue;
+                }
+
+                $organization = $byUuid[$uuid] ?? $integration->getFederation($uuid);
+
+                if (!$organization) {
+                    continue;
+                }
+
+                $item->organization_id = (int) ($organization['id'] ?? 0);
+                $item->name = (string) ($organization['name'] ?? $item->name);
+                $item->short_name = (string) ($organization['code'] ?? $item->short_name);
+                $item->logo = (string) ($organization['logo'] ?? $item->logo);
+                $item->website = (string) ($organization['website'] ?? $item->website);
+                $item->email = (string) ($organization['email'] ?? $item->email);
+            }
+        } catch (Throwable) {
+            // Keep local compatibility snapshots if Organizations becomes unavailable.
+        }
+
+        return $items;
     }
 
     public function getCountryOptions(): array
