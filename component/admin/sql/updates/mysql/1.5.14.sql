@@ -1,0 +1,3 @@
+-- Competitions 1.5.14
+-- No database structure changes are required.
+-- Registers the Team Import Web Asset before any asset is enabled.
