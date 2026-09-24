@@ -1,0 +1,3 @@
+-- Competitions 1.5.13
+-- No database structure changes are required.
+-- Loads the team-import live-search asset directly from the rendered Joomla template through Web Asset Manager.
