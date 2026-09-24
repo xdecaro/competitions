@@ -1,0 +1,3 @@
+-- Competitions 1.5.11
+-- No database structure changes are required.
+-- Team import search is now client-side/live so multi-selection survives filtering.
