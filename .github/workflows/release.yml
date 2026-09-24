@@ -76,4 +76,4 @@ jobs:
             "dist/mod_xdecarocompetitions_countriesfederations_${VERSION}.zip" \
             "dist/pkg_xdecarocompetitions_${VERSION}.zip" \
             "dist/SHA256SUMS.txt" --target main --title "Competitions ${VERSION}" \
-            --notes "Competitions ${VERSION}: adds bulk Club-team import from Organizations with preview, duplicate-safe UUID links, federation-readiness status and Pending defaults."
+            --notes "Competitions ${VERSION}: makes Organizations team import search fully live, preserving multi-selection across searches with selected/visible counters and visible-row select-all."
