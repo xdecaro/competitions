@@ -41,6 +41,11 @@ final class HtmlView extends BaseHtmlView
 
         if ($user->authorise('core.create', 'com_xdecarocompetitions')) {
             ToolbarHelper::addNew('team.add');
+            ToolbarHelper::link(
+                'index.php?option=com_xdecarocompetitions&view=teamimport',
+                Text::_('COM_XDECAROCOMPETITIONS_TOOLBAR_IMPORT_FROM_ORGANIZATIONS'),
+                'upload'
+            );
         }
 
         if ($user->authorise('core.edit', 'com_xdecarocompetitions')) {
