@@ -34,6 +34,7 @@ jobs:
           php tests/people-roster-photo-contract.php
           php tests/organizations-federation-contract.php
           php tests/organizations-team-contract.php
+          php tests/organizations-team-import-contract.php
           php tests/team-approval-toolbar-contract.php
           php tests/federation-link-persistence-contract.php
           php tests/live-sync-edit-lock-contract.php
