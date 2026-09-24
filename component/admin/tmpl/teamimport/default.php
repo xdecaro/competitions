@@ -71,8 +71,6 @@ $statusMap = [
 
             <div class="visually-hidden" aria-live="polite" data-teamimport-live-status></div>
 
-            <div class="small text-muted mt-3 d-none">
-            </div>
         </div>
     </div>
 
