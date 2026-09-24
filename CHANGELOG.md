@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.5.13 - 2026-09-24
+
+- Fixed the confirmed Organizations team-import failure where the page HTML rendered correctly but `teamimport.js` was not inserted at all: browser diagnostics showed no script tag, no resource request and zero input/search listeners.
+- Moved the page-specific script activation into the rendered Team Import template using Joomla Web Asset Manager `registerAndUseScript()`, matching Joomla's recommended placement for template-specific JavaScript.
+- Added a `core` dependency and a diagnostic `data-xdecaro-teamimport` script attribute.
+- Removed the earlier helper-level loading path that could leave the page asset registered but not attached.
+- Kept the corrected search/Pulisci input-group layout and the existing persistent selection, selected-only review and visible-row select-all behavior.
+- Extended the import regression contract to require template-time Web Asset activation.
+- No database structure changes are required.
+
 ## 1.5.12 - 2026-09-24
 
 - Fixed the Organizations team-import live search not executing after installation because the new script depended only on Web Asset registry discovery.
