@@ -9,7 +9,7 @@ use Joomla\CMS\Session\Session;
 
 final class UiHelper
 {
-    private const VERSION = '1.5.11';
+    private const VERSION = '1.5.12';
 
     public static function loadTeamImportAsset(): void
     {
