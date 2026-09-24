@@ -1,19 +1,9 @@
 <?php
 defined('_JEXEC') or die;
 
-use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Router\Route;
-
-$wa = Factory::getApplication()->getDocument()->getWebAssetManager();
-$wa->registerAndUseScript(
-    'com_xdecarocompetitions.teamimport.page',
-    'com_xdecarocompetitions/teamimport.js',
-    ['version' => '1.5.13'],
-    ['defer' => true, 'data-xdecaro-teamimport' => '1'],
-    ['core']
-);
 
 $statusMap = [
     'ready' => ['COM_XDECAROCOMPETITIONS_TEAMIMPORT_STATUS_READY', 'text-bg-success'],
