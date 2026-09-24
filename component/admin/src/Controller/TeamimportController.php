@@ -136,7 +136,6 @@ final class TeamimportController extends BaseController
             ->select('COUNT(*)')
             ->from($db->quoteName('#__xdecarocompetitions_teams'))
             ->where($db->quoteName('organization_uuid') . ' = :organizationUuid')
-            ->where($db->quoteName('state') . ' <> -2')
             ->bind(':organizationUuid', $uuid);
 
         return (int) $db->setQuery($query)->loadResult() > 0;
