@@ -24,9 +24,7 @@ final class HtmlView extends BaseHtmlView
             throw new \RuntimeException(Text::_('JERROR_ALERTNOAUTHOR'), 403);
         }
 
-        UiHelper::loadAssets();
-        Factory::getApplication()->getDocument()->getWebAssetManager()
-            ->useScript('com_xdecarocompetitions.teamimport');
+        UiHelper::loadTeamImportAsset();
 
         $this->items = $this->getModel()->getPreviewRows();
         $this->summary = $this->getModel()->getSummary($this->items);
