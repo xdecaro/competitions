@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.5.14 - 2026-09-24
+
+- Fixed the confirmed Team Import asset lifecycle issue after browser diagnostics proved the JavaScript file exists and works when loaded directly, but Joomla never inserted it into the page.
+- Registers the Team Import runtime asset inside the shared administrator `UiHelper::loadAssets()` **before any Web Asset is enabled**, avoiding late registration after Web Asset use has already begun.
+- Enables the Team Import script only when `view=teamimport`.
+- Removed the too-late template-level `registerAndUseScript()` workaround.
+- Preserved the working live-search logic, persistent selections, visible/selected counters, selected-only review and visible-row select-all.
+- Extended the regression contract to enforce pre-use asset registration order.
+- No database structure changes are required.
+
 ## 1.5.13 - 2026-09-24
 
 - Fixed the confirmed Organizations team-import failure where the page HTML rendered correctly but `teamimport.js` was not inserted at all: browser diagnostics showed no script tag, no resource request and zero input/search listeners.
