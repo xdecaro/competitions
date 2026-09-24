@@ -10,7 +10,6 @@ $importController = file_get_contents($root . '/component/admin/src/Controller/T
 $importTemplate = file_get_contents($root . '/component/admin/tmpl/teamimport/default.php');
 $importScript = file_get_contents($root . '/component/media/teamimport.js');
 $assetRegistry = file_get_contents($root . '/component/media/joomla.asset.json');
-$uiHelper = file_get_contents($root . '/component/admin/src/Helper/UiHelper.php');
 
 $checks = [
     [str_contains($teamsView, 'view=teamimport'), 'Teams toolbar must link to the Organizations import view'],
@@ -45,9 +44,10 @@ $checks = [
     [str_contains($importScript, 'checkedBoxes().length'), 'Team import script must preserve and count selections across searches'],
     [str_contains($importScript, 'visibleSelectable'), 'Select-all must operate on currently visible rows'],
     [str_contains($assetRegistry, 'com_xdecarocompetitions.teamimport'), 'Team import live-search asset must be registered'],
-    [str_contains($importView, 'UiHelper::loadTeamImportAsset()'), 'Team import view must load the runtime-registered asset'],
-    [str_contains($uiHelper, 'com_xdecarocompetitions.teamimport.runtime'), 'UiHelper must runtime-register the team import script'],
-    [str_contains($uiHelper, "'com_xdecarocompetitions/teamimport.js'"), 'Runtime team import asset must point to the installed media file'],
+    [str_contains($importView, 'UiHelper::loadAssets()'), 'Team import view must load shared administrator assets'],
+    [str_contains($importTemplate, 'registerAndUseScript('), 'Team import template must register and use its page script during rendering'],
+    [str_contains($importTemplate, "'com_xdecarocompetitions/teamimport.js'"), 'Rendered team import asset must point to the installed media file'],
+    [str_contains($importTemplate, "'data-xdecaro-teamimport' => '1'"), 'Rendered team import script must carry a diagnostic data attribute'],
     [str_contains($importTemplate, 'class="input-group"'), 'Clear action must stay aligned with the live-search input'],
     [str_contains($importModel, "searchClubs('', 200)"), 'Import preview must load one stable provider window for client-side live filtering'],
 ];

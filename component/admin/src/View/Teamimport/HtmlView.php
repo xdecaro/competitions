@@ -24,7 +24,7 @@ final class HtmlView extends BaseHtmlView
             throw new \RuntimeException(Text::_('JERROR_ALERTNOAUTHOR'), 403);
         }
 
-        UiHelper::loadTeamImportAsset();
+        UiHelper::loadAssets();
 
         $this->items = $this->getModel()->getPreviewRows();
         $this->summary = $this->getModel()->getSummary($this->items);
