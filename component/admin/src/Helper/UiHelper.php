@@ -24,6 +24,7 @@ final class UiHelper
         $syncScriptName = 'com_xdecarocompetitions.live-sync.runtime';
         $scopeScriptName = 'com_xdecarocompetitions.scope.runtime';
         $peopleScriptName = 'com_xdecarocompetitions.people-picker.runtime';
+        $teamImportScriptName = 'com_xdecarocompetitions.teamimport.runtime';
 
         if (!$wa->assetExists('style', $styleName)) {
             $wa->registerStyle($styleName, 'com_xdecarocompetitions/admin.css', ['version' => self::VERSION]);
@@ -79,6 +80,16 @@ final class UiHelper
             );
         }
 
+        if (!$wa->assetExists('script', $teamImportScriptName)) {
+            $wa->registerScript(
+                $teamImportScriptName,
+                'com_xdecarocompetitions/teamimport.js',
+                ['version' => self::VERSION],
+                ['defer' => true],
+                ['core']
+            );
+        }
+
         $token = Session::getFormToken();
         $document->addScriptOptions('com_xdecarocompetitions.filterbar', [
             'strings' => [
@@ -117,5 +128,8 @@ final class UiHelper
         $wa->useScript($syncScriptName);
         $wa->useScript($scopeScriptName);
         $wa->useScript($peopleScriptName);
+        if (Factory::getApplication()->input->getCmd('view') === 'teamimport') {
+            $wa->useScript($teamImportScriptName);
+        }
     }
 }
