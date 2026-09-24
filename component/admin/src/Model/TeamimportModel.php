@@ -161,11 +161,11 @@ final class TeamimportModel extends BaseDatabaseModel
                 $db->quoteName('id'),
                 $db->quoteName('organization_uuid'),
                 $db->quoteName('approval_status'),
+                $db->quoteName('state'),
             ])
             ->from($db->quoteName('#__xdecarocompetitions_teams'))
             ->where($db->quoteName('organization_uuid') . ' IS NOT NULL')
-            ->where($db->quoteName('organization_uuid') . " <> ''")
-            ->where($db->quoteName('state') . ' <> -2');
+            ->where($db->quoteName('organization_uuid') . " <> ''");
 
         $map = [];
 
