@@ -76,4 +76,4 @@ jobs:
             "dist/mod_xdecarocompetitions_countriesfederations_${VERSION}.zip" \
             "dist/pkg_xdecarocompetitions_${VERSION}.zip" \
             "dist/SHA256SUMS.txt" --target main --title "Competitions ${VERSION}" \
-            --notes "Competitions ${VERSION}: makes Organizations team import search fully live, preserving multi-selection across searches with selected/visible counters and visible-row select-all."
+            --notes "Competitions ${VERSION}: fixes runtime loading of Organizations team-import live search and aligns the Clear action with the search input."
