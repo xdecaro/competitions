@@ -17,9 +17,9 @@ Competitions is the competition-management component in the xdecaro Joomla ecosy
 
 ## Current version
 
-**1.5.9**
+**1.5.10**
 
-Version 1.5.9 adds bulk approval workflow actions to the Teams Joomla toolbar. Selected teams can be moved to Approved, Pending or Rejected without opening each record; approval is refused when the team federation is not determined.
+Version 1.5.10 adds a bulk Teams import workflow from Organizations. Administrators can preview/search up to 200 canonical Club organizations, select many rows at once, skip existing UUID links automatically, inspect federation readiness before import and create the selected Competition teams as Pending without duplicating club identity data.
 
 Version 1.5.0 added a public read-only person-history provider keyed by the existing People `person_uuid`. Competitions advertises the `competitions.people_history` v1 capability through Core, allowing People to show competition, season, team, role, shirt number and roster status history without reading Competitions private tables or duplicating competition data.
 
@@ -61,6 +61,8 @@ For linked federations, name, short name, logo, website and email are compatibil
 
 Existing legacy club teams remain valid and can be linked once without changing their Competition ID or historical relations. Once linked, the canonical club cannot be swapped from the normal team editor. If Organizations is temporarily unavailable, existing links and local compatibility snapshots remain usable.
 
+The Teams administrator also provides an Organizations import preview. It consumes the same public provider boundary, returns at most 200 Club organizations per search, marks already-linked UUIDs as non-importable duplicates, shows active sports-affiliation readiness and imports selected Clubs through the normal Team model as Pending records. No Organizations private table is queried by the import workflow.
+
 Competitions never queries `#__xdecaroorganizations_*` directly.
 
 ### Finance
@@ -91,11 +93,11 @@ When Core `CapabilityRegistry` is available, Competitions declares analytics, No
 
 The current Competitions 1.x line targets Joomla 6 and PHP 8.3+. Compatibility with earlier Joomla versions is not claimed until runtime-tested.
 
-CI performs a real Joomla 6.1.3 installation of the built package. The 1.5.9 gate validates the Teams approval toolbar/controller/model workflow, CSRF/ACL checks and federation-before-approval validation, active sports-affiliation federation derivation, ambiguity/no-affiliation behavior, Club/National federation UI separation, club-team Organizations linking, team UUID schema/migration and editor behavior, schema repair and federation-link persistence, one-time federation linking and immutable canonical links, all edit-form live-sync lock fields, the live-sync reload-loop guard, the federation model method signature, the Organizations public-provider boundary, stable federation UUID schema/migration, public branding, approval-message language loading, the People provider boundary, People UUID schema, roster photo schema, People picker WebAsset path, selected sensitive-profile autofill contract, public person-history provider/runtime, bulk player approval actions and the existing Finance bridge regression coverage.
+CI performs a real Joomla 6.1.3 installation of the built package. The 1.5.10 gate validates the Organizations team-import preview/controller boundary, duplicate-safe UUID handling and Pending defaults, the Teams approval toolbar/controller/model workflow, CSRF/ACL checks and federation-before-approval validation, active sports-affiliation federation derivation, ambiguity/no-affiliation behavior, Club/National federation UI separation, club-team Organizations linking, team UUID schema/migration and editor behavior, schema repair and federation-link persistence, one-time federation linking and immutable canonical links, all edit-form live-sync lock fields, the live-sync reload-loop guard, the federation model method signature, the Organizations public-provider boundary, stable federation UUID schema/migration, public branding, approval-message language loading, the People provider boundary, People UUID schema, roster photo schema, People picker WebAsset path, selected sensitive-profile autofill contract, public person-history provider/runtime, bulk player approval actions and the existing Finance bridge regression coverage.
 
 ## Data and update policy
 
-Fresh installations create only `#__xdecarocompetitions_*` tables. Version 1.4.0 adds nullable unique `person_uuid` to players and a nullable edition/team `photo` to rosters. Versions 1.5.0 and 1.5.1 do not change the database schema. Version 1.5.2 adds a nullable unique `organization_uuid` to federations; existing federation rows remain valid and unlinked. Versions 1.5.3, 1.5.4 and 1.5.5 change no database structure. Version 1.5.6 repairs the existing 1.5.2 federation UUID schema on historical installations when it is missing; it does not remove or rewrite data. Version 1.5.7 adds a nullable unique `organization_uuid` to teams for canonical Organizations club links; existing teams remain valid and unlinked. Versions 1.5.8 and 1.5.9 change no database structure.
+Fresh installations create only `#__xdecarocompetitions_*` tables. Version 1.4.0 adds nullable unique `person_uuid` to players and a nullable edition/team `photo` to rosters. Versions 1.5.0 and 1.5.1 do not change the database schema. Version 1.5.2 adds a nullable unique `organization_uuid` to federations; existing federation rows remain valid and unlinked. Versions 1.5.3, 1.5.4 and 1.5.5 change no database structure. Version 1.5.6 repairs the existing 1.5.2 federation UUID schema on historical installations when it is missing; it does not remove or rewrite data. Version 1.5.7 adds a nullable unique `organization_uuid` to teams for canonical Organizations club links; existing teams remain valid and unlinked. Versions 1.5.8, 1.5.9 and 1.5.10 change no database structure.
 
 Existing player records are not auto-linked or auto-merged. Linking to People must be explicit or performed by a separately verified migration workflow.
 

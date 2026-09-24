@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.5.10 - 2026-09-24
+
+- Added **Importa da Organizations** to the Teams Joomla toolbar.
+- Added a dedicated preview page listing up to 200 Organizations records of type `club`, with search, select-all and per-row import status.
+- The preview detects already imported teams by stable Organizations UUID and never creates a second Competition team for the same club.
+- Federation readiness is shown before import: ready, no affiliation, federation not mapped, ambiguous affiliation or Organizations affiliation service unavailable.
+- Clubs without a determined federation may still be imported as **Pending**, preserving the workflow for large event/team batches; ambiguous or unverifiable records are disabled until corrected.
+- Bulk import reuses `TeamModel::save()` for every selected club, so canonical identity sync, UUID persistence, affiliation-derived federation rules, alias generation, ACL-related table validation and live-sync creation events remain centralized.
+- New imported teams default to `Club`, `Approval = Pending`, published state, no manager and automatic alias.
+- Added duplicate-safe handling for linked teams already in the trash, plus row-level error reporting without aborting the entire batch.
+- Added Italian/English UI strings, distribution validation and a dedicated Organizations team-import contract.
+- No database structure changes are required.
+
 ## 1.5.9 - 2026-09-24
 
 - Added bulk team approval actions to the main Joomla toolbar: Approve, Pending and Reject.

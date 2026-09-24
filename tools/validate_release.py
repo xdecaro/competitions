@@ -109,6 +109,13 @@ def validate_source()->None:
     team_form=(ROOT/'component/admin/forms/team.xml').read_text(encoding='utf-8')
     for token in ['type="TeamOrganization"','name="organization_uuid"','name="team_type"']:
         if token not in team_form: fail(f'Team Organizations form missing {token}')
+    team_import_model=(ROOT/'component/admin/src/Model/TeamimportModel.php').read_text(encoding='utf-8')
+    for token in ['searchClubs($search, 200)','getActiveSportsFederations','#__xdecarocompetitions_teams','#__xdecarocompetitions_federations']:
+        if token not in team_import_model: fail(f'Team Organizations import model missing {token}')
+    if '#__xdecaroorganizations_' in team_import_model: fail('Team Organizations import must not access Organizations private tables')
+    team_import_controller=(ROOT/'component/admin/src/Controller/TeamimportController.php').read_text(encoding='utf-8')
+    for token in ["authorise('core.create', 'com_xdecarocompetitions')",'checkToken()',"createModel('Team', 'Administrator'","'approval_status' => 'pending'"]:
+        if token not in team_import_controller: fail(f'Team Organizations import controller missing {token}')
     photo=(ROOT/'component/admin/src/Service/CompetitionPhotoService.php').read_text(encoding='utf-8')
     for token in ["'roster'","'people'","'legacy'",'profile_document_reference','profile_document_uuid']:
         if token not in photo: fail(f'competition photo resolver missing {token}')
@@ -140,7 +147,7 @@ def validate_dist()->None:
             bad=archive.testzip()
             if bad is not None: fail(f'corrupt ZIP member {bad} in {path.name}')
     with zipfile.ZipFile(paths[0]) as archive:
-        required={'competitions.xml','script.php','admin/src/Extension/CompetitionsComponent.php','admin/src/Service/AnalyticsSourceService.php','admin/src/Service/CrossProductIntegrationService.php','admin/src/Service/MatchReminderService.php','admin/src/Service/PeopleIntegrationService.php','admin/src/Service/OrganizationsIntegrationService.php','admin/src/Field/FederationOrganizationField.php','admin/src/Field/TeamOrganizationField.php','admin/src/Service/CompetitionPhotoService.php','admin/src/Controller/PeopleController.php','admin/sql/updates/mysql/1.4.0.sql',f'admin/sql/updates/mysql/{VERSION}.sql','admin/sql/install.1.4.0.mysql.utf8mb4.sql','media/js/people-picker.js','media/team-edit.js','admin/language/en-GB/com_competitions.ini','admin/language/it-IT/com_competitions.ini'}
+        required={'competitions.xml','script.php','admin/src/Extension/CompetitionsComponent.php','admin/src/Service/AnalyticsSourceService.php','admin/src/Service/CrossProductIntegrationService.php','admin/src/Service/MatchReminderService.php','admin/src/Service/PeopleIntegrationService.php','admin/src/Service/OrganizationsIntegrationService.php','admin/src/Field/FederationOrganizationField.php','admin/src/Field/TeamOrganizationField.php','admin/src/Model/TeamimportModel.php','admin/src/View/Teamimport/HtmlView.php','admin/src/Controller/TeamimportController.php','admin/tmpl/teamimport/default.php','admin/src/Service/CompetitionPhotoService.php','admin/src/Controller/PeopleController.php','admin/sql/updates/mysql/1.4.0.sql',f'admin/sql/updates/mysql/{VERSION}.sql','admin/sql/install.1.4.0.mysql.utf8mb4.sql','media/js/people-picker.js','media/team-edit.js','admin/language/en-GB/com_competitions.ini','admin/language/it-IT/com_competitions.ini'}
         missing=required-set(archive.namelist())
         if missing: fail(f'component ZIP missing {sorted(missing)}')
         if 'xdecarocompetitions.xml' in archive.namelist(): fail('component ZIP still contains legacy manifest name')

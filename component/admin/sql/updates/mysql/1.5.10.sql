@@ -1,0 +1,3 @@
+-- Competitions 1.5.10
+-- No database structure changes are required.
+-- Adds bulk import of Club teams from the public Organizations provider.
