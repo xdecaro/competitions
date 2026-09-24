@@ -49,7 +49,7 @@ $checks = [
     [str_contains($uiHelper, 'com_xdecarocompetitions.teamimport.runtime'), 'UiHelper must define the Team Import runtime asset'],
     [str_contains($uiHelper, "'com_xdecarocompetitions/teamimport.js'"), 'UiHelper Team Import asset must point to the installed media file'],
     [str_contains($uiHelper, "getCmd('view') === 'teamimport'"), 'UiHelper must only enable Team Import JavaScript on the Team Import view'],
-    [strpos($uiHelper, "registerScript(\n                $teamImportScriptName") < strpos($uiHelper, '$wa->useScript($filterScriptName)'), 'Team Import asset must be registered before Web Asset use begins'],
+    [strpos($uiHelper, '$teamImportScriptName =') < strpos($uiHelper, '$wa->useScript($filterScriptName)'), 'Team Import asset must be defined before Web Asset use begins'],
     [!str_contains($importTemplate, 'registerAndUseScript('), 'Team Import template must not register JavaScript after template rendering begins'],
     [str_contains($importTemplate, 'class="input-group"'), 'Clear action must stay aligned with the live-search input'],
     [str_contains($importModel, "searchClubs('', 200)"), 'Import preview must load one stable provider window for client-side live filtering'],
