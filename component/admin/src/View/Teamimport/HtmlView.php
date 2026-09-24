@@ -25,6 +25,8 @@ final class HtmlView extends BaseHtmlView
         }
 
         UiHelper::loadAssets();
+        Factory::getApplication()->getDocument()->getWebAssetManager()
+            ->useScript('com_xdecarocompetitions.teamimport');
 
         $this->items = $this->getModel()->getPreviewRows();
         $this->summary = $this->getModel()->getSummary($this->items);

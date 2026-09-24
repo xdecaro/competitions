@@ -1,13 +1,9 @@
 <?php
 defined('_JEXEC') or die;
 
-use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Router\Route;
-
-$app = Factory::getApplication();
-$search = trim((string) $app->input->getString('filter_search', ''));
 
 $statusMap = [
     'ready' => ['COM_XDECAROCOMPETITIONS_TEAMIMPORT_STATUS_READY', 'text-bg-success'],
@@ -19,50 +15,60 @@ $statusMap = [
     'new' => ['COM_XDECAROCOMPETITIONS_TEAMIMPORT_STATUS_NEW', 'text-bg-info'],
 ];
 ?>
-<div class="competitions-admin">
+<div class="competitions-admin" data-teamimport-live>
     <div class="mb-4">
         <p class="text-muted mb-0"><?= Text::_('COM_XDECAROCOMPETITIONS_TEAMIMPORT_INTRO'); ?></p>
     </div>
 
-    <form
-        action="<?= Route::_('index.php'); ?>"
-        method="get"
-        id="teamimport-filter"
-        class="card mb-3"
-    >
+    <div class="card mb-3">
         <div class="card-body">
             <div class="row g-2 align-items-end">
                 <div class="col-12 col-lg">
-                    <label class="form-label" for="filter_search">
+                    <label class="form-label" for="teamimport_search">
                         <?= Text::_('JSEARCH_FILTER'); ?>
                     </label>
                     <input
                         class="form-control"
                         type="search"
-                        name="filter_search"
-                        id="filter_search"
-                        value="<?= $this->escape($search); ?>"
+                        id="teamimport_search"
+                        value=""
+                        autocomplete="off"
+                        data-teamimport-search
                         placeholder="<?= Text::_('COM_XDECAROCOMPETITIONS_TEAMIMPORT_SEARCH_PLACEHOLDER'); ?>"
                     >
+                    <div class="form-text">
+                        <?= Text::_('COM_XDECAROCOMPETITIONS_TEAMIMPORT_LIVE_SEARCH_DESC'); ?>
+                    </div>
                 </div>
                 <div class="col-auto">
-                    <button class="btn btn-primary" type="submit">
-                        <?= Text::_('JSEARCH_FILTER_SUBMIT'); ?>
+                    <button class="btn btn-outline-secondary" type="button" data-teamimport-clear>
+                        <?= Text::_('JSEARCH_FILTER_CLEAR'); ?>
                     </button>
                 </div>
-                <div class="col-auto">
-                    <a
-                        class="btn btn-outline-secondary"
-                        href="<?= Route::_('index.php?option=com_xdecarocompetitions&view=teamimport'); ?>"
-                    >
-                        <?= Text::_('JSEARCH_FILTER_CLEAR'); ?>
-                    </a>
+                <div class="col-12 col-lg-auto">
+                    <div class="form-check mb-2">
+                        <input
+                            class="form-check-input"
+                            type="checkbox"
+                            id="teamimport_selected_only"
+                            data-teamimport-selected-only
+                        >
+                        <label class="form-check-label" for="teamimport_selected_only">
+                            <?= Text::_('COM_XDECAROCOMPETITIONS_TEAMIMPORT_SHOW_SELECTED_ONLY'); ?>
+                        </label>
+                    </div>
                 </div>
             </div>
+
+            <div class="small text-muted mt-3">
+                <?= Text::_('COM_XDECAROCOMPETITIONS_TEAMIMPORT_VISIBLE'); ?>:
+                <strong data-teamimport-visible-count><?= count($this->items); ?></strong>
+                ·
+                <?= Text::_('COM_XDECAROCOMPETITIONS_TEAMIMPORT_SELECTED'); ?>:
+                <strong data-teamimport-selected-count>0</strong>
+            </div>
         </div>
-        <input type="hidden" name="option" value="com_xdecarocompetitions">
-        <input type="hidden" name="view" value="teamimport">
-    </form>
+    </div>
 
     <div class="row g-3 mb-3">
         <div class="col-6 col-lg-3">
@@ -119,7 +125,15 @@ $statusMap = [
             <table class="table table-striped align-middle competitions-responsive-table">
                 <thead>
                     <tr>
-                        <th class="w-1 text-center"><?= HTMLHelper::_('grid.checkall'); ?></th>
+                        <th class="w-1 text-center">
+                            <input
+                                class="form-check-input"
+                                type="checkbox"
+                                data-teamimport-checkall
+                                aria-label="<?= Text::_('COM_XDECAROCOMPETITIONS_TEAMIMPORT_SELECT_VISIBLE'); ?>"
+                                title="<?= Text::_('COM_XDECAROCOMPETITIONS_TEAMIMPORT_SELECT_VISIBLE'); ?>"
+                            >
+                        </th>
                         <th><?= Text::_('COM_XDECAROCOMPETITIONS_FIELD_NAME'); ?></th>
                         <th><?= Text::_('COM_XDECAROCOMPETITIONS_FIELD_COUNTRY'); ?></th>
                         <th><?= Text::_('COM_XDECAROCOMPETITIONS_FIELD_FEDERATION'); ?></th>
@@ -141,7 +155,16 @@ $statusMap = [
                         . (!empty($item['federation_code']) ? ' (' . (string) $item['federation_code'] . ')' : '')
                     );
                     ?>
-                    <tr>
+                    <tr
+                        data-teamimport-row
+                        data-teamimport-search="<?= $this->escape(trim(implode(' ', [
+                            (string) ($item['name'] ?? ''),
+                            (string) ($item['code'] ?? ''),
+                            $country,
+                            $federation,
+                            Text::_($statusMeta[0]),
+                        ]))); ?>"
+                    >
                         <td class="text-center competitions-responsive-table__check">
                             <?php if ($selectable) : ?>
                                 <input
@@ -149,7 +172,6 @@ $statusMap = [
                                     id="cb<?= (int) $i; ?>"
                                     name="cid[]"
                                     value="<?= $this->escape((string) $item['uuid']); ?>"
-                                    onclick="Joomla.isChecked(this.checked);"
                                 >
                             <?php else : ?>
                                 <input type="checkbox" disabled aria-label="<?= Text::_('JDISABLED'); ?>">
@@ -212,6 +234,12 @@ $statusMap = [
                     <tr>
                         <td colspan="5" class="text-center py-5 text-muted">
                             <?= Text::_('COM_XDECAROCOMPETITIONS_TEAMIMPORT_NO_RESULTS'); ?>
+                        </td>
+                    </tr>
+                <?php else : ?>
+                    <tr data-teamimport-empty hidden>
+                        <td colspan="5" class="text-center py-5 text-muted">
+                            <?= Text::_('COM_XDECAROCOMPETITIONS_TEAMIMPORT_NO_LIVE_RESULTS'); ?>
                         </td>
                     </tr>
                 <?php endif; ?>

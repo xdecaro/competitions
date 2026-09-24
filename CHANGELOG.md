@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.5.11 - 2026-09-24
+
+- Reworked the Organizations team-import search into a true live client-side filter.
+- Searching no longer reloads the page, so teams already selected remain selected while searching for additional clubs.
+- Added a persistent selected counter plus a visible-row counter.
+- Added **Show selected only** to review the complete multi-selection before importing.
+- Replaced the generic Joomla select-all behavior with **Select all visible rows**, so filtering and bulk selection work predictably together.
+- The import preview now loads one stable Organizations provider window (up to 200 Clubs) and filters that in place; no row is recreated while typing.
+- Added accessible labels and explicit no-live-results messaging.
+- Added regression coverage for persistent selection, live filtering, visible-row select-all and asset packaging.
+- No database structure changes are required.
+
 ## 1.5.10 - 2026-09-24
 
 - Added **Importa da Organizations** to the Teams Joomla toolbar.
