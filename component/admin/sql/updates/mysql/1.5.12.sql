@@ -1,0 +1,3 @@
+-- Competitions 1.5.12
+-- No database structure changes are required.
+-- Fixes runtime loading and layout of the Organizations team-import live search.

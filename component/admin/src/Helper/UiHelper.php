@@ -9,7 +9,26 @@ use Joomla\CMS\Session\Session;
 
 final class UiHelper
 {
-    private const VERSION = '1.5.11';
+    private const VERSION = '1.5.12';
+
+    public static function loadTeamImportAsset(): void
+    {
+        self::loadAssets();
+
+        $wa = Factory::getApplication()->getDocument()->getWebAssetManager();
+        $scriptName = 'com_xdecarocompetitions.teamimport.runtime';
+
+        if (!$wa->assetExists('script', $scriptName)) {
+            $wa->registerScript(
+                $scriptName,
+                'com_xdecarocompetitions/teamimport.js',
+                ['version' => self::VERSION],
+                ['defer' => true]
+            );
+        }
+
+        $wa->useScript($scriptName);
+    }
 
     public static function loadAssets(): void
     {

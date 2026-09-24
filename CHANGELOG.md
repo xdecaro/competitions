@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.5.12 - 2026-09-24
+
+- Fixed the Organizations team-import live search not executing after installation because the new script depended only on Web Asset registry discovery.
+- The import script is now registered explicitly at runtime, matching the existing Competitions administrator asset strategy and avoiding stale/undiscovered registry entries after upgrades.
+- Fixed the search toolbar layout: **Pulisci** now sits directly beside the search input instead of dropping lower beside the helper text.
+- Kept persistent multi-selection, selected/visible counters, selected-only review and visible-row select-all.
+- Added an accessible live status for filtered row counts and handles both input and native search-clear events.
+- Extended regression coverage to require runtime script registration and the corrected input-group layout.
+- No database structure changes are required.
+
 ## 1.5.11 - 2026-09-24
 
 - Reworked the Organizations team-import search into a true live client-side filter.

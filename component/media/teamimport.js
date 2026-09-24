@@ -21,6 +21,7 @@
     const visibleCount = root.querySelector('[data-teamimport-visible-count]');
     const checkAll = root.querySelector('[data-teamimport-checkall]');
     const emptyState = root.querySelector('[data-teamimport-empty]');
+    const liveStatus = root.querySelector('[data-teamimport-live-status]');
     const rows = Array.from(root.querySelectorAll('[data-teamimport-row]'));
     const selectable = rows.filter((row) => row.querySelector('input[name="cid[]"]:not(:disabled)'));
 
@@ -59,9 +60,6 @@
         selectedCount.textContent = String(count);
       }
 
-      document.querySelectorAll('joomla-toolbar-button button[disabled]').forEach(() => {
-        // Joomla updates toolbar enablement through isChecked when available.
-      });
     };
 
     const updateCheckAll = () => {
@@ -96,6 +94,10 @@
         visibleCount.textContent = String(visible);
       }
 
+      if (liveStatus) {
+        liveStatus.textContent = String(visible) + ' / ' + String(rows.length);
+      }
+
       if (emptyState) {
         emptyState.hidden = visible > 0;
       }
@@ -105,6 +107,7 @@
     };
 
     search?.addEventListener('input', applyFilter);
+    search?.addEventListener('search', applyFilter);
 
     clear?.addEventListener('click', () => {
       if (search) {

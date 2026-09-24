@@ -22,31 +22,32 @@ $statusMap = [
 
     <div class="card mb-3">
         <div class="card-body">
-            <div class="row g-2 align-items-end">
-                <div class="col-12 col-lg">
+            <div class="row g-3">
+                <div class="col-12">
                     <label class="form-label" for="teamimport_search">
                         <?= Text::_('JSEARCH_FILTER'); ?>
                     </label>
-                    <input
-                        class="form-control"
-                        type="search"
-                        id="teamimport_search"
-                        value=""
-                        autocomplete="off"
-                        data-teamimport-search
-                        placeholder="<?= Text::_('COM_XDECAROCOMPETITIONS_TEAMIMPORT_SEARCH_PLACEHOLDER'); ?>"
-                    >
+                    <div class="input-group">
+                        <input
+                            class="form-control"
+                            type="search"
+                            id="teamimport_search"
+                            value=""
+                            autocomplete="off"
+                            data-teamimport-search
+                            placeholder="<?= Text::_('COM_XDECAROCOMPETITIONS_TEAMIMPORT_SEARCH_PLACEHOLDER'); ?>"
+                        >
+                        <button class="btn btn-outline-secondary" type="button" data-teamimport-clear>
+                            <?= Text::_('JSEARCH_FILTER_CLEAR'); ?>
+                        </button>
+                    </div>
                     <div class="form-text">
                         <?= Text::_('COM_XDECAROCOMPETITIONS_TEAMIMPORT_LIVE_SEARCH_DESC'); ?>
                     </div>
                 </div>
-                <div class="col-auto">
-                    <button class="btn btn-outline-secondary" type="button" data-teamimport-clear>
-                        <?= Text::_('JSEARCH_FILTER_CLEAR'); ?>
-                    </button>
-                </div>
-                <div class="col-12 col-lg-auto">
-                    <div class="form-check mb-2">
+
+                <div class="col-12 d-flex flex-wrap align-items-center gap-3">
+                    <div class="form-check mb-0">
                         <input
                             class="form-check-input"
                             type="checkbox"
@@ -57,16 +58,19 @@ $statusMap = [
                             <?= Text::_('COM_XDECAROCOMPETITIONS_TEAMIMPORT_SHOW_SELECTED_ONLY'); ?>
                         </label>
                     </div>
+
+                    <div class="small text-muted">
+                        <?= Text::_('COM_XDECAROCOMPETITIONS_TEAMIMPORT_VISIBLE'); ?>:
+                        <strong data-teamimport-visible-count><?= count($this->items); ?></strong>
+                        ·
+                        <?= Text::_('COM_XDECAROCOMPETITIONS_TEAMIMPORT_SELECTED'); ?>:
+                        <strong data-teamimport-selected-count>0</strong>
+                    </div>
                 </div>
             </div>
 
-            <div class="small text-muted mt-3">
-                <?= Text::_('COM_XDECAROCOMPETITIONS_TEAMIMPORT_VISIBLE'); ?>:
-                <strong data-teamimport-visible-count><?= count($this->items); ?></strong>
-                ·
-                <?= Text::_('COM_XDECAROCOMPETITIONS_TEAMIMPORT_SELECTED'); ?>:
-                <strong data-teamimport-selected-count>0</strong>
-            </div>
+            <div class="visually-hidden" aria-live="polite" data-teamimport-live-status></div>
+
         </div>
     </div>
 
