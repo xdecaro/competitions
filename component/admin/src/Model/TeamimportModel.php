@@ -3,7 +3,6 @@ namespace xdecaro\Component\Competitions\Administrator\Model;
 
 defined('_JEXEC') or die;
 
-use Joomla\CMS\Factory;
 use Joomla\CMS\MVC\Model\BaseDatabaseModel;
 use Joomla\Database\ParameterType;
 use Throwable;
@@ -13,12 +12,12 @@ final class TeamimportModel extends BaseDatabaseModel
 {
     public function getPreviewRows(): array
     {
-        $app = Factory::getApplication();
-        $search = trim((string) $app->input->getString('filter_search', ''));
         $integration = new OrganizationsIntegrationService();
 
         try {
-            $organizations = $integration->searchClubs($search, 200);
+            // Load the complete provider window once. Filtering is performed
+            // client-side so checkbox selections survive every search change.
+            $organizations = $integration->searchClubs('', 200);
         } catch (Throwable $e) {
             $this->setError($e->getMessage());
             return [];
