@@ -13,6 +13,7 @@
     {"name":"com_xdecarocompetitions.scope","type":"script","uri":"com_xdecarocompetitions/scope.js","version":"1.5.10","attributes":{"defer":true}},
     {"name":"com_xdecarocompetitions.people-picker","type":"script","uri":"com_xdecarocompetitions/people-picker.js","version":"1.5.10","attributes":{"defer":true}},
     {"name":"com_xdecarocompetitions.team-edit","type":"script","uri":"com_xdecarocompetitions/team-edit.js","version":"1.5.10","attributes":{"defer":true}},
+    {"name":"com_xdecarocompetitions.teamimport","type":"script","uri":"com_xdecarocompetitions/teamimport.js","version":"1.5.10","attributes":{"defer":true}},
     {"name":"com_xdecarocompetitions.core-bridge","type":"style","uri":"com_xdecarocompetitions/core-bridge.css","version":"1.5.10","dependencies":["com_xdecarocompetitions.admin"]},
     {"name":"com_xdecarocompetitions.information","type":"style","uri":"com_xdecarocompetitions/information.css","version":"1.5.10","dependencies":["com_xdecarocompetitions.admin"]},
     {"name":"com_xdecarocompetitions.information","type":"script","uri":"com_xdecarocompetitions/information.js","version":"1.5.10","attributes":{"defer":true}}
