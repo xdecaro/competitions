@@ -8,6 +8,7 @@ $form = file_get_contents($root . '/component/admin/forms/team.xml');
 $model = file_get_contents($root . '/component/admin/src/Model/TeamModel.php');
 $table = file_get_contents($root . '/component/admin/src/Table/TeamTable.php');
 $template = file_get_contents($root . '/component/admin/tmpl/team/edit.php');
+$listTemplate = file_get_contents($root . '/component/admin/tmpl/teams/default.php');
 $asset = file_get_contents($root . '/component/media/joomla.asset.json');
 $script = file_get_contents($root . '/component/media/team-edit.js');
 $scope = file_get_contents($root . '/component/admin/src/Helper/TournamentScopeHelper.php');
@@ -42,6 +43,8 @@ $checks = [
     [str_contains($template, 'data-team-local-identity'), 'Team editor must expose local identity region for national/legacy teams'],
     [str_contains($template, 'data-team-manual-federation'), 'Team editor must isolate manual federation selection to National/legacy flows'],
     [str_contains($template, 'COM_XDECAROCOMPETITIONS_TEAM_FEDERATION_DERIVED_DESC'), 'Linked Club editor must show the derived federation state'],
+    [str_contains($listTemplate, "'club' => ['COM_XDECAROCOMPETITIONS_TEAM_TYPE_CLUB', 'is-info']"), 'Teams list Club badge must use the distinct info style'],
+    [str_contains($listTemplate, 'class="competitions-badge is-success"'), 'Organizations source badge must use the shared Competitions badge geometry'],
     [!preg_match('/name="federation_id"[^>]*required="true"/', $form), 'Manual federation must not be required for canonical Club teams'],
     [str_contains($asset, 'com_xdecarocompetitions.team-edit'), 'Team editor JavaScript asset must be registered'],
     [str_contains($script, "isClub"), 'Team editor JavaScript must switch club/national identity UI'],

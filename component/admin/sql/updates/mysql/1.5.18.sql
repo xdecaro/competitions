@@ -1,0 +1,3 @@
+-- Competitions 1.5.18
+-- No database structure changes are required.
+-- Teams list badge presentation only: Club uses the info style and Organizations uses the shared Competitions badge geometry.

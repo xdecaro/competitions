@@ -17,9 +17,9 @@ Competitions is the competition-management component in the xdecaro Joomla ecosy
 
 ## Current version
 
-**1.5.17**
+**1.5.18**
 
-Version 1.5.17 narrows Team Import live search to the team/club name only. Country, federation, affiliation code and row status no longer influence matches. It also removes the legacy root-level `teamimport.js` copy so the only shipped Team Import script is the canonical `media/js/teamimport.js` asset.
+Version 1.5.18 improves the Teams list badge presentation: Club now uses the distinct info style, while the Organizations source badge uses the same Competitions badge geometry so both badges have matching height, padding and vertical alignment.
 
 Version 1.5.0 added a public read-only person-history provider keyed by the existing People `person_uuid`. Competitions advertises the `competitions.people_history` v1 capability through Core, allowing People to show competition, season, team, role, shirt number and roster status history without reading Competitions private tables or duplicating competition data.
 
