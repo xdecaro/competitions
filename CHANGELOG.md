@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.5.23 - 2026-09-25
+
+- Added an automatic upgrade backfill for linked Club teams still showing `Federazione non determinata`.
+- During install/update, Competitions reads each unresolved Club's active sports affiliation only through the public Organizations provider.
+- If exactly one active federation affiliation exists and that federation is already linked in Competitions, the team receives the correct local `federation_id` and country snapshot automatically.
+- Missing, ambiguous or not-yet-mapped affiliations are left unchanged; no federation is guessed.
+- Future federation saves keep the 1.5.22 incremental auto-refresh behavior.
+- No database structure changes are required.
+
 ## 1.5.22 - 2026-09-25
 
 - Federation picker labels now append the Competitions national sports code derived from the linked Organizations country.
