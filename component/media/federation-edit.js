@@ -9,14 +9,15 @@
     }
 
     const organization = form.querySelector('[name="jform[organization_uuid]"]');
-    const country = form.querySelector('[name="jform[country_id]"]');
+    const country = form.querySelector('select[name="jform[country_id]"]');
+    const shadow = form.querySelector('[data-federation-country-shadow]');
     const note = form.querySelector('[data-federation-country-derived]');
     const options = window.Joomla?.getOptions?.('com_xdecarocompetitions.federationEdit') || {};
     const countryMap = options.countryMap && typeof options.countryMap === 'object'
       ? options.countryMap
       : {};
 
-    if (!organization || !country) {
+    if (!organization || !country || !shadow) {
       return;
     }
 
@@ -32,6 +33,8 @@
         country.required = false;
         country.disabled = true;
         country.setAttribute('aria-readonly', 'true');
+        shadow.value = String(countryId);
+        shadow.disabled = false;
         country.dispatchEvent(new Event('change', { bubbles: true }));
       } else {
         if (wasDerived) {
@@ -42,6 +45,8 @@
         country.disabled = false;
         country.required = true;
         country.removeAttribute('aria-readonly');
+        shadow.value = '';
+        shadow.disabled = true;
       }
 
       wasDerived = derived;
