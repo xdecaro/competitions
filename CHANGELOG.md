@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.5.20 - 2026-09-25
+
+- Fixed the confirmed federation editor asset-path bug: `federation-edit.js` was packaged at the media root while Joomla resolves its Web Asset URI from `media/js`.
+- Moved the federation editor script to `component/media/js/federation-edit.js` and removed the obsolete root copy.
+- Preserved the 1.5.19 country map and automatic Organizations ISO alpha-2 → Competitions country behavior.
+- Strengthened source and distribution contracts so the federation editor asset must ship from the Joomla `media/js` path.
+- No database structure changes are required.
+
 ## 1.5.19 - 2026-09-25
 
 - Linked federation country is now derived automatically from the canonical Organizations federation `country_code` when available.
