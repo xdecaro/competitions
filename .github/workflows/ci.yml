@@ -36,6 +36,8 @@ jobs:
         run: php tests/organizations-federation-contract.php
       - name: Organizations team contract
         run: php tests/organizations-team-contract.php
+      - name: Team federation backfill contract
+        run: php tests/team-federation-backfill-contract.php
       - name: Organizations team import contract
         run: php tests/organizations-team-import-contract.php
       - name: Team approval toolbar contract
