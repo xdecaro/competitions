@@ -1,0 +1,3 @@
+-- Competitions 1.5.20
+-- No schema changes.
+-- Federation editor JavaScript moved to Joomla media/js so the Web Asset Manager can load it.
