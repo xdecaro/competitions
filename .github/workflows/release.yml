@@ -76,4 +76,4 @@ jobs:
             "dist/mod_xdecarocompetitions_countriesfederations_${VERSION}.zip" \
             "dist/pkg_xdecarocompetitions_${VERSION}.zip" \
             "dist/SHA256SUMS.txt" --target main --title "Competitions ${VERSION}" \
-            --notes "Competitions ${VERSION}: improves Teams list badges by distinguishing Club and aligning the Organizations source badge with the shared Competitions badge geometry."
+            --notes "Competitions ${VERSION}: derives a linked federation country automatically from the canonical Organizations country_code, updates the editor immediately, and enforces the same ISO alpha-2 mapping server-side."

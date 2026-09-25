@@ -17,6 +17,7 @@ final class HtmlView extends BaseHtmlView
     public $state;
     public bool $organizationsAvailable = false;
     public ?array $organizationData = null;
+    public array $organizationCountryMap = [];
 
     public function display($tpl = null): void
     {
@@ -33,6 +34,12 @@ final class HtmlView extends BaseHtmlView
 
         $organizations = new OrganizationsIntegrationService();
         $this->organizationsAvailable = $organizations->isAvailable();
+        $this->organizationCountryMap = (array) $this->get('OrganizationCountryMap');
+
+        Factory::getApplication()->getDocument()->addScriptOptions(
+            'com_xdecarocompetitions.federationEdit',
+            ['countryMap' => $this->organizationCountryMap]
+        );
 
         if ($this->organizationsAvailable && !empty($this->item->organization_uuid)) {
             try {

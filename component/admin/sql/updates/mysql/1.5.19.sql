@@ -1,0 +1,3 @@
+-- Competitions 1.5.19
+-- No schema changes.
+-- Linked federation country is derived from Organizations country_code when available.

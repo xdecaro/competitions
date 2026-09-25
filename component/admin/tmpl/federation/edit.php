@@ -11,6 +11,9 @@ $wa->useStyle('com_xdecarocompetitions.admin');
 
 HTMLHelper::_('behavior.formvalidator');
 
+Factory::getApplication()->getDocument()->getWebAssetManager()
+    ->useScript('com_xdecarocompetitions.federation-edit');
+
 $isNew = empty($this->item->id);
 $isLinked = !empty($this->item->organization_uuid);
 $showLinkPicker = $this->organizationsAvailable && !$isLinked;
@@ -87,7 +90,13 @@ $organizationCode = trim((string) ($this->organizationData['code'] ?? $this->ite
                 <?php endif; ?>
             <?php endif; ?>
 
-            <?= $this->form->renderField('country_id'); ?>
+            <div data-federation-country>
+                <?= $this->form->renderField('country_id'); ?>
+                <input type="hidden" name="jform[country_id]" value="" data-federation-country-shadow disabled>
+                <div class="form-text text-success d-none" data-federation-country-derived>
+                    <?= Text::_('COM_XDECAROCOMPETITIONS_FEDERATION_COUNTRY_DERIVED_DESC'); ?>
+                </div>
+            </div>
 
             <?php if ($showLocalIdentity) : ?>
                 <?= $this->form->renderField('name'); ?>

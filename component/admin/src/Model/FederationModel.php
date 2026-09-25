@@ -6,6 +6,7 @@ defined('_JEXEC') or die;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Table\Table;
+use Joomla\Database\ParameterType;
 use xdecaro\Component\Competitions\Administrator\Service\OrganizationsIntegrationService;
 
 final class FederationModel extends BaseAdminModel
@@ -29,6 +30,61 @@ final class FederationModel extends BaseAdminModel
         }
 
         return $data;
+    }
+
+    /**
+     * Map canonical Organizations federation UUIDs to local Competitions country IDs.
+     *
+     * The country remains Competition-owned sports scope data, while the ISO alpha-2
+     * source value comes from the canonical organization record.
+     *
+     * @return array<string, int>
+     */
+    public function getOrganizationCountryMap(): array
+    {
+        $integration = new OrganizationsIntegrationService();
+
+        if (!$integration->isAvailable()) {
+            return [];
+        }
+
+        try {
+            $organizations = $integration->searchFederations('', 200);
+        } catch (\Throwable) {
+            return [];
+        }
+
+        $db = $this->getDatabase();
+        $query = $db->getQuery(true)
+            ->select([
+                $db->quoteName('id'),
+                $db->quoteName('iso2'),
+            ])
+            ->from($db->quoteName('#__xdecarocompetitions_countries'))
+            ->where($db->quoteName('state') . ' <> -2');
+
+        $countries = [];
+
+        foreach ($db->setQuery($query)->loadObjectList() ?: [] as $country) {
+            $iso2 = strtoupper(trim((string) ($country->iso2 ?? '')));
+
+            if ($iso2 !== '') {
+                $countries[$iso2] = (int) $country->id;
+            }
+        }
+
+        $map = [];
+
+        foreach ($organizations as $organization) {
+            $uuid = strtolower(trim((string) ($organization['uuid'] ?? '')));
+            $countryCode = strtoupper(trim((string) ($organization['country_code'] ?? '')));
+
+            if ($uuid !== '' && isset($countries[$countryCode])) {
+                $map[$uuid] = $countries[$countryCode];
+            }
+        }
+
+        return $map;
     }
 
     public function save($data): bool
@@ -78,6 +134,16 @@ final class FederationModel extends BaseAdminModel
                 $data['short_name'] = $this->snapshotText($organization['code'] ?? null, 100);
                 $data['logo'] = $this->snapshotText($organization['logo'] ?? null, 512);
                 $data['website'] = $this->snapshotText($organization['website'] ?? null, 512);
+
+                $organizationCountryCode = strtoupper(trim((string) ($organization['country_code'] ?? '')));
+
+                if ($organizationCountryCode !== '') {
+                    $countryId = $this->resolveCountryIdFromIso2($organizationCountryCode);
+
+                    if ($countryId > 0) {
+                        $data['country_id'] = $countryId;
+                    }
+                }
 
                 $email = trim((string) ($organization['email'] ?? ''));
                 $data['email'] = $email !== '' && mb_strlen($email) <= 190 ? $email : null;
@@ -140,6 +206,25 @@ final class FederationModel extends BaseAdminModel
             ->bind(':id', $id, \Joomla\Database\ParameterType::INTEGER);
 
         return strtolower(trim((string) $db->setQuery($query, 0, 1)->loadResult())) === $uuid;
+    }
+
+    private function resolveCountryIdFromIso2(string $countryCode): int
+    {
+        $countryCode = strtoupper(trim($countryCode));
+
+        if (!preg_match('/^[A-Z]{2}$/', $countryCode)) {
+            return 0;
+        }
+
+        $db = $this->getDatabase();
+        $query = $db->getQuery(true)
+            ->select($db->quoteName('id'))
+            ->from($db->quoteName('#__xdecarocompetitions_countries'))
+            ->where($db->quoteName('iso2') . ' = :iso2')
+            ->where($db->quoteName('state') . ' <> -2')
+            ->bind(':iso2', $countryCode, ParameterType::STRING);
+
+        return (int) $db->setQuery($query, 0, 1)->loadResult();
     }
 
     private function snapshotText(mixed $value, int $maxLength): ?string

@@ -17,9 +17,9 @@ Competitions is the competition-management component in the xdecaro Joomla ecosy
 
 ## Current version
 
-**1.5.18**
+**1.5.19**
 
-Version 1.5.18 improves the Teams list badge presentation: Club now uses the distinct info style, while the Organizations source badge uses the same Competitions badge geometry so both badges have matching height, padding and vertical alignment.
+Version 1.5.19 derives a linked federation's Competitions country automatically from the canonical Organizations `country_code` when available. The editor updates the country immediately and the server repeats the ISO alpha-2 mapping on save, while organizations without a country continue to use the manual Competitions country field.
 
 Version 1.5.0 added a public read-only person-history provider keyed by the existing People `person_uuid`. Competitions advertises the `competitions.people_history` v1 capability through Core, allowing People to show competition, season, team, role, shirt number and roster status history without reading Competitions private tables or duplicating competition data.
 
@@ -57,7 +57,7 @@ Organizations is an optional canonical identity provider for federations and clu
 
 Federation mappings use a stable Organizations UUID filtered to organizations of type `federation`. Club-team mappings use a separate stable Organizations UUID filtered to organizations of type `club`. Competition keeps its own local federation/team primary keys because participations, rosters, matches, coefficients and history already reference those IDs.
 
-For linked federations, name, short name, logo, website and email are compatibility snapshots refreshed from Organizations. For linked club teams, name, short name, logo, email, phone and website are compatibility snapshots refreshed from Organizations. A linked Club's federation is derived from exactly one published active `sports_affiliation` returned by Organizations: Competitions maps the affiliation target UUID to its own linked federation row. If there is no active affiliation or the target federation is not yet mapped in Competitions, the Club stays explicitly undetermined; multiple active federation affiliations are treated as ambiguous and are never guessed. Approval state, manager, ordering, alias and participation lifecycle remain Competition-domain data. National representative teams are not treated as legal club organizations and keep manual federation management inside Competitions.
+For linked federations, name, short name, logo, website and email are compatibility snapshots refreshed from Organizations. When Organizations exposes an ISO alpha-2 `country_code` that matches a Competitions country, Competitions derives `country_id`; the manual country field remains the fallback when the canonical organization has no country or the sports territory cannot be mapped directly. For linked club teams, name, short name, logo, email, phone and website are compatibility snapshots refreshed from Organizations. A linked Club's federation is derived from exactly one published active `sports_affiliation` returned by Organizations: Competitions maps the affiliation target UUID to its own linked federation row. If there is no active affiliation or the target federation is not yet mapped in Competitions, the Club stays explicitly undetermined; multiple active federation affiliations are treated as ambiguous and are never guessed. Approval state, manager, ordering, alias and participation lifecycle remain Competition-domain data. National representative teams are not treated as legal club organizations and keep manual federation management inside Competitions.
 
 Existing legacy club teams remain valid and can be linked once without changing their Competition ID or historical relations. Once linked, the canonical club cannot be swapped from the normal team editor. If Organizations is temporarily unavailable, existing links and local compatibility snapshots remain usable.
 
