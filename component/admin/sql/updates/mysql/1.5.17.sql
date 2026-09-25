@@ -1,0 +1,3 @@
+-- Competitions 1.5.17
+-- No database structure changes are required.
+-- Team Import live search is restricted to the team name and the legacy root-level JavaScript copy is removed.
