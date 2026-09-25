@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.5.22 - 2026-09-25
+
+- Federation picker labels now append the Competitions national sports code derived from the linked Organizations country.
+- Example labels: `Federación Española de Deportes para Sordos (FEDS) — ESP`, `Liga Portuguesa de Desporto para Surdos (LPDS) — POR`.
+- The code comes from the existing Competitions countries table, preserving sports codes such as GER, NED and POR rather than displaying only ISO alpha-2.
+- Existing filtering of already-linked federations remains unchanged.
+- No database structure changes are required.
+
 ## 1.5.21 - 2026-09-25
 
 - Federation creation now hides Organizations federations that are already linked to an existing Competitions federation.
