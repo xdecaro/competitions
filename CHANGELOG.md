@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.5.21 - 2026-09-25
+
+- Federation creation now hides Organizations federations that are already linked to an existing Competitions federation.
+- The picker keeps its current value when needed for compatibility, but prevents already-used canonical federations from appearing as new choices.
+- The existing unique UUID constraint remains the server-side safety net against duplicate links.
+- No database structure changes are required.
+
 ## 1.5.20 - 2026-09-25
 
 - Fixed the confirmed federation editor asset-path bug: `federation-edit.js` was packaged at the media root while Joomla resolves its Web Asset URI from `media/js`.
