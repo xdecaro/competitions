@@ -7,6 +7,10 @@ $service = file_get_contents($root . '/component/admin/src/Service/Organizations
 $form = file_get_contents($root . '/component/admin/forms/federation.xml');
 $model = file_get_contents($root . '/component/admin/src/Model/FederationModel.php');
 $table = file_get_contents($root . '/component/admin/src/Table/FederationTable.php');
+$view = file_get_contents($root . '/component/admin/src/View/Federation/HtmlView.php');
+$template = file_get_contents($root . '/component/admin/tmpl/federation/edit.php');
+$asset = file_get_contents($root . '/component/media/joomla.asset.json');
+$script = file_get_contents($root . '/component/media/federation-edit.js');
 $schema = file_get_contents($root . '/component/admin/sql/install.mysql.utf8mb4.sql');
 $migration = file_get_contents($root . '/component/admin/sql/updates/mysql/1.5.2.sql');
 
@@ -22,6 +26,18 @@ $checks = [
     [str_contains($model, "\$data['organization_uuid']"), 'Federation model must persist the stable Organizations UUID'],
     [str_contains($model, "\$organization['name']"), 'Federation model must refresh canonical name snapshot'],
     [str_contains($model, "\$organization['code']"), 'Federation model must refresh canonical code snapshot'],
+    [str_contains($model, "\$organization['country_code']"), 'Federation model must consume the canonical Organizations country code'],
+    [str_contains($model, 'resolveCountryIdFromIso2'), 'Federation model must derive the local country from Organizations ISO alpha-2'],
+    [str_contains($model, "\$data['country_id'] = \$countryId"), 'Derived Organizations country must override the local federation country on save'],
+    [str_contains($model, "\$db->quoteName('iso2')"), 'Federation country mapping must use the local Competitions ISO alpha-2 field'],
+    [str_contains($model, 'getOrganizationCountryMap'), 'Federation editor must expose a UUID-to-country map'],
+    [str_contains($view, 'com_xdecarocompetitions.federationEdit'), 'Federation view must publish the country map to JavaScript'],
+    [str_contains($template, "useScript('com_xdecarocompetitions.federation-edit')"), 'Federation editor must load its country sync asset'],
+    [str_contains($template, 'data-federation-country-derived'), 'Federation editor must show when the country is derived'],
+    [str_contains($asset, 'com_xdecarocompetitions.federation-edit'), 'Federation editor asset must be registered'],
+    [str_contains($script, 'countryMap'), 'Federation editor JavaScript must consume the country map'],
+    [str_contains($script, 'country.disabled = true'), 'Automatically derived country must not be manually editable'],
+    [str_contains($script, 'country.required = false'), 'Automatically derived country must not be blocked by client-side required validation'],
     [str_contains($model, "if (\$existingUuid !== '')"), 'Existing canonical federation link must be immutable from the edit form'],
     [str_contains($model, "\$organizationUuid = \$existingUuid"), 'Existing canonical federation UUID must be preserved server-side'],
     [str_contains(file_get_contents($root . '/component/admin/tmpl/federation/edit.php'), '$showLinkPicker = $this->organizationsAvailable && !$isLinked;'), 'Link picker must disappear after a federation is linked'],
