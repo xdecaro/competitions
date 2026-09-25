@@ -9,7 +9,7 @@ use Joomla\CMS\Session\Session;
 
 final class UiHelper
 {
-    private const VERSION = '1.5.14';
+    private const VERSION = '1.5.15';
 
     public static function loadAssets(): void
     {
@@ -128,8 +128,6 @@ final class UiHelper
         $wa->useScript($syncScriptName);
         $wa->useScript($scopeScriptName);
         $wa->useScript($peopleScriptName);
-        if (Factory::getApplication()->input->getCmd('view') === 'teamimport') {
-            $wa->useScript($teamImportScriptName);
-        }
+        $wa->useScript($teamImportScriptName);
     }
 }

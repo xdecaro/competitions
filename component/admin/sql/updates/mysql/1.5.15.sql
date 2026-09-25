@@ -1,0 +1,3 @@
+-- Competitions 1.5.15
+-- No database structure changes are required.
+-- Always attaches the guarded Team Import script through the shared administrator asset loader.
