@@ -19,7 +19,7 @@ Competitions is the competition-management component in the xdecaro Joomla ecosy
 
 **1.5.22**
 
-Version 1.5.22 adds the national sports code to each available federation in the Organizations picker, for example `FEDS — ESP` and `LPDS — POR`, while retaining the 1.5.21 filtering of already-linked federations.
+Version 1.5.22 adds the national sports code to each available federation in the Organizations picker, for example `FEDS — ESP` and `LPDS — POR`, while retaining the 1.5.21 filtering of already-linked federations. When a federation is linked/saved, Competitions also refreshes any linked Club still without a federation if its single active Organizations sports affiliation points to that federation, so those teams no longer need to be opened and saved manually.
 
 Version 1.5.0 added a public read-only person-history provider keyed by the existing People `person_uuid`. Competitions advertises the `competitions.people_history` v1 capability through Core, allowing People to show competition, season, team, role, shirt number and roster status history without reading Competitions private tables or duplicating competition data.
 
