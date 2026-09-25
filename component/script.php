@@ -113,7 +113,7 @@ final class com_xdecarocompetitionsInstallerScript
                 continue;
             }
 
-            $countryCode = strtoupper(trim((string) (($federation->iso3 ?? '') ?: ($federation->code ?? '')));
+            $countryCode = strtoupper(trim((string) (($federation->iso3 ?? '') ?: ($federation->code ?? ''))));
 
             $federations[$uuid] = [
                 'id' => (int) $federation->id,
