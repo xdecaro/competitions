@@ -1,0 +1,3 @@
+-- Competitions 1.5.21
+-- No schema changes.
+-- Federation picker hides Organizations federations already linked in Competitions.
