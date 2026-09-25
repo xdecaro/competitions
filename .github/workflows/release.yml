@@ -76,4 +76,4 @@ jobs:
             "dist/mod_xdecarocompetitions_countriesfederations_${VERSION}.zip" \
             "dist/pkg_xdecarocompetitions_${VERSION}.zip" \
             "dist/SHA256SUMS.txt" --target main --title "Competitions ${VERSION}" \
-            --notes "Competitions ${VERSION}: fixes the confirmed Team Import Web Asset lifecycle issue by registering its live-search script before administrator assets are enabled."
+            --notes "Competitions ${VERSION}: fixes Team Import live-search asset activation by attaching the guarded script through the same shared administrator Web Asset path as the working Competitions scripts."
