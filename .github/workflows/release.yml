@@ -76,4 +76,4 @@ jobs:
             "dist/mod_xdecarocompetitions_countriesfederations_${VERSION}.zip" \
             "dist/pkg_xdecarocompetitions_${VERSION}.zip" \
             "dist/SHA256SUMS.txt" --target main --title "Competitions ${VERSION}" \
-            --notes "Competitions ${VERSION}: fixes the federation editor Web Asset path so automatic Organizations country mapping loads correctly from Joomla media/js."
+            --notes "Competitions ${VERSION}: hides Organizations federations that are already linked in Competitions, keeping the new-federation picker focused on available canonical federations."

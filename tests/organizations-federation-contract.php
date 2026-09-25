@@ -7,6 +7,7 @@ $service = file_get_contents($root . '/component/admin/src/Service/Organizations
 $form = file_get_contents($root . '/component/admin/forms/federation.xml');
 $model = file_get_contents($root . '/component/admin/src/Model/FederationModel.php');
 $table = file_get_contents($root . '/component/admin/src/Table/FederationTable.php');
+$field = file_get_contents($root . '/component/admin/src/Field/FederationOrganizationField.php');
 $view = file_get_contents($root . '/component/admin/src/View/Federation/HtmlView.php');
 $template = file_get_contents($root . '/component/admin/tmpl/federation/edit.php');
 $asset = file_get_contents($root . '/component/media/joomla.asset.json');
@@ -20,6 +21,9 @@ $checks = [
     [str_contains($service, "'type' => 'federation'"), 'Organizations search must be limited to federation type'],
     [!str_contains($service, '#__xdecaroorganizations_'), 'Competitions must not read Organizations private tables'],
     [str_contains($form, 'type="FederationOrganization"'), 'Federation form must use the Organizations picker'],
+    [str_contains($field, 'getLinkedOrganizationUuids'), 'Federation picker must load already linked Organizations UUIDs'],
+    [str_contains($field, "#__xdecarocompetitions_federations"), 'Federation picker duplicate filter must use the local Competitions federation table'],
+    [str_contains($field, 'isset($linked[$uuid]) && $uuid !== $current'), 'Federation picker must hide already linked Organizations federations while preserving its current value'],
     [str_contains($form, 'COM_XDECAROCOMPETITIONS_SELECT_COUNTRY'), 'Country must have an explicit empty selection'],
     [!preg_match('/name="name"[^>]*required="true"/', $form), 'Canonical linked federation name must not block client validation'],
     [str_contains($model, 'public function save($data): bool'), 'FederationModel save signature must match BaseAdminModel'],
