@@ -28,6 +28,7 @@ final class FederationOrganizationField extends ListField
         $service = new OrganizationsIntegrationService();
         $current = strtolower(trim((string) $this->value));
         $linked = $this->getLinkedOrganizationUuids();
+        $countryCodes = $this->getCountrySportsCodesByIso2();
 
         try {
             if (!$service->isAvailable()) {
@@ -48,20 +49,22 @@ final class FederationOrganizationField extends ListField
                 }
 
                 $seen[$uuid] = true;
-                $name = trim((string) ($organization['name'] ?? ''));
-                $code = trim((string) ($organization['code'] ?? ''));
-                $label = $code !== '' ? $name . ' (' . $code . ')' : $name;
-                $options[] = HTMLHelper::_('select.option', $uuid, $label);
+                $options[] = HTMLHelper::_(
+                    'select.option',
+                    $uuid,
+                    $this->buildOrganizationLabel($organization, $countryCodes)
+                );
             }
 
             if ($current !== '' && !isset($seen[$current])) {
                 $organization = $service->getFederation($current);
 
                 if ($organization) {
-                    $name = trim((string) ($organization['name'] ?? ''));
-                    $code = trim((string) ($organization['code'] ?? ''));
-                    $label = $code !== '' ? $name . ' (' . $code . ')' : $name;
-                    $options[] = HTMLHelper::_('select.option', $current, $label);
+                    $options[] = HTMLHelper::_(
+                        'select.option',
+                        $current,
+                        $this->buildOrganizationLabel($organization, $countryCodes)
+                    );
                 }
             }
         } catch (Throwable) {
@@ -69,6 +72,61 @@ final class FederationOrganizationField extends ListField
         }
 
         return array_merge(parent::getOptions(), $options);
+    }
+
+    /**
+     * @param array<string, mixed> $organization
+     * @param array<string, string> $countryCodes
+     */
+    private function buildOrganizationLabel(array $organization, array $countryCodes): string
+    {
+        $name = trim((string) ($organization['name'] ?? ''));
+        $code = trim((string) ($organization['code'] ?? ''));
+        $countryIso2 = strtoupper(trim((string) ($organization['country_code'] ?? '')));
+        $countryCode = $countryCodes[$countryIso2] ?? '';
+
+        $label = $code !== '' ? $name . ' (' . $code . ')' : $name;
+
+        if ($countryCode !== '') {
+            $label .= ' — ' . $countryCode;
+        }
+
+        return $label;
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    private function getCountrySportsCodesByIso2(): array
+    {
+        try {
+            $db = Factory::getContainer()->get(DatabaseInterface::class);
+            $query = $db->getQuery(true)
+                ->select([
+                    $db->quoteName('iso2'),
+                    $db->quoteName('code'),
+                ])
+                ->from($db->quoteName('#__xdecarocompetitions_countries'))
+                ->where($db->quoteName('iso2') . ' IS NOT NULL')
+                ->where($db->quoteName('iso2') . " <> ''")
+                ->where($db->quoteName('code') . " <> ''")
+                ->where($db->quoteName('state') . ' <> -2');
+
+            $codes = [];
+
+            foreach ($db->setQuery($query)->loadObjectList() ?: [] as $country) {
+                $iso2 = strtoupper(trim((string) ($country->iso2 ?? '')));
+                $code = strtoupper(trim((string) ($country->code ?? '')));
+
+                if ($iso2 !== '' && $code !== '') {
+                    $codes[$iso2] = $code;
+                }
+            }
+
+            return $codes;
+        } catch (Throwable) {
+            return [];
+        }
     }
 
     /**
