@@ -17,9 +17,9 @@ Competitions is the competition-management component in the xdecaro Joomla ecosy
 
 ## Current version
 
-**1.5.22**
+**1.5.23**
 
-Version 1.5.22 adds the national sports code to each available federation in the Organizations picker, for example `FEDS — ESP` and `LPDS — POR`, while retaining the 1.5.21 filtering of already-linked federations. When a federation is linked/saved, Competitions also refreshes any linked Club still without a federation if its single active Organizations sports affiliation points to that federation, so those teams no longer need to be opened and saved manually.
+Version 1.5.23 automatically backfills existing linked Clubs that still have no local federation mapping during component update. It uses only the public Organizations affiliation provider, requires exactly one active sports federation affiliation, and updates the Club only when that federation is already linked in Competitions. The 1.5.22 national-code labels and incremental refresh on federation save remain unchanged.
 
 Version 1.5.0 added a public read-only person-history provider keyed by the existing People `person_uuid`. Competitions advertises the `competitions.people_history` v1 capability through Core, allowing People to show competition, season, team, role, shirt number and roster status history without reading Competitions private tables or duplicating competition data.
 
@@ -97,7 +97,7 @@ CI performs a real Joomla 6.1.3 installation of the built package. The 1.5.16 ga
 
 ## Data and update policy
 
-Fresh installations create only `#__xdecarocompetitions_*` tables. Version 1.4.0 adds nullable unique `person_uuid` to players and a nullable edition/team `photo` to rosters. Versions 1.5.0 and 1.5.1 do not change the database schema. Version 1.5.2 adds a nullable unique `organization_uuid` to federations; existing federation rows remain valid and unlinked. Versions 1.5.3, 1.5.4 and 1.5.5 change no database structure. Version 1.5.6 repairs the existing 1.5.2 federation UUID schema on historical installations when it is missing; it does not remove or rewrite data. Version 1.5.7 adds a nullable unique `organization_uuid` to teams for canonical Organizations club links; existing teams remain valid and unlinked. Versions 1.5.8 through 1.5.22 change no database structure.
+Fresh installations create only `#__xdecarocompetitions_*` tables. Version 1.4.0 adds nullable unique `person_uuid` to players and a nullable edition/team `photo` to rosters. Versions 1.5.0 and 1.5.1 do not change the database schema. Version 1.5.2 adds a nullable unique `organization_uuid` to federations; existing federation rows remain valid and unlinked. Versions 1.5.3, 1.5.4 and 1.5.5 change no database structure. Version 1.5.6 repairs the existing 1.5.2 federation UUID schema on historical installations when it is missing; it does not remove or rewrite data. Version 1.5.7 adds a nullable unique `organization_uuid` to teams for canonical Organizations club links; existing teams remain valid and unlinked. Versions 1.5.8 through 1.5.23 change no database structure.
 
 Existing player records are not auto-linked or auto-merged. Linking to People must be explicit or performed by a separately verified migration workflow.
 

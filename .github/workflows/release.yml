@@ -34,6 +34,7 @@ jobs:
           php tests/people-roster-photo-contract.php
           php tests/organizations-federation-contract.php
           php tests/organizations-team-contract.php
+          php tests/team-federation-backfill-contract.php
           php tests/organizations-team-import-contract.php
           php tests/team-approval-toolbar-contract.php
           php tests/federation-link-persistence-contract.php
@@ -76,4 +77,4 @@ jobs:
             "dist/mod_xdecarocompetitions_countriesfederations_${VERSION}.zip" \
             "dist/pkg_xdecarocompetitions_${VERSION}.zip" \
             "dist/SHA256SUMS.txt" --target main --title "Competitions ${VERSION}" \
-            --notes "Competitions ${VERSION}: appends national sports codes to the federation picker and automatically refreshes linked Clubs that were waiting for a newly mapped Organizations federation."
+            --notes "Competitions ${VERSION}: automatically backfills existing linked Clubs that still lack a local federation mapping, using the public Organizations sports-affiliation provider without guessing ambiguous relationships."
