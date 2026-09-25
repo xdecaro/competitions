@@ -1,0 +1,3 @@
+-- Competitions 1.5.16
+-- No database structure changes are required.
+-- Installs Team Import JavaScript under media/js so Joomla Web Asset Manager can resolve it.
