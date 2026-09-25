@@ -1,22 +1,22 @@
 {
   "$schema": "https://developer.joomla.org/schemas/json-schema/web_assets.json",
   "name": "com_xdecarocompetitions",
-  "version": "1.5.19",
+  "version": "1.5.20",
   "description": "Competitions administrator assets",
   "license": "GPL-2.0-or-later",
   "assets": [
-    {"name":"com_xdecarocompetitions.admin","type":"style","uri":"com_xdecarocompetitions/admin.css","version":"1.5.19"},
-    {"name":"com_xdecarocompetitions.filterbar-style","type":"style","uri":"com_xdecarocompetitions/filterbar.css","version":"1.5.19","dependencies":["com_xdecarocompetitions.admin"]},
-    {"name":"com_xdecarocompetitions.filterbar","type":"script","uri":"com_xdecarocompetitions/filterbar.js","version":"1.5.19","attributes":{"defer":true}},
-    {"name":"com_xdecarocompetitions.live-sync-style","type":"style","uri":"com_xdecarocompetitions/live-sync.css","version":"1.5.19"},
-    {"name":"com_xdecarocompetitions.live-sync","type":"script","uri":"com_xdecarocompetitions/live-sync.js","version":"1.5.19","attributes":{"defer":true}},
-    {"name":"com_xdecarocompetitions.scope","type":"script","uri":"com_xdecarocompetitions/scope.js","version":"1.5.19","attributes":{"defer":true}},
-    {"name":"com_xdecarocompetitions.people-picker","type":"script","uri":"com_xdecarocompetitions/people-picker.js","version":"1.5.19","attributes":{"defer":true}},
-    {"name":"com_xdecarocompetitions.team-edit","type":"script","uri":"com_xdecarocompetitions/team-edit.js","version":"1.5.19","attributes":{"defer":true}},
-    {"name":"com_xdecarocompetitions.teamimport","type":"script","uri":"com_xdecarocompetitions/teamimport.js","version":"1.5.19","attributes":{"defer":true}},
-    {"name":"com_xdecarocompetitions.federation-edit","type":"script","uri":"com_xdecarocompetitions/federation-edit.js","version":"1.5.19","attributes":{"defer":true}},
-    {"name":"com_xdecarocompetitions.core-bridge","type":"style","uri":"com_xdecarocompetitions/core-bridge.css","version":"1.5.19","dependencies":["com_xdecarocompetitions.admin"]},
-    {"name":"com_xdecarocompetitions.information","type":"style","uri":"com_xdecarocompetitions/information.css","version":"1.5.19","dependencies":["com_xdecarocompetitions.admin"]},
-    {"name":"com_xdecarocompetitions.information","type":"script","uri":"com_xdecarocompetitions/information.js","version":"1.5.19","attributes":{"defer":true}}
+    {"name":"com_xdecarocompetitions.admin","type":"style","uri":"com_xdecarocompetitions/admin.css","version":"1.5.20"},
+    {"name":"com_xdecarocompetitions.filterbar-style","type":"style","uri":"com_xdecarocompetitions/filterbar.css","version":"1.5.20","dependencies":["com_xdecarocompetitions.admin"]},
+    {"name":"com_xdecarocompetitions.filterbar","type":"script","uri":"com_xdecarocompetitions/filterbar.js","version":"1.5.20","attributes":{"defer":true}},
+    {"name":"com_xdecarocompetitions.live-sync-style","type":"style","uri":"com_xdecarocompetitions/live-sync.css","version":"1.5.20"},
+    {"name":"com_xdecarocompetitions.live-sync","type":"script","uri":"com_xdecarocompetitions/live-sync.js","version":"1.5.20","attributes":{"defer":true}},
+    {"name":"com_xdecarocompetitions.scope","type":"script","uri":"com_xdecarocompetitions/scope.js","version":"1.5.20","attributes":{"defer":true}},
+    {"name":"com_xdecarocompetitions.people-picker","type":"script","uri":"com_xdecarocompetitions/people-picker.js","version":"1.5.20","attributes":{"defer":true}},
+    {"name":"com_xdecarocompetitions.team-edit","type":"script","uri":"com_xdecarocompetitions/team-edit.js","version":"1.5.20","attributes":{"defer":true}},
+    {"name":"com_xdecarocompetitions.teamimport","type":"script","uri":"com_xdecarocompetitions/teamimport.js","version":"1.5.20","attributes":{"defer":true}},
+    {"name":"com_xdecarocompetitions.federation-edit","type":"script","uri":"com_xdecarocompetitions/federation-edit.js","version":"1.5.20","attributes":{"defer":true}},
+    {"name":"com_xdecarocompetitions.core-bridge","type":"style","uri":"com_xdecarocompetitions/core-bridge.css","version":"1.5.20","dependencies":["com_xdecarocompetitions.admin"]},
+    {"name":"com_xdecarocompetitions.information","type":"style","uri":"com_xdecarocompetitions/information.css","version":"1.5.20","dependencies":["com_xdecarocompetitions.admin"]},
+    {"name":"com_xdecarocompetitions.information","type":"script","uri":"com_xdecarocompetitions/information.js","version":"1.5.20","attributes":{"defer":true}}
   ]
 }

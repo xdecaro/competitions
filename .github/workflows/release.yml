@@ -76,4 +76,4 @@ jobs:
             "dist/mod_xdecarocompetitions_countriesfederations_${VERSION}.zip" \
             "dist/pkg_xdecarocompetitions_${VERSION}.zip" \
             "dist/SHA256SUMS.txt" --target main --title "Competitions ${VERSION}" \
-            --notes "Competitions ${VERSION}: derives a linked federation country automatically from the canonical Organizations country_code, updates the editor immediately, and enforces the same ISO alpha-2 mapping server-side."
+            --notes "Competitions ${VERSION}: fixes the federation editor Web Asset path so automatic Organizations country mapping loads correctly from Joomla media/js."
