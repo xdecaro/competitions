@@ -76,4 +76,4 @@ jobs:
             "dist/mod_xdecarocompetitions_countriesfederations_${VERSION}.zip" \
             "dist/pkg_xdecarocompetitions_${VERSION}.zip" \
             "dist/SHA256SUMS.txt" --target main --title "Competitions ${VERSION}" \
-            --notes "Competitions ${VERSION}: Team Import live search now matches only team/club names and the legacy root-level teamimport.js copy is no longer shipped."
+            --notes "Competitions ${VERSION}: improves Teams list badges by distinguishing Club and aligning the Organizations source badge with the shared Competitions badge geometry."
