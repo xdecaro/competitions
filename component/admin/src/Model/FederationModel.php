@@ -140,17 +140,9 @@ final class FederationModel extends BaseAdminModel
                 if ($organizationCountryCode !== '') {
                     $countryId = $this->resolveCountryIdFromIso2($organizationCountryCode);
 
-                    if ($countryId <= 0) {
-                        $this->setError(
-                            Text::sprintf(
-                                'COM_XDECAROCOMPETITIONS_ERROR_FEDERATION_ORGANIZATION_COUNTRY_UNMAPPED',
-                                $organizationCountryCode
-                            )
-                        );
-                        return false;
+                    if ($countryId > 0) {
+                        $data['country_id'] = $countryId;
                     }
-
-                    $data['country_id'] = $countryId;
                 }
 
                 $email = trim((string) ($organization['email'] ?? ''));
