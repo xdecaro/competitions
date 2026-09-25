@@ -6,8 +6,8 @@ defined('_JEXEC') or die;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Form\Field\ListField;
 use Joomla\CMS\HTML\HTMLHelper;
-use Joomla\Database\DatabaseInterface;
 use Joomla\CMS\Language\Text;
+use Joomla\Database\DatabaseInterface;
 use Throwable;
 use xdecaro\Component\Competitions\Administrator\Service\OrganizationsIntegrationService;
 
