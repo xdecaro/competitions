@@ -104,6 +104,7 @@ jobs:
           test "$("${MYSQL[@]}" -e "SELECT COUNT(*) FROM information_schema.statistics WHERE table_schema='joomla' AND table_name='cmp_xdecarocompetitions_federations' AND index_name='uq_competitions_federations_organization_uuid' AND non_unique=0;")" = '1'
           test "$("${MYSQL[@]}" -e "SELECT COUNT(*) FROM information_schema.columns WHERE table_schema='joomla' AND table_name='cmp_xdecarocompetitions_teams' AND column_name='organization_uuid';")" = '1'
           test "$("${MYSQL[@]}" -e "SELECT COUNT(*) FROM information_schema.statistics WHERE table_schema='joomla' AND table_name='cmp_xdecarocompetitions_teams' AND index_name='uq_competitions_teams_organization_uuid' AND non_unique=0;")" = '1'
+          test -f joomla/media/com_competitions/js/federation-edit.js
           for row in "component|com_competitions|" "plugin|xdecarocompetitions|system" "plugin|competitions|xdecaroanalytics" "plugin|xdecarocompetitions|task"; do
             IFS='|' read -r type element folder <<< "$row"
             count="$("${MYSQL[@]}" -e "SELECT COUNT(*) FROM cmp_extensions WHERE type='${type}' AND element='${element}' AND folder='${folder}';")"
