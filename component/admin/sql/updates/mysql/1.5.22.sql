@@ -1,0 +1,3 @@
+-- Competitions 1.5.22
+-- No schema changes.
+-- Federation picker labels include the Competitions national sports code when Organizations country_code can be mapped.
