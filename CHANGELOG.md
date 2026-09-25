@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.5.16 - 2026-09-25
+
+- Fixed the root cause of Team Import live-search JavaScript not loading: the file was packaged at the media root, while Joomla Web Asset Manager resolves script URIs from the component `media/js` directory.
+- Added `component/media/js/teamimport.js`, matching the layout already used by the working `filterbar.js`, `live-sync.js`, `scope.js` and `people-picker.js` assets.
+- Kept the existing guarded runtime registration and live-search logic unchanged.
+- Extended release validation and regression tests to require the Team Import script in the Joomla `media/js` path.
+- No database structure changes are required.
+
 ## 1.5.15 - 2026-09-25
 
 - Fixed the final Team Import asset activation issue confirmed in the live site: all shared Competitions administrator scripts were loading, while only `teamimport.js` was absent.
