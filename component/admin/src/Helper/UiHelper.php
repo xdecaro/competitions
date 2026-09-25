@@ -128,8 +128,6 @@ final class UiHelper
         $wa->useScript($syncScriptName);
         $wa->useScript($scopeScriptName);
         $wa->useScript($peopleScriptName);
-        if (Factory::getApplication()->input->getCmd('view') === 'teamimport') {
-            $wa->useScript($teamImportScriptName);
-        }
+        $wa->useScript($teamImportScriptName);
     }
 }
