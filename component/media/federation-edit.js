@@ -20,6 +20,8 @@
       return;
     }
 
+    let wasDerived = false;
+
     const sync = () => {
       const uuid = String(organization.value || '').trim().toLowerCase();
       const countryId = Number(countryMap[uuid] || 0);
@@ -32,10 +34,17 @@
         country.setAttribute('aria-readonly', 'true');
         country.dispatchEvent(new Event('change', { bubbles: true }));
       } else {
+        if (wasDerived) {
+          country.value = '';
+          country.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+
         country.disabled = false;
         country.required = true;
         country.removeAttribute('aria-readonly');
       }
+
+      wasDerived = derived;
 
       if (note) {
         note.classList.toggle('d-none', !derived);
