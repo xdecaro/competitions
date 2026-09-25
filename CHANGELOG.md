@@ -5,7 +5,7 @@
 - Linked federation country is now derived automatically from the canonical Organizations federation `country_code` when available.
 - The federation editor immediately selects and locks the matching Competitions country after choosing an Organizations federation, avoiding duplicate manual country entry.
 - Server-side save repeats the ISO alpha-2 mapping authoritatively, so the UI cannot create a conflicting federation/country pair.
-- Organizations with no country remain compatible: the Competitions country stays manually selectable and required.
+- Organizations with no country, or without a matching ISO alpha-2 sports-country record, remain compatible: the Competitions country stays manually selectable and required.
 - No database structure changes are required.
 
 ## 1.5.18 - 2026-09-25
