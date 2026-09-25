@@ -38,6 +38,8 @@ $checks = [
     [str_contains($script, 'countryMap'), 'Federation editor JavaScript must consume the country map'],
     [str_contains($script, 'country.disabled = true'), 'Automatically derived country must not be manually editable'],
     [str_contains($script, 'country.required = false'), 'Automatically derived country must not be blocked by client-side required validation'],
+    [str_contains($template, 'data-federation-country-shadow'), 'Derived country must have a hidden submission field'],
+    [str_contains($script, 'shadow.disabled = false'), 'Derived country shadow must be submitted while the visible selector is locked'],
     [str_contains($model, "if (\$existingUuid !== '')"), 'Existing canonical federation link must be immutable from the edit form'],
     [str_contains($model, "\$organizationUuid = \$existingUuid"), 'Existing canonical federation UUID must be preserved server-side'],
     [str_contains(file_get_contents($root . '/component/admin/tmpl/federation/edit.php'), '$showLinkPicker = $this->organizationsAvailable && !$isLinked;'), 'Link picker must disappear after a federation is linked'],
