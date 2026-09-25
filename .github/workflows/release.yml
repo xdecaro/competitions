@@ -76,4 +76,4 @@ jobs:
             "dist/mod_xdecarocompetitions_countriesfederations_${VERSION}.zip" \
             "dist/pkg_xdecarocompetitions_${VERSION}.zip" \
             "dist/SHA256SUMS.txt" --target main --title "Competitions ${VERSION}" \
-            --notes "Competitions ${VERSION}: appends each federation national sports code to the Organizations picker while keeping already-linked federations hidden."
+            --notes "Competitions ${VERSION}: appends national sports codes to the federation picker and automatically refreshes linked Clubs that were waiting for a newly mapped Organizations federation."
