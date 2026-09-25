@@ -92,6 +92,7 @@ $organizationCode = trim((string) ($this->organizationData['code'] ?? $this->ite
 
             <div data-federation-country>
                 <?= $this->form->renderField('country_id'); ?>
+                <input type="hidden" name="jform[country_id]" value="" data-federation-country-shadow disabled>
                 <div class="form-text text-success d-none" data-federation-country-derived>
                     <?= Text::_('COM_XDECAROCOMPETITIONS_FEDERATION_COUNTRY_DERIVED_DESC'); ?>
                 </div>
