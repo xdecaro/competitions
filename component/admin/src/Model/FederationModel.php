@@ -7,6 +7,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Table\Table;
 use Joomla\Database\ParameterType;
+use xdecaro\Component\Competitions\Administrator\Helper\LiveSyncHelper;
 use xdecaro\Component\Competitions\Administrator\Service\OrganizationsIntegrationService;
 
 final class FederationModel extends BaseAdminModel
@@ -167,6 +168,10 @@ final class FederationModel extends BaseAdminModel
                 $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_FEDERATION_LINK_NOT_PERSISTED'));
                 return false;
             }
+
+            if ($available) {
+                $this->syncUndeterminedLinkedClubs($integration, $organizationUuid, $savedId);
+            }
         }
 
         return true;
@@ -206,6 +211,122 @@ final class FederationModel extends BaseAdminModel
             ->bind(':id', $id, \Joomla\Database\ParameterType::INTEGER);
 
         return strtolower(trim((string) $db->setQuery($query, 0, 1)->loadResult())) === $uuid;
+    }
+
+    private function syncUndeterminedLinkedClubs(
+        OrganizationsIntegrationService $integration,
+        string $federationUuid,
+        int $federationId
+    ): void {
+        $federationUuid = strtolower(trim($federationUuid));
+
+        if ($federationUuid === '' || $federationId <= 0) {
+            return;
+        }
+
+        $db = $this->getDatabase();
+        $query = $db->getQuery(true)
+            ->select([
+                $db->quoteName('id'),
+                $db->quoteName('organization_uuid'),
+            ])
+            ->from($db->quoteName('#__xdecarocompetitions_teams'))
+            ->where($db->quoteName('team_type') . ' = ' . $db->quote('club'))
+            ->where($db->quoteName('federation_id') . ' = 0')
+            ->where($db->quoteName('organization_uuid') . ' IS NOT NULL')
+            ->where($db->quoteName('organization_uuid') . " <> ''")
+            ->where($db->quoteName('state') . ' <> -2');
+
+        $teams = $db->setQuery($query)->loadObjectList() ?: [];
+
+        if (!$teams) {
+            return;
+        }
+
+        $query = $db->getQuery(true)
+            ->select([
+                $db->quoteName('c.iso3'),
+                $db->quoteName('c.code'),
+            ])
+            ->from($db->quoteName('#__xdecarocompetitions_federations', 'f'))
+            ->innerJoin(
+                $db->quoteName('#__xdecarocompetitions_countries', 'c')
+                . ' ON ' . $db->quoteName('c.id') . ' = ' . $db->quoteName('f.country_id')
+            )
+            ->where($db->quoteName('f.id') . ' = :federationId')
+            ->where($db->quoteName('f.state') . ' <> -2')
+            ->where($db->quoteName('c.state') . ' <> -2')
+            ->bind(':federationId', $federationId, ParameterType::INTEGER);
+
+        $country = $db->setQuery($query, 0, 1)->loadObject();
+        $countryCode = strtoupper(trim((string) (($country->iso3 ?? '') ?: ($country->code ?? ''))));
+        $countryCode = $countryCode !== '' && strlen($countryCode) <= 3 ? $countryCode : null;
+        $updatedIds = [];
+
+        foreach ($teams as $team) {
+            $clubUuid = strtolower(trim((string) ($team->organization_uuid ?? '')));
+
+            if ($clubUuid === '') {
+                continue;
+            }
+
+            try {
+                $affiliations = $integration->getActiveSportsFederations($clubUuid);
+            } catch (\Throwable) {
+                continue;
+            }
+
+            if (count($affiliations) !== 1) {
+                continue;
+            }
+
+            $targetUuid = strtolower(trim((string) ($affiliations[0]['target_uuid'] ?? '')));
+
+            if ($targetUuid !== $federationUuid) {
+                continue;
+            }
+
+            $teamId = (int) ($team->id ?? 0);
+
+            if ($teamId <= 0) {
+                continue;
+            }
+
+            $update = $db->getQuery(true)
+                ->update($db->quoteName('#__xdecarocompetitions_teams'))
+                ->set($db->quoteName('federation_id') . ' = :newFederationId')
+                ->set(
+                    $countryCode !== null
+                        ? $db->quoteName('country_code') . ' = :countryCode'
+                        : $db->quoteName('country_code') . ' = NULL'
+                )
+                ->where($db->quoteName('id') . ' = :teamId')
+                ->where($db->quoteName('federation_id') . ' = 0')
+                ->bind(':newFederationId', $federationId, ParameterType::INTEGER)
+                ->bind(':teamId', $teamId, ParameterType::INTEGER);
+
+            if ($countryCode !== null) {
+                $update->bind(':countryCode', $countryCode, ParameterType::STRING);
+            }
+
+            $db->setQuery($update)->execute();
+            $updatedIds[] = $teamId;
+        }
+
+        if (!$updatedIds) {
+            return;
+        }
+
+        LiveSyncHelper::touchModified(
+            $db,
+            'team',
+            $updatedIds,
+            (int) Factory::getApplication()->getIdentity()->id
+        );
+
+        foreach ($updatedIds as $teamId) {
+            LiveSyncHelper::record($db, 'team', $teamId, 'update');
+        }
     }
 
     private function resolveCountryIdFromIso2(string $countryCode): int
