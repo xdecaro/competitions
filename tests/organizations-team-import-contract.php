@@ -10,6 +10,7 @@ $importController = file_get_contents($root . '/component/admin/src/Controller/T
 $importTemplate = file_get_contents($root . '/component/admin/tmpl/teamimport/default.php');
 $importScript = file_get_contents($root . '/component/media/js/teamimport.js');
 $assetRegistry = file_get_contents($root . '/component/media/joomla.asset.json');
+$componentManifest = file_get_contents($root . '/component/xdecarocompetitions.xml');
 $uiHelper = file_get_contents($root . '/component/admin/src/Helper/UiHelper.php');
 
 $checks = [
@@ -41,6 +42,10 @@ $checks = [
     [str_contains($importTemplate, 'data-teamimport-checkall'), 'Import preview must select only visible rows'],
     [!str_contains($importTemplate, 'method="get"'), 'Live search must not submit/reload the preview page'],
     [is_file($root . '/component/media/js/teamimport.js'), 'Team Import JavaScript must be installed under media/js for Joomla Web Asset resolution'],
+    [!is_file($root . '/component/media/teamimport.js'), 'Legacy Team Import JavaScript must not remain at the media root'],
+    [!str_contains($componentManifest, '<filename>teamimport.js</filename>'), 'Component manifest must not install a root-level Team Import JavaScript copy'],
+    [str_contains($importTemplate, 'data-teamimport-search="<?= $this->escape((string) ($item[\'name\'] ?? \'\')); ?>"'), 'Team import live search index must contain only the team name'],
+    [!str_contains($importTemplate, "(string) ($item['code'] ?? '')"), 'Team import live search must not index the affiliation code'],
     [str_contains($importScript, "search?.addEventListener('input'"), 'Team import search must filter on every input change'],
     [str_contains($importScript, 'row.hidden = !show'), 'Team import search must filter locally without rebuilding rows'],
     [str_contains($importScript, 'checkedBoxes().length'), 'Team import script must preserve and count selections across searches'],
