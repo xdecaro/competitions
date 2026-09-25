@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.5.18 - 2026-09-25
+
+- Changed the Teams list **Club** badge from muted grey to the distinct info style for clearer visual separation.
+- Replaced the Bootstrap Organizations source badge with the shared `competitions-badge is-success` style.
+- Club and Organizations badges now use matching height, padding and vertical alignment.
+- No database structure or business-logic changes are required.
+
 ## 1.5.17 - 2026-09-25
 
 - Team Import live search now matches only the team/club name.
