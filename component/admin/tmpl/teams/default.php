@@ -16,7 +16,7 @@ $approvalLabels = [
 ];
 
 $teamTypeLabels = [
-    'club' => ['COM_XDECAROCOMPETITIONS_TEAM_TYPE_CLUB', 'is-muted'],
+    'club' => ['COM_XDECAROCOMPETITIONS_TEAM_TYPE_CLUB', 'is-info'],
     'national' => ['COM_XDECAROCOMPETITIONS_TEAM_TYPE_NATIONAL', 'is-success'],
 ];
 ?>
@@ -98,7 +98,7 @@ $teamTypeLabels = [
             <?php foreach ($this->items as $i => $item) : ?>
                 <?php
                 $approval = $approvalLabels[$item->approval_status] ?? ['COM_XDECAROCOMPETITIONS_APPROVAL_PENDING', 'bg-secondary'];
-                $teamType = $teamTypeLabels[$item->team_type] ?? ['COM_XDECAROCOMPETITIONS_TEAM_TYPE_CLUB', 'is-muted'];
+                $teamType = $teamTypeLabels[$item->team_type] ?? ['COM_XDECAROCOMPETITIONS_TEAM_TYPE_CLUB', 'is-info'];
                 ?>
                 <tr>
                     <td class="text-center competitions-responsive-table__check"><?= HTMLHelper::_('grid.id', $i, $item->id); ?></td>
@@ -109,7 +109,7 @@ $teamTypeLabels = [
                         <div class="d-flex flex-wrap gap-1 mt-1">
                             <span class="competitions-badge <?= $teamType[1]; ?>"><?= Text::_($teamType[0]); ?></span>
                             <?php if (!empty($item->organization_uuid)) : ?>
-                                <span class="badge text-bg-success"><?= Text::_('COM_XDECAROCOMPETITIONS_SOURCE_ORGANIZATIONS'); ?></span>
+                                <span class="competitions-badge is-success"><?= Text::_('COM_XDECAROCOMPETITIONS_SOURCE_ORGANIZATIONS'); ?></span>
                             <?php endif; ?>
                         </div>
                         <?php if ($item->short_name || $item->city) : ?>
