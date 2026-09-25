@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.5.15 - 2026-09-25
+
+- Fixed the final Team Import asset activation issue confirmed in the live site: all shared Competitions administrator scripts were loading, while only `teamimport.js` was absent.
+- Removed the fragile conditional `view=teamimport` gate from `UiHelper::loadAssets()`.
+- The Team Import script is now always attached with the other administrator assets; its own DOM guard exits immediately on pages that do not contain `[data-teamimport-live]`, so there is no functional side effect elsewhere.
+- This keeps a single Joomla Web Asset Manager path and removes dependence on mutable request/view state during MVC dispatch.
+- Preserved live filtering, persistent multi-selection, selected/visible counters, selected-only review, visible-row select-all and the corrected Cerca/Pulisci layout.
+- Updated regression coverage to prevent reintroducing conditional Team Import asset activation.
+- No database structure changes are required.
+
 ## 1.5.14 - 2026-09-24
 
 - Fixed the confirmed Team Import asset lifecycle issue after browser diagnostics proved the JavaScript file exists and works when loaded directly, but Joomla never inserted it into the page.
