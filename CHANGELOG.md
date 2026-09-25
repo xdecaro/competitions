@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.5.17 - 2026-09-25
+
+- Team Import live search now matches only the team/club name.
+- Country, federation, affiliation code and row status no longer affect search results.
+- Removed the legacy duplicate `component/media/teamimport.js`; the canonical script remains only under `component/media/js/teamimport.js`.
+- Removed the root-level Team Import JavaScript entry from the component media manifest.
+- Strengthened regression and distribution validation so the legacy root copy cannot be shipped again.
+- Preserved live filtering, persistent selections, selected-only review, counters and visible-row select-all.
+- No database structure changes are required.
+
 ## 1.5.16 - 2026-09-25
 
 - Fixed the root cause of Team Import live-search JavaScript not loading: the file was packaged at the media root, while Joomla Web Asset Manager resolves script URIs from the component `media/js` directory.

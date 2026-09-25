@@ -76,4 +76,4 @@ jobs:
             "dist/mod_xdecarocompetitions_countriesfederations_${VERSION}.zip" \
             "dist/pkg_xdecarocompetitions_${VERSION}.zip" \
             "dist/SHA256SUMS.txt" --target main --title "Competitions ${VERSION}" \
-            --notes "Competitions ${VERSION}: fixes Team Import live-search asset packaging by installing teamimport.js in Joomla media/js, matching the working administrator scripts."
+            --notes "Competitions ${VERSION}: Team Import live search now matches only team/club names and the legacy root-level teamimport.js copy is no longer shipped."

@@ -17,9 +17,9 @@ Competitions is the competition-management component in the xdecaro Joomla ecosy
 
 ## Current version
 
-**1.5.16**
+**1.5.17**
 
-Version 1.5.16 fixes the Team Import asset packaging path. The live-search script now lives under the component media `js/` directory, matching Joomla Web Asset resolution and the working Competitions administrator scripts.
+Version 1.5.17 narrows Team Import live search to the team/club name only. Country, federation, affiliation code and row status no longer influence matches. It also removes the legacy root-level `teamimport.js` copy so the only shipped Team Import script is the canonical `media/js/teamimport.js` asset.
 
 Version 1.5.0 added a public read-only person-history provider keyed by the existing People `person_uuid`. Competitions advertises the `competitions.people_history` v1 capability through Core, allowing People to show competition, season, team, role, shirt number and roster status history without reading Competitions private tables or duplicating competition data.
 

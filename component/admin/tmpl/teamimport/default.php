@@ -161,13 +161,7 @@ $statusMap = [
                     ?>
                     <tr
                         data-teamimport-row
-                        data-teamimport-search="<?= $this->escape(trim(implode(' ', [
-                            (string) ($item['name'] ?? ''),
-                            (string) ($item['code'] ?? ''),
-                            $country,
-                            $federation,
-                            Text::_($statusMeta[0]),
-                        ]))); ?>"
+                        data-teamimport-search="<?= $this->escape((string) ($item['name'] ?? '')); ?>"
                     >
                         <td class="text-center competitions-responsive-table__check">
                             <?php if ($selectable) : ?>
