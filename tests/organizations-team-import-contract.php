@@ -45,7 +45,7 @@ $checks = [
     [!is_file($root . '/component/media/teamimport.js'), 'Legacy Team Import JavaScript must not remain at the media root'],
     [!str_contains($componentManifest, '<filename>teamimport.js</filename>'), 'Component manifest must not install a root-level Team Import JavaScript copy'],
     [str_contains($importTemplate, 'data-teamimport-search="<?= $this->escape((string) ($item[\'name\'] ?? \'\')); ?>"'), 'Team import live search index must contain only the team name'],
-    [!str_contains($importTemplate, "(string) ($item['code'] ?? '')"), 'Team import live search must not index the affiliation code'],
+    [!str_contains($importTemplate, "trim(implode(' ', ["), 'Team import live search must not build a multi-field search index'],
     [str_contains($importScript, "search?.addEventListener('input'"), 'Team import search must filter on every input change'],
     [str_contains($importScript, 'row.hidden = !show'), 'Team import search must filter locally without rebuilding rows'],
     [str_contains($importScript, 'checkedBoxes().length'), 'Team import script must preserve and count selections across searches'],
