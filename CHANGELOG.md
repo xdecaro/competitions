@@ -6,6 +6,8 @@
 - Example labels: `Federación Española de Deportes para Sordos (FEDS) — ESP`, `Liga Portuguesa de Desporto para Surdos (LPDS) — POR`.
 - The code comes from the existing Competitions countries table, preserving sports codes such as GER, NED and POR rather than displaying only ISO alpha-2.
 - Existing filtering of already-linked federations remains unchanged.
+- Saving/linking a federation now automatically refreshes linked Club teams that were still `Federazione non determinata`: if their single active Organizations sports affiliation points to that federation, Competitions fills `federation_id` and the country snapshot immediately.
+- Ambiguous or missing Organizations affiliations are never guessed and remain unchanged.
 - No database structure changes are required.
 
 ## 1.5.21 - 2026-09-25
