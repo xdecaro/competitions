@@ -1,0 +1,3 @@
+-- Competitions 1.5.23
+-- No schema changes.
+-- Upgrade backfills linked Club federation_id values from Organizations active sports affiliations when the target federation is already mapped in Competitions.
