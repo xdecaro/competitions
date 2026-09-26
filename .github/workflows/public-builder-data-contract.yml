@@ -15,6 +15,10 @@ jobs:
       - uses: shivammathur/setup-php@v2
         with: {php-version: '8.3', coverage: none}
       - name: PHP syntax
-        run: php -l tests/public-builder-data-service-contract.php
+        run: |
+          php -l tests/public-builder-data-service-contract.php
+          php -l tests/public-builder-entities-contract.php
       - name: Public builder data service contract
         run: php tests/public-builder-data-service-contract.php
+      - name: Public builder entities contract
+        run: php tests/public-builder-entities-contract.php
