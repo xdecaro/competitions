@@ -5,6 +5,7 @@ on:
     branches: [feature/public-builder-data-api]
     paths:
       - tools/finalize_public_entities_release.py
+      - .github/workflows/finalize-public-entities-release.yml
 
 permissions:
   contents: write
@@ -26,7 +27,7 @@ jobs:
         run: |
           php tests/public-builder-data-service-contract.php
           php tests/public-builder-entities-contract.php
-          python3 tools/validate_release.py --source
+          python3 tools/validate_release.py
           find component package plugins modules tests -type f -name '*.php' -print0 | xargs -0 -n1 php -l
       - name: Build and verify distribution
         run: |
