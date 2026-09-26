@@ -1,0 +1,20 @@
+name: Public Builder Data Contract
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions: {contents: read}
+
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with: {php-version: '8.3', coverage: none}
+      - name: PHP syntax
+        run: php -l tests/public-builder-data-service-contract.php
+      - name: Public builder data service contract
+        run: php tests/public-builder-data-service-contract.php

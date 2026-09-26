@@ -18,6 +18,7 @@ use xdecaro\Component\Competitions\Administrator\Service\MatchReminderService;
 use xdecaro\Component\Competitions\Administrator\Service\OrganizationsIntegrationService;
 use xdecaro\Component\Competitions\Administrator\Service\PeopleIntegrationService;
 use xdecaro\Component\Competitions\Administrator\Service\PersonHistoryService;
+use xdecaro\Component\Competitions\Administrator\Service\PublicBuilderDataService;
 
 return new class () implements ServiceProviderInterface {
     public function register(Container $container): void
@@ -33,6 +34,7 @@ return new class () implements ServiceProviderInterface {
         $container->share(OrganizationsIntegrationService::class, static fn (): OrganizationsIntegrationService => new OrganizationsIntegrationService());
         $container->share(CompetitionPhotoService::class, static fn (): CompetitionPhotoService => new CompetitionPhotoService());
         $container->share(PersonHistoryService::class, static fn (Container $container): PersonHistoryService => new PersonHistoryService($container->get(DatabaseInterface::class)));
+        $container->share(PublicBuilderDataService::class, static fn (Container $container): PublicBuilderDataService => new PublicBuilderDataService($container->get(DatabaseInterface::class)));
 
         $container->set(
             ComponentInterface::class,
@@ -47,6 +49,7 @@ return new class () implements ServiceProviderInterface {
                 $component->setOrganizationsIntegrationService($container->get(OrganizationsIntegrationService::class));
                 $component->setCompetitionPhotoService($container->get(CompetitionPhotoService::class));
                 $component->setPersonHistoryService($container->get(PersonHistoryService::class));
+                $component->setPublicBuilderDataService($container->get(PublicBuilderDataService::class));
                 return $component;
             }
         );

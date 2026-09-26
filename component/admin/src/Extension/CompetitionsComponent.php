@@ -13,6 +13,7 @@ use xdecaro\Component\Competitions\Administrator\Service\MatchReminderService;
 use xdecaro\Component\Competitions\Administrator\Service\PeopleIntegrationService;
 use xdecaro\Component\Competitions\Administrator\Service\OrganizationsIntegrationService;
 use xdecaro\Component\Competitions\Administrator\Service\PersonHistoryService;
+use xdecaro\Component\Competitions\Administrator\Service\PublicBuilderDataService;
 
 /** Public, provider-owned service surface for optional xdecaro integrations. */
 final class CompetitionsComponent extends MVCComponent
@@ -25,6 +26,7 @@ final class CompetitionsComponent extends MVCComponent
     private ?OrganizationsIntegrationService $organizations = null;
     private ?CompetitionPhotoService $photos = null;
     private ?PersonHistoryService $personHistory = null;
+    private ?PublicBuilderDataService $publicBuilderData = null;
 
     public function setCoreIntegrationService(CoreIntegrationService $service): void { $this->core = $service; }
     public function setCrossProductIntegrationService(CrossProductIntegrationService $service): void { $this->crossProduct = $service; }
@@ -34,6 +36,7 @@ final class CompetitionsComponent extends MVCComponent
     public function setOrganizationsIntegrationService(OrganizationsIntegrationService $service): void { $this->organizations = $service; }
     public function setCompetitionPhotoService(CompetitionPhotoService $service): void { $this->photos = $service; }
     public function setPersonHistoryService(PersonHistoryService $service): void { $this->personHistory = $service; }
+    public function setPublicBuilderDataService(PublicBuilderDataService $service): void { $this->publicBuilderData = $service; }
 
     public function getCoreIntegrationService(): CoreIntegrationService
     {
@@ -73,5 +76,10 @@ final class CompetitionsComponent extends MVCComponent
     public function getPersonHistoryService(): PersonHistoryService
     {
         return $this->personHistory ?? throw new RuntimeException('Competitions person history service is unavailable.');
+    }
+
+    public function getPublicBuilderDataService(): PublicBuilderDataService
+    {
+        return $this->publicBuilderData ?? throw new RuntimeException('Competitions public builder data service is unavailable.');
     }
 }
