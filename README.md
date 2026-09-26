@@ -17,7 +17,9 @@ Competitions is the competition-management component in the xdecaro Joomla ecosy
 
 ## Current version
 
-**1.5.23**
+**1.5.24**
+
+Version 1.5.24 adds a safe read-only public presentation API for YOOtheme and other presentation consumers. Federations, approved teams and approved roster players are exposed only from Competitions-owned tables, with publication/approval guards and a strict public player allowlist that excludes birth dates, external references, People UUIDs, review notes and medical/ISCD data.
 
 Version 1.5.23 automatically backfills existing linked Clubs that still have no local federation mapping during component update. It uses only the public Organizations affiliation provider, requires exactly one active sports federation affiliation, and updates the Club only when that federation is already linked in Competitions. The 1.5.22 national-code labels and incremental refresh on federation save remain unchanged.
 

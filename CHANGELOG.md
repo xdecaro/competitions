@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.5.24 - 2026-09-26
+
+- Added a read-only public presentation API for federations, approved teams and approved competition rosters.
+- Public roster output is fail-closed: published/approved teams and players are required, and public roster lookups require approved participation/roster status.
+- Public player rows expose only presentation-safe fields such as name, nationality, shirt number, role, public photo and team/season context.
+- Birth date, external references, People UUIDs, review notes and medical/ISCD data are never selected by the public builder service.
+- Added contract coverage preventing direct access to People or Organizations private tables.
+- No database structure changes are required.
+
 ## 1.5.23 - 2026-09-25
 
 - Added an automatic upgrade backfill for linked Club teams still showing `Federazione non determinata`.
