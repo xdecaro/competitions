@@ -1,0 +1,25 @@
+name: Builder data provider contract
+
+on:
+  pull_request:
+    paths:
+      - 'component/admin/src/Service/BuilderDataProviderService.php'
+      - 'component/admin/src/Extension/CompetitionsComponent.php'
+      - 'component/admin/services/provider.php'
+      - 'tests/builder-data-provider-contract.php'
+      - '.github/workflows/builder-data-provider.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          coverage: none
+      - name: Builder data provider contract
+        run: php tests/builder-data-provider-contract.php
