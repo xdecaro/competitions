@@ -1,0 +1,3 @@
+-- Competitions 1.5.24
+-- No schema changes.
+-- Adds a safe read-only public presentation API for federations, approved teams and approved roster players.
