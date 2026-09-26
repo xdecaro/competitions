@@ -5,12 +5,18 @@ on:
     branches: [feature/public-builder-data-api]
     paths:
       - tools/apply_public_entities_patch.py
+  pull_request:
+    branches: [main]
+    paths:
+      - tools/apply_public_entities_patch.py
+      - .github/workflows/public-entities-apply.yml
 
 permissions:
   contents: write
 
 jobs:
   apply:
+    if: github.event.pull_request.head.ref == 'feature/public-builder-data-api' || github.ref == 'refs/heads/feature/public-builder-data-api'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
