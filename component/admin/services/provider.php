@@ -11,6 +11,7 @@ use Joomla\DI\Container;
 use Joomla\DI\ServiceProviderInterface;
 use xdecaro\Component\Competitions\Administrator\Extension\CompetitionsComponent;
 use xdecaro\Component\Competitions\Administrator\Service\AnalyticsSourceService;
+use xdecaro\Component\Competitions\Administrator\Service\BuilderDataProviderService;
 use xdecaro\Component\Competitions\Administrator\Service\CompetitionPhotoService;
 use xdecaro\Component\Competitions\Administrator\Service\CoreIntegrationService;
 use xdecaro\Component\Competitions\Administrator\Service\CrossProductIntegrationService;
@@ -33,6 +34,7 @@ return new class () implements ServiceProviderInterface {
         $container->share(OrganizationsIntegrationService::class, static fn (): OrganizationsIntegrationService => new OrganizationsIntegrationService());
         $container->share(CompetitionPhotoService::class, static fn (): CompetitionPhotoService => new CompetitionPhotoService());
         $container->share(PersonHistoryService::class, static fn (Container $container): PersonHistoryService => new PersonHistoryService($container->get(DatabaseInterface::class)));
+        $container->share(BuilderDataProviderService::class, static fn (Container $container): BuilderDataProviderService => new BuilderDataProviderService($container->get(DatabaseInterface::class)));
 
         $container->set(
             ComponentInterface::class,
@@ -47,6 +49,7 @@ return new class () implements ServiceProviderInterface {
                 $component->setOrganizationsIntegrationService($container->get(OrganizationsIntegrationService::class));
                 $component->setCompetitionPhotoService($container->get(CompetitionPhotoService::class));
                 $component->setPersonHistoryService($container->get(PersonHistoryService::class));
+                $component->setBuilderDataProviderService($container->get(BuilderDataProviderService::class));
                 return $component;
             }
         );
