@@ -6,6 +6,7 @@ defined('_JEXEC') or die;
 use Joomla\CMS\Extension\MVCComponent;
 use RuntimeException;
 use xdecaro\Component\Competitions\Administrator\Service\AnalyticsSourceService;
+use xdecaro\Component\Competitions\Administrator\Service\BuilderDataProviderService;
 use xdecaro\Component\Competitions\Administrator\Service\CompetitionPhotoService;
 use xdecaro\Component\Competitions\Administrator\Service\CoreIntegrationService;
 use xdecaro\Component\Competitions\Administrator\Service\CrossProductIntegrationService;
@@ -25,6 +26,7 @@ final class CompetitionsComponent extends MVCComponent
     private ?OrganizationsIntegrationService $organizations = null;
     private ?CompetitionPhotoService $photos = null;
     private ?PersonHistoryService $personHistory = null;
+    private ?BuilderDataProviderService $builderDataProvider = null;
 
     public function setCoreIntegrationService(CoreIntegrationService $service): void { $this->core = $service; }
     public function setCrossProductIntegrationService(CrossProductIntegrationService $service): void { $this->crossProduct = $service; }
@@ -34,6 +36,7 @@ final class CompetitionsComponent extends MVCComponent
     public function setOrganizationsIntegrationService(OrganizationsIntegrationService $service): void { $this->organizations = $service; }
     public function setCompetitionPhotoService(CompetitionPhotoService $service): void { $this->photos = $service; }
     public function setPersonHistoryService(PersonHistoryService $service): void { $this->personHistory = $service; }
+    public function setBuilderDataProviderService(BuilderDataProviderService $service): void { $this->builderDataProvider = $service; }
 
     public function getCoreIntegrationService(): CoreIntegrationService
     {
@@ -73,5 +76,10 @@ final class CompetitionsComponent extends MVCComponent
     public function getPersonHistoryService(): PersonHistoryService
     {
         return $this->personHistory ?? throw new RuntimeException('Competitions person history service is unavailable.');
+    }
+
+    public function getBuilderDataProviderService(): BuilderDataProviderService
+    {
+        return $this->builderDataProvider ?? throw new RuntimeException('Competitions builder data provider service is unavailable.');
     }
 }
