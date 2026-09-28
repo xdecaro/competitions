@@ -47,7 +47,7 @@ final class PlayerTable extends Table
             return false;
         }
 
-        if (!in_array($this->approval_status, ['pending', 'approved', 'rejected'], true)) {
+        if (!in_array($this->approval_status, ['pending', 'submitted', 'approved', 'rejected'], true)) {
             $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_PLAYER_APPROVAL_INVALID'));
             return false;
         }
