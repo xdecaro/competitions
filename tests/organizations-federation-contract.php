@@ -11,9 +11,20 @@ $field = file_get_contents($root . '/component/admin/src/Field/FederationOrganiz
 $view = file_get_contents($root . '/component/admin/src/View/Federation/HtmlView.php');
 $template = file_get_contents($root . '/component/admin/tmpl/federation/edit.php');
 $asset = file_get_contents($root . '/component/media/joomla.asset.json');
+$assets = json_decode((string) $asset, true);
 $script = file_get_contents($root . '/component/media/js/federation-edit.js');
 $schema = file_get_contents($root . '/component/admin/sql/install.mysql.utf8mb4.sql');
 $migration = file_get_contents($root . '/component/admin/sql/updates/mysql/1.5.2.sql');
+
+$federationEditUri = null;
+if (is_array($assets)) {
+    foreach (($assets['assets'] ?? []) as $item) {
+        if (($item['name'] ?? '') === 'com_xdecarocompetitions.federation-edit' && ($item['type'] ?? '') === 'script') {
+            $federationEditUri = (string) ($item['uri'] ?? '');
+            break;
+        }
+    }
+}
 
 $checks = [
     [str_contains($service, "bootComponent('com_xdecaroorganizations')"), 'Organizations must be booted through Joomla'],
@@ -51,7 +62,7 @@ $checks = [
     [str_contains($asset, 'com_xdecarocompetitions.federation-edit'), 'Federation editor asset must be registered'],
     [is_file($root . '/component/media/js/federation-edit.js'), 'Federation editor script must live in Joomla media/js'],
     [!is_file($root . '/component/media/federation-edit.js'), 'Legacy root federation editor script must not remain'],
-    [str_contains($asset, '"uri":"com_xdecarocompetitions/federation-edit.js"'), 'Federation editor asset URI must omit the duplicate /js/ segment'],
+    [$federationEditUri === 'com_xdecarocompetitions/federation-edit.js', 'Federation editor asset URI must omit the duplicate /js/ segment'],
     [str_contains($script, 'countryMap'), 'Federation editor JavaScript must consume the country map'],
     [str_contains($script, 'country.disabled = true'), 'Automatically derived country must not be manually editable'],
     [str_contains($script, 'country.required = false'), 'Automatically derived country must not be blocked by client-side required validation'],
@@ -61,7 +72,6 @@ $checks = [
     [str_contains($model, "\$organizationUuid = \$existingUuid"), 'Existing canonical federation UUID must be preserved server-side'],
     [str_contains(file_get_contents($root . '/component/admin/tmpl/federation/edit.php'), '$showLinkPicker = $this->organizationsAvailable && !$isLinked;'), 'Link picker must disappear after a federation is linked'],
     [str_contains(file_get_contents($root . '/component/admin/tmpl/federation/edit.php'), 'COM_XDECAROCOMPETITIONS_CREATE_FEDERATION_IN_ORGANIZATIONS'), 'New federation editor must offer creation in Organizations'],
-
     [str_contains($table, 'uq_competitions_federations_organization_uuid') || str_contains($schema, 'uq_competitions_federations_organization_uuid'), 'Federation Organizations link must be unique'],
     [str_contains($schema, '`organization_uuid` CHAR(36) DEFAULT NULL'), 'Fresh install schema must include organization_uuid'],
     [str_contains($migration, 'ADD COLUMN `organization_uuid` CHAR(36) NULL'), 'Upgrade migration must add organization_uuid'],
