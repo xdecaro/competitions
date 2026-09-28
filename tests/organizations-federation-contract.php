@@ -77,6 +77,15 @@ $checks = [
     [str_contains($migration, 'ADD COLUMN `organization_uuid` CHAR(36) NULL'), 'Upgrade migration must add organization_uuid'],
     [str_contains($migration, 'ADD UNIQUE KEY `uq_competitions_federations_organization_uuid`'), 'Upgrade migration must add the unique UUID index'],
     [!preg_match('/DROP\s+(TABLE|COLUMN)|TRUNCATE\s+TABLE|DELETE\s+FROM/i', $migration), 'Federation migration must be non-destructive'],
+
+    // A sovereign ISO code such as GB must not be blindly assigned to a sports territory.
+    // When there is no direct ISO2 country match, Competitions may derive a local
+    // sport territory only from explicit territory metadata or one unique name match.
+    [str_contains($model, 'resolveCountryIdFromOrganization'), 'Federation country resolver must work from the whole Organizations record'],
+    [str_contains($model, "'sport_territory'"), 'Federation country resolver must distinguish local sports territories'],
+    [str_contains($model, "\$organization['territory_name']"), 'Federation country resolver must prefer explicit Organizations territory metadata'],
+    [str_contains($model, 'findUniqueSportsTerritoryMatch'), 'Federation country resolver must use a unique-only sports territory fallback'],
+    [str_contains($model, 'count($matches) === 1'), 'Sports territory fallback must refuse ambiguous matches'],
 ];
 
 foreach ($checks as [$ok, $message]) {
