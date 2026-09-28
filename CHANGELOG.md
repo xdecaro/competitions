@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.5.59 - 2026-09-28
+
+- Fixed the workflow bug where the Participations **Pending** toolbar action stored `submitted`, causing the row to appear as Submitted instead of Pending.
+- Separated **Pending** (`pending`) from **Submitted** (`submitted`) across Teams, Participations, Players and Rosters.
+- Added a dedicated **Submitted** bulk toolbar action to all four administrator lists, alongside Approve, Pending and Reject.
+- Added matching form options, list filters, badges, controller actions and model/table validation for the distinct Submitted state.
+- Preserved participation submission timestamps only for Submitted/Approved/Rejected transitions; Pending does not create a submission timestamp.
+- No database structure changes are required.
+
 ## 1.5.58 - 2026-09-28
 
 - Added bulk **Approve / Pending / Reject** workflow actions to Participations and Rosters while preserving the existing Joomla publication state separately.
@@ -22,7 +31,7 @@
 - During install/update, Competitions reads each unresolved Club's active sports affiliation only through the public Organizations provider.
 - If exactly one active federation affiliation exists and that federation is already linked in Competitions, the team receives the correct local `federation_id` and country snapshot automatically.
 - Missing, ambiguous or not-yet-mapped affiliations are left unchanged; no federation is guessed.
-- Future federation saves keep the 1.5.22 incremental auto-refresh behavior.
+- Future federation saves keep the 1.5.22 national-code labels and incremental refresh on federation save unchanged.
 - No database structure changes are required.
 
 ## 1.5.22 - 2026-09-25

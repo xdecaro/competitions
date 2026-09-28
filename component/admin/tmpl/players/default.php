@@ -12,10 +12,16 @@ $listOrder = $this->escape($this->state->get('list.ordering'));
 $listDirn = $this->escape($this->state->get('list.direction'));
 $approvalLabels = [
     'pending' => 'COM_XDECAROCOMPETITIONS_PLAYER_PENDING',
+    'submitted' => 'COM_XDECAROCOMPETITIONS_PLAYER_SUBMITTED',
     'approved' => 'COM_XDECAROCOMPETITIONS_PLAYER_APPROVED',
     'rejected' => 'COM_XDECAROCOMPETITIONS_PLAYER_REJECTED',
 ];
-$approvalClasses = ['pending' => 'bg-warning text-dark', 'approved' => 'bg-success', 'rejected' => 'bg-danger'];
+$approvalClasses = [
+    'pending' => 'bg-warning text-dark',
+    'submitted' => 'bg-info text-dark',
+    'approved' => 'bg-success',
+    'rejected' => 'bg-danger',
+];
 ?>
 <form action="<?= Route::_('index.php?option=com_xdecarocompetitions&view=players'); ?>" method="post" name="adminForm" id="adminForm" class="competitions-admin">
     <div class="competitions-filterbar">

@@ -35,6 +35,7 @@
     <field name="website" type="url" label="COM_XDECAROCOMPETITIONS_FIELD_WEBSITE" maxlength="512" filter="url" />
     <field name="approval_status" type="list" label="COM_XDECAROCOMPETITIONS_FIELD_APPROVAL_STATUS" default="pending">
       <option value="pending">COM_XDECAROCOMPETITIONS_APPROVAL_PENDING</option>
+      <option value="submitted">COM_XDECAROCOMPETITIONS_APPROVAL_SUBMITTED</option>
       <option value="approved">COM_XDECAROCOMPETITIONS_APPROVAL_APPROVED</option>
       <option value="rejected">COM_XDECAROCOMPETITIONS_APPROVAL_REJECTED</option>
     </field>

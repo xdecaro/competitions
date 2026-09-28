@@ -1,0 +1,3 @@
+-- 1.5.59 schema marker.
+-- No structural database change is required: workflow status columns are VARCHAR(32)
+-- and now distinguish pending from submitted across teams, participations, players and rosters.

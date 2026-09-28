@@ -9,7 +9,7 @@ use Joomla\CMS\Session\Session;
 
 final class UiHelper
 {
-    private const VERSION = '1.5.58';
+    private const VERSION = '1.5.59';
 
     public static function loadAssets(): void
     {

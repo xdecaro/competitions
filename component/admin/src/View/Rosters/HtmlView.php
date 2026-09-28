@@ -56,6 +56,7 @@ final class HtmlView extends BaseHtmlView
         if ($user->authorise('core.edit.state', 'com_xdecarocompetitions')) {
             ToolbarHelper::custom('rosters.approve', 'checkmark', 'checkmark', Text::_('COM_XDECAROCOMPETITIONS_TOOLBAR_APPROVE'), true);
             ToolbarHelper::custom('rosters.pending', 'clock', 'clock', Text::_('COM_XDECAROCOMPETITIONS_TOOLBAR_PENDING'), true);
+            ToolbarHelper::custom('rosters.submit', 'upload', 'upload', Text::_('COM_XDECAROCOMPETITIONS_TOOLBAR_SUBMIT'), true);
             ToolbarHelper::custom('rosters.reject', 'cancel', 'cancel', Text::_('COM_XDECAROCOMPETITIONS_TOOLBAR_REJECT'), true);
             ToolbarHelper::publish('rosters.publish', 'JTOOLBAR_PUBLISH', true);
             ToolbarHelper::unpublish('rosters.unpublish', 'JTOOLBAR_UNPUBLISH', true);

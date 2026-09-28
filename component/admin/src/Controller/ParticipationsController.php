@@ -33,7 +33,12 @@ final class ParticipationsController extends AdminController
 
     public function pending(): void
     {
-        $this->updateWorkflowStatus('submitted', 'COM_XDECAROCOMPETITIONS_PARTICIPATION_WORKFLOW_PENDING');
+        $this->updateWorkflowStatus('pending', 'COM_XDECAROCOMPETITIONS_PARTICIPATION_WORKFLOW_PENDING');
+    }
+
+    public function submit(): void
+    {
+        $this->updateWorkflowStatus('submitted', 'COM_XDECAROCOMPETITIONS_PARTICIPATION_WORKFLOW_SUBMITTED');
     }
 
     public function reject(): void

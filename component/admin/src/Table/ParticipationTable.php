@@ -34,7 +34,7 @@ final class ParticipationTable extends Table
             return false;
         }
 
-        if (!in_array($this->status, ['draft', 'submitted', 'approved', 'rejected'], true)) {
+        if (!in_array($this->status, ['draft', 'pending', 'submitted', 'approved', 'rejected'], true)) {
             $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_PARTICIPATION_STATUS_INVALID'));
             return false;
         }

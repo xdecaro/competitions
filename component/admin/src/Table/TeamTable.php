@@ -77,7 +77,7 @@ final class TeamTable extends Table
             return false;
         }
 
-        if (!in_array($this->approval_status, ['pending', 'approved', 'rejected'], true)) {
+        if (!in_array($this->approval_status, ['pending', 'submitted', 'approved', 'rejected'], true)) {
             $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_TEAM_APPROVAL_INVALID'));
             return false;
         }
@@ -93,7 +93,6 @@ final class TeamTable extends Table
         }
 
         $db = $this->getDbo();
-
         $country = null;
 
         if ($this->federation_id > 0) {

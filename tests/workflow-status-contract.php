@@ -3,12 +3,24 @@ declare(strict_types=1);
 
 $root = dirname(__DIR__);
 $files = [
+    'teamsView' => $root . '/component/admin/src/View/Teams/HtmlView.php',
+    'teamsController' => $root . '/component/admin/src/Controller/TeamsController.php',
+    'teamModel' => $root . '/component/admin/src/Model/TeamModel.php',
+    'teamForm' => $root . '/component/admin/forms/team.xml',
+    'playersView' => $root . '/component/admin/src/View/Players/HtmlView.php',
+    'playersController' => $root . '/component/admin/src/Controller/PlayersController.php',
+    'playerModel' => $root . '/component/admin/src/Model/PlayerModel.php',
+    'playerForm' => $root . '/component/admin/forms/player.xml',
     'participationsView' => $root . '/component/admin/src/View/Participations/HtmlView.php',
     'participationsController' => $root . '/component/admin/src/Controller/ParticipationsController.php',
     'participationModel' => $root . '/component/admin/src/Model/ParticipationModel.php',
+    'participationTable' => $root . '/component/admin/src/Table/ParticipationTable.php',
+    'participationForm' => $root . '/component/admin/forms/participation.xml',
     'rostersView' => $root . '/component/admin/src/View/Rosters/HtmlView.php',
     'rostersController' => $root . '/component/admin/src/Controller/RostersController.php',
     'rosterModel' => $root . '/component/admin/src/Model/RosterModel.php',
+    'rosterTable' => $root . '/component/admin/src/Table/RosterTable.php',
+    'rosterForm' => $root . '/component/admin/forms/roster.xml',
     'seasonsView' => $root . '/component/admin/src/View/Seasons/HtmlView.php',
     'seasonForm' => $root . '/component/admin/forms/season.xml',
     'seasonTable' => $root . '/component/admin/src/Table/SeasonTable.php',
@@ -28,21 +40,36 @@ foreach ($files as $name => $path) {
 $c = [];
 foreach ($files as $name => $path) $c[$name] = file_get_contents($path);
 
+foreach (['teams', 'players', 'participations', 'rosters'] as $scope) {
+    $viewKey = $scope . 'View';
+    $controllerKey = $scope . 'Controller';
+    foreach (['approve', 'pending', 'submit', 'reject'] as $action) {
+        $task = $scope . '.' . $action;
+        if (strpos($c[$viewKey], $task) === false) {
+            fwrite(STDERR, ucfirst($scope) . " toolbar must expose {$action}.\n");
+            exit(1);
+        }
+        if (strpos($c[$controllerKey], 'public function ' . $action . '()') === false) {
+            fwrite(STDERR, ucfirst($scope) . "Controller {$action}() missing.\n");
+            exit(1);
+        }
+    }
+}
+
 $requirements = [
-    [$c['participationsView'], "participations.approve", 'Participations toolbar must expose Approve.'],
-    [$c['participationsView'], "participations.pending", 'Participations toolbar must expose Pending.'],
-    [$c['participationsView'], "participations.reject", 'Participations toolbar must expose Reject.'],
-    [$c['participationsController'], 'public function approve()', 'ParticipationsController approve() missing.'],
-    [$c['participationsController'], 'public function pending()', 'ParticipationsController pending() missing.'],
-    [$c['participationsController'], 'public function reject()', 'ParticipationsController reject() missing.'],
-    [$c['participationModel'], 'public function setWorkflowStatus', 'ParticipationModel bulk workflow setter missing.'],
-    [$c['rostersView'], "rosters.approve", 'Rosters toolbar must expose Approve.'],
-    [$c['rostersView'], "rosters.pending", 'Rosters toolbar must expose Pending.'],
-    [$c['rostersView'], "rosters.reject", 'Rosters toolbar must expose Reject.'],
-    [$c['rostersController'], 'public function approve()', 'RostersController approve() missing.'],
-    [$c['rostersController'], 'public function pending()', 'RostersController pending() missing.'],
-    [$c['rostersController'], 'public function reject()', 'RostersController reject() missing.'],
-    [$c['rosterModel'], 'public function setWorkflowStatus', 'RosterModel bulk workflow setter missing.'],
+    [$c['teamModel'], "['pending', 'submitted', 'approved', 'rejected']", 'Team model must accept pending, submitted, approved and rejected.'],
+    [$c['playerModel'], "['pending', 'submitted', 'approved', 'rejected']", 'Player model must accept pending, submitted, approved and rejected.'],
+    [$c['participationModel'], "['pending', 'submitted', 'approved', 'rejected']", 'Participation model must accept pending, submitted, approved and rejected.'],
+    [$c['participationTable'], "['draft', 'pending', 'submitted', 'approved', 'rejected']", 'Participation table must distinguish pending from submitted.'],
+    [$c['rosterModel'], "['pending', 'submitted', 'approved', 'rejected']", 'Roster model must accept pending, submitted, approved and rejected.'],
+    [$c['rosterTable'], "['pending', 'submitted', 'approved', 'rejected']", 'Roster table must accept submitted.'],
+    [$c['teamForm'], 'value="submitted"', 'Team form submitted status missing.'],
+    [$c['playerForm'], 'value="submitted"', 'Player form submitted status missing.'],
+    [$c['participationForm'], 'value="pending"', 'Participation form pending status missing.'],
+    [$c['participationForm'], 'value="submitted"', 'Participation form submitted status missing.'],
+    [$c['rosterForm'], 'value="submitted"', 'Roster form submitted status missing.'],
+    [$c['participationsController'], "updateWorkflowStatus('pending'", 'Participations pending action must set pending, not submitted.'],
+    [$c['participationsController'], "updateWorkflowStatus('submitted'", 'Participations submit action must set submitted.'],
     [$c['seasonForm'], 'name="workflow_status"', 'Season form workflow_status field missing.'],
     [$c['seasonForm'], 'value="draft"', 'Season status draft missing.'],
     [$c['seasonForm'], 'value="awaiting_host"', 'Season status awaiting_host missing.'],

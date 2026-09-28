@@ -36,6 +36,11 @@ final class RostersController extends AdminController
         $this->updateWorkflowStatus('pending', 'COM_XDECAROCOMPETITIONS_ROSTER_WORKFLOW_PENDING');
     }
 
+    public function submit(): void
+    {
+        $this->updateWorkflowStatus('submitted', 'COM_XDECAROCOMPETITIONS_ROSTER_WORKFLOW_SUBMITTED');
+    }
+
     public function reject(): void
     {
         $this->updateWorkflowStatus('rejected', 'COM_XDECAROCOMPETITIONS_ROSTER_WORKFLOW_REJECTED');
