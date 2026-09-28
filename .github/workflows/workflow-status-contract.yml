@@ -1,0 +1,30 @@
+name: Competitions workflow status contract
+
+on:
+  pull_request:
+    paths:
+      - 'component/admin/src/View/Participations/**'
+      - 'component/admin/src/Controller/ParticipationsController.php'
+      - 'component/admin/src/Model/ParticipationModel.php'
+      - 'component/admin/src/View/Rosters/**'
+      - 'component/admin/src/Controller/RostersController.php'
+      - 'component/admin/src/Model/RosterModel.php'
+      - 'component/admin/forms/season.xml'
+      - 'component/admin/src/Table/SeasonTable.php'
+      - 'component/admin/sql/**'
+      - 'tests/workflow-status-contract.php'
+      - '.github/workflows/workflow-status-contract.yml'
+  push:
+    branches: [main]
+
+permissions: {contents: read}
+
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with: {php-version: '8.3', coverage: none}
+      - name: Workflow status contract
+        run: php tests/workflow-status-contract.php
