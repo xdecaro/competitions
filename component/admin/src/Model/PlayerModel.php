@@ -101,7 +101,7 @@ final class PlayerModel extends BaseAdminModel
 
     protected function prepareTable($table): void
     {
-        $uuid = strtolower(trim((string) ($table->person_uuid ?? ''));
+        $uuid = strtolower(trim((string) ($table->person_uuid ?? '')));
         if ($uuid === '') {
             return;
         }
