@@ -36,6 +36,11 @@ final class PlayersController extends AdminController
         $this->updateApprovalStatus('pending', 'COM_XDECAROCOMPETITIONS_APPROVAL_UPDATED_PENDING');
     }
 
+    public function submit(): void
+    {
+        $this->updateApprovalStatus('submitted', 'COM_XDECAROCOMPETITIONS_APPROVAL_UPDATED_SUBMITTED');
+    }
+
     public function reject(): void
     {
         $this->updateApprovalStatus('rejected', 'COM_XDECAROCOMPETITIONS_APPROVAL_UPDATED_REJECTED');
