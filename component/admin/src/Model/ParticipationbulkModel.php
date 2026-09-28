@@ -56,6 +56,74 @@ final class ParticipationbulkModel extends BaseDatabaseModel
         return $db->setQuery($query)->loadObjectList() ?: [];
     }
 
+    /**
+     * Keep only existing Competition teams whose canonical display name is
+     * present in the uploaded source list. No team is created or modified.
+     *
+     * @param array<int, object> $teams
+     * @param array<int, string> $sourceNames
+     * @return array<int, object>
+     */
+    public function filterTeamsBySourceNames(array $teams, array $sourceNames): array
+    {
+        if (!$sourceNames) {
+            return $teams;
+        }
+
+        $wanted = [];
+        foreach ($sourceNames as $name) {
+            $normalized = $this->normalizeTeamName((string) $name);
+            if ($normalized !== '') {
+                $wanted[$normalized] = true;
+            }
+        }
+
+        if (!$wanted) {
+            return [];
+        }
+
+        return array_values(array_filter(
+            $teams,
+            fn (object $team): bool => isset($wanted[$this->normalizeTeamName((string) ($team->name ?? ''))])
+        ));
+    }
+
+    /** @return array{source:int,matched:int,unmatched:int} */
+    public function getSourceFilterSummary(array $teams, array $sourceNames): array
+    {
+        $source = [];
+        foreach ($sourceNames as $name) {
+            $normalized = $this->normalizeTeamName((string) $name);
+            if ($normalized !== '') {
+                $source[$normalized] = true;
+            }
+        }
+
+        $matched = [];
+        foreach ($teams as $team) {
+            $normalized = $this->normalizeTeamName((string) ($team->name ?? ''));
+            if ($normalized !== '' && isset($source[$normalized])) {
+                $matched[$normalized] = true;
+            }
+        }
+
+        return [
+            'source' => count($source),
+            'matched' => count($matched),
+            'unmatched' => max(0, count($source) - count($matched)),
+        ];
+    }
+
+    public function normalizeTeamName(string $value): string
+    {
+        $value = html_entity_decode(trim($value), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        $value = mb_strtoupper($value, 'UTF-8');
+        $value = preg_replace('/[\x{2018}\x{2019}\x{0060}]/u', "'", $value) ?? $value;
+        $value = preg_replace('/\s+/u', ' ', $value) ?? $value;
+
+        return trim($value);
+    }
+
     public function getSeasonLabel(int $seasonId): string
     {
         if ($seasonId <= 0) {
