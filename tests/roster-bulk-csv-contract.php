@@ -33,7 +33,7 @@ $requirements = [
     [$ctl, "'shirt_number'", 'Roster bulk CSV must support shirt number aliases.'],
     [$ctl, "'nr'", 'Roster bulk CSV must support nr as shirt number.'],
     [$ctl, "'n'", 'Roster bulk CSV must support n as shirt number.'],
-    [$ctl, "if ($h === '#')", 'Roster bulk CSV must support # as shirt number header.'],
+    [$ctl, "if (\$h === '#')", 'Roster bulk CSV must support # as shirt number header.'],
     [$ctl, "'role'", 'Roster bulk CSV must support role aliases.'],
     [$ctl, 'public function addSelected()', 'Roster bulk controller must create selected roster rows.'],
     [$ctl, "'status' => 'pending'", 'New roster rows must start pending.'],
