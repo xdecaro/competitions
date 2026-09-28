@@ -67,4 +67,49 @@ foreach ($requirements as [$haystack, $needle, $message]) {
     }
 }
 
-echo "Player approval toolbar contract OK\n";
+$bulkFiles = [
+    'controller' => $root . '/component/admin/src/Controller/PlayerbulkController.php',
+    'model' => $root . '/component/admin/src/Model/PlayerbulkModel.php',
+    'view' => $root . '/component/admin/src/View/Playerbulk/HtmlView.php',
+    'template' => $root . '/component/admin/tmpl/playerbulk/default.php',
+    'peopleService' => $root . '/component/admin/src/Service/PeopleIntegrationService.php',
+];
+
+foreach ($bulkFiles as $name => $path) {
+    if (!is_file($path)) {
+        fwrite(STDERR, "Missing player bulk {$name}: {$path}\n");
+        exit(1);
+    }
+}
+
+$bulkController = file_get_contents($bulkFiles['controller']);
+$bulkModel = file_get_contents($bulkFiles['model']);
+$bulkView = file_get_contents($bulkFiles['view']);
+$bulkTemplate = file_get_contents($bulkFiles['template']);
+$peopleService = file_get_contents($bulkFiles['peopleService']);
+
+$bulkRequirements = [
+    [$view, 'view=playerbulk', 'Players toolbar must link to the separate bulk-add page.'],
+    [$view, 'Aggiungi giocatori', 'Players toolbar must expose the bulk-add label.'],
+    [$bulkController, 'public function addSelected()', 'Player bulk controller must expose addSelected().'],
+    [$bulkController, '$this->checkToken()', 'Player bulk add must validate CSRF token.'],
+    [$bulkController, "authorise('core.create'", 'Player bulk add must enforce create ACL.'],
+    [$bulkController, "'approval_status' => 'pending'", 'Bulk-created players must start pending.'],
+    [$bulkController, "'state' => 1", 'Bulk-created players must be published.'],
+    [$bulkModel, 'getAvailablePeople', 'Player bulk model must load People candidates.'],
+    [$bulkModel, '#__xdecarocompetitions_players', 'Player bulk model must exclude already-linked people.'],
+    [$bulkView, 'playerbulk.addSelected', 'Player bulk toolbar must submit selected people.'],
+    [$bulkTemplate, 'name="person_uuid[]"', 'Player bulk page must support multi-person selection.'],
+    [$bulkTemplate, 'Seleziona tutte', 'Player bulk page must expose select-all.'],
+    [$bulkTemplate, 'Cerca in People', 'Player bulk page must expose People search.'],
+    [$peopleService, 'min(200, $limit)', 'People integration search must allow up to 200 results for bulk selection.'],
+];
+
+foreach ($bulkRequirements as [$haystack, $needle, $message]) {
+    if (strpos($haystack, $needle) === false) {
+        fwrite(STDERR, $message . "\n");
+        exit(1);
+    }
+}
+
+echo "Player approval toolbar and bulk-add contracts OK\n";
