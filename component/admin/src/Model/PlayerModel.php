@@ -33,7 +33,7 @@ final class PlayerModel extends BaseAdminModel
     {
         $status = strtolower(trim($status));
 
-        if (!in_array($status, ['pending', 'approved', 'rejected'], true)) {
+        if (!in_array($status, ['pending', 'submitted', 'approved', 'rejected'], true)) {
             throw new InvalidArgumentException('Invalid player approval status: ' . $status);
         }
 
@@ -101,7 +101,7 @@ final class PlayerModel extends BaseAdminModel
 
     protected function prepareTable($table): void
     {
-        $uuid = strtolower(trim((string) ($table->person_uuid ?? '')));
+        $uuid = strtolower(trim((string) ($table->person_uuid ?? ''));
         if ($uuid === '') {
             return;
         }
@@ -152,8 +152,6 @@ final class PlayerModel extends BaseAdminModel
                 }
                 throw new RuntimeException(Text::_('COM_XDECAROCOMPETITIONS_ERROR_PEOPLE_UNAVAILABLE'), 0, $e);
             }
-            // Existing linked players remain editable when People is temporarily unavailable.
-            // Their stored identity snapshot is preserved until People can be queried again.
         }
     }
 }
