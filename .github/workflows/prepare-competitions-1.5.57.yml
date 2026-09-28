@@ -1,0 +1,85 @@
+name: Prepare Competitions 1.5.57 public release
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/prepare-competitions-1.5.57.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Normalize release metadata and contracts
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import json, re, xml.etree.ElementTree as ET
+          version='1.5.57'
+          Path('VERSION').write_text(version+'\n')
+
+          manifests = [
+              Path('component/xdecarocompetitions.xml'),
+              Path('package/pkg_xdecarocompetitions.xml'),
+              Path('plugins/system/xdecarocompetitions/xdecarocompetitions.xml'),
+              Path('plugins/xdecaroanalytics/competitions/competitions.xml'),
+              Path('plugins/task/xdecarocompetitions/xdecarocompetitions.xml'),
+              Path('modules/mod_xdecarocompetitions_matchtimeline/mod_xdecarocompetitions_matchtimeline.xml'),
+              Path('modules/mod_xdecarocompetitions_countriesfederations/mod_xdecarocompetitions_countriesfederations.xml'),
+          ]
+          for p in manifests:
+              tree=ET.parse(p); root=tree.getroot(); node=root.find('version')
+              if node is None: raise SystemExit(f'missing version in {p}')
+              node.text=version
+              if p.name == 'pkg_xdecarocompetitions.xml':
+                  for child in root.findall('./files/file'):
+                      text=(child.text or '').strip()
+                      child.text=re.sub(r'_\d+\.\d+\.\d+\.zip$', f'_{version}.zip', text)
+              tree.write(p, encoding='utf-8', xml_declaration=True)
+
+          asset_path=Path('component/media/joomla.asset.json')
+          asset=json.loads(asset_path.read_text())
+          asset['version']=version
+          for item in asset.get('assets',[]): item['version']=version
+          asset_path.write_text(json.dumps(asset, indent=2, ensure_ascii=False)+'\n')
+
+          ui=Path('component/admin/src/Helper/UiHelper.php')
+          s=ui.read_text()
+          s,n=re.subn(r"private const VERSION = '\d+\.\d+\.\d+';", f"private const VERSION = '{version}';", s, count=1)
+          if n!=1: raise SystemExit('UiHelper VERSION marker not found')
+          ui.write_text(s)
+
+          feed=Path('updates/pkg_xdecarocompetitions.xml')
+          s=feed.read_text()
+          s,n1=re.subn(r'<version>[^<]+</version>', f'<version>{version}</version>', s, count=1)
+          s,n2=re.subn(r'https://github\.com/xdecaro/competitions/releases/download/v[^/]+/pkg_xdecarocompetitions_[^<]+\.zip', f'https://github.com/xdecaro/competitions/releases/download/v{version}/pkg_xdecarocompetitions_{version}.zip', s, count=1)
+          if n1!=1 or n2!=1: raise SystemExit('update feed version/url markers not found')
+          feed.write_text(s)
+
+          marker=Path(f'component/admin/sql/updates/mysql/{version}.sql')
+          marker.write_text(f'-- Competitions {version}\n-- No schema changes.\n-- Adds the season-date integration event contract; data schema remains unchanged.\n')
+
+          test=Path('tests/competitions-1.5.56-season-date-event-contract.php')
+          test.write_text('''<?php\ndeclare(strict_types=1);\n$root = dirname(__DIR__);\n$file = $root . '/component/admin/src/Model/SeasonModel.php';\nif (!is_file($file)) { fwrite(STDERR, "Missing SeasonModel.php\\n"); exit(1); }\n$s=(string) file_get_contents($file);\nforeach (["onXdecaroCompetitionSeasonDatesChanged", "DispatcherInterface", "loadSeasonDates(", "datesChanged(", "dispatchSeasonDatesChanged("] as $token) {\n    if (strpos($s,$token)===false) { fwrite(STDERR, "Missing season-date event token: {$token}\\n"); exit(1); }\n}\necho "Competitions season date event contract OK\\n";\n''')
+          PY
+          php -l component/admin/src/Model/SeasonModel.php
+          php tests/competitions-1.5.56-season-date-event-contract.php
+          python3 tools/validate_release.py
+          python3 tools/build.py
+          python3 tools/validate_release.py --dist
+      - name: Commit public release source
+        run: |
+          set -euo pipefail
+          rm -f .github/workflows/prepare-competitions-1.5.57.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'Prepare Competitions 1.5.57 public release'
+          git push origin HEAD:main
