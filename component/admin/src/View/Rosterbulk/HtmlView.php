@@ -31,7 +31,7 @@ final class HtmlView extends BaseHtmlView
         UiHelper::loadAssets();
         $model = $this->getModel();
         $this->participationOptions = $model->getParticipationOptions();
-        $this->participationId = $app->input->getInt('participation_id');
+        $this->participationId = (int) $app->input->getInt('participation_id', 0);
         $this->participation = $model->getParticipation($this->participationId);
 
         $sourcePid = (int) $app->getUserState('com_xdecarocompetitions.rosterbulk.source_participation_id', 0);
