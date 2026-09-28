@@ -6,6 +6,7 @@ defined('_JEXEC') or die;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\View\HtmlView as BaseHtmlView;
+use Joomla\CMS\Router\Route;
 use Joomla\CMS\Toolbar\ToolbarHelper;
 use xdecaro\Component\Competitions\Administrator\Helper\UiHelper;
 
@@ -41,6 +42,14 @@ final class HtmlView extends BaseHtmlView
 
         if ($user->authorise('core.create', 'com_xdecarocompetitions')) {
             ToolbarHelper::addNew('participation.add');
+            $seasonId = (int) $this->state->get('filter.season_id', 0);
+            $bulkUrl = 'index.php?option=com_xdecarocompetitions&view=participationbulk';
+
+            if ($seasonId > 0) {
+                $bulkUrl .= '&season_id=' . $seasonId;
+            }
+
+            ToolbarHelper::link(Route::_($bulkUrl), 'Aggiungi squadre', 'plus');
         }
 
         if ($user->authorise('core.edit', 'com_xdecarocompetitions')) {
