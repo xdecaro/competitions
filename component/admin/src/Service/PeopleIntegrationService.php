@@ -22,7 +22,7 @@ final class PeopleIntegrationService
     public function searchPeople(string $search, int $limit = 20): array
     {
         try {
-            return (array) $this->provider()->searchPeople(['search' => trim($search)], max(1, min(50, $limit)), false);
+            return (array) $this->provider()->searchPeople(['search' => trim($search)], max(1, min(200, $limit)), false);
         } catch (Throwable $e) {
             throw new RuntimeException('People search is unavailable: ' . $e->getMessage(), (int) $e->getCode(), $e);
         }
