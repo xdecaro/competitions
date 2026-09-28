@@ -15,6 +15,8 @@ $hasSource = !empty($this->sourceTeamNames);
 .participation-bulk-shell .bulk-source-box{border:1px solid var(--template-bg-dark-10,#d9d9d9);border-radius:.5rem;padding:12px;background:var(--body-bg,#fff)}
 .participation-bulk-shell .bulk-source-summary{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
 .participation-bulk-shell .bulk-source-summary span{font-size:.875rem;padding:.2rem .5rem;border-radius:999px;background:rgba(127,127,127,.12)}
+.participation-bulk-shell .bulk-unmatched{margin-top:10px;padding:10px 12px;border-radius:.45rem;background:rgba(220,53,69,.08);border:1px solid rgba(220,53,69,.2)}
+.participation-bulk-shell .bulk-unmatched ul{margin:.35rem 0 0;padding-left:1.15rem}
 .participation-bulk-shell .bulk-list-head{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}
 .participation-bulk-shell .bulk-actions{display:flex;gap:8px;flex-wrap:wrap}
 .participation-bulk-shell .bulk-search{max-width:520px}
@@ -77,6 +79,16 @@ $hasSource = !empty($this->sourceTeamNames);
                             <span><?= (int) $this->sourceSummary['matched']; ?> trovate in Competitions</span>
                             <span><?= (int) $this->sourceSummary['unmatched']; ?> non abbinate</span>
                         </div>
+                        <?php if (!empty($this->unmatchedSourceNames)) : ?>
+                            <div class="bulk-unmatched">
+                                <div class="fw-semibold">Non abbinate</div>
+                                <ul>
+                                    <?php foreach ($this->unmatchedSourceNames as $unmatchedName) : ?>
+                                        <li><?= $this->escape((string) $unmatchedName); ?></li>
+                                    <?php endforeach; ?>
+                                </ul>
+                            </div>
+                        <?php endif; ?>
                         <button type="button" class="btn btn-sm btn-link px-0 mt-1" id="clear-csv">Rimuovi filtro CSV</button>
                     <?php endif; ?>
                 </div>
