@@ -41,6 +41,7 @@ jobs:
           php tests/live-sync-edit-lock-contract.php
           php tests/people-history-contract.php
           php tests/public-branding-messages-contract.php
+          php tests/competitions-1.5.56-season-date-event-contract.php
           python3 tools/validate_release.py
       - name: Build twice and verify determinism
         run: |
@@ -58,6 +59,8 @@ jobs:
           VERSION="${{ steps.version.outputs.version }}"
           PACKAGE="dist/pkg_xdecarocompetitions_${VERSION}.zip"
           SHA256="$(sha256sum "$PACKAGE" | awk '{print $1}')"
+          grep -Fq "<version>${VERSION}</version>" updates/pkg_xdecarocompetitions.xml
+          grep -Fq "https://github.com/xdecaro/competitions/releases/download/v${VERSION}/pkg_xdecarocompetitions_${VERSION}.zip" updates/pkg_xdecarocompetitions.xml
           grep -Fq "<sha256>${SHA256}</sha256>" updates/pkg_xdecarocompetitions.xml
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
@@ -77,4 +80,4 @@ jobs:
             "dist/mod_xdecarocompetitions_countriesfederations_${VERSION}.zip" \
             "dist/pkg_xdecarocompetitions_${VERSION}.zip" \
             "dist/SHA256SUMS.txt" --target main --title "Competitions ${VERSION}" \
-            --notes "Competitions ${VERSION}: automatically backfills existing linked Clubs that still lack a local federation mapping, using the public Organizations sports-affiliation provider without guessing ambiguous relationships."
+            --notes "Competitions ${VERSION}: dispatches a Joomla event when season dates change so optional integrations such as Membership can synchronize linked records without direct table coupling. Joomla 6 only."
