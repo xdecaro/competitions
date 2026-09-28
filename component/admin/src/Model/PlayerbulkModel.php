@@ -36,7 +36,6 @@ final class PlayerbulkModel extends BaseDatabaseModel
                     ->select($db->quoteName('person_uuid'))
                     ->from($db->quoteName('#__xdecarocompetitions_players'))
                     ->where($db->quoteName('person_uuid') . ' IS NOT NULL')
-                    ->where($db->quoteName('state') . ' <> -2')
             )->loadColumn()
         )), true);
 
