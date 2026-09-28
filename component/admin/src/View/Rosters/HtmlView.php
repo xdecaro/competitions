@@ -6,6 +6,7 @@ defined('_JEXEC') or die;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\View\HtmlView as BaseHtmlView;
+use Joomla\CMS\Router\Route;
 use Joomla\CMS\Toolbar\ToolbarHelper;
 use xdecaro\Component\Competitions\Administrator\Helper\UiHelper;
 
@@ -41,6 +42,11 @@ final class HtmlView extends BaseHtmlView
 
         if ($user->authorise('core.create', 'com_xdecarocompetitions')) {
             ToolbarHelper::addNew('roster.add');
+            ToolbarHelper::link(
+                Route::_('index.php?option=com_xdecarocompetitions&view=rosterbulk'),
+                'Aggiungi rosa',
+                'plus'
+            );
         }
 
         if ($user->authorise('core.edit', 'com_xdecarocompetitions')) {
