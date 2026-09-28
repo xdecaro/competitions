@@ -1,0 +1,20 @@
+name: Participation bulk CSV contract
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions: {contents: read}
+
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with: {php-version: '8.3', extensions: mbstring, coverage: none}
+      - name: PHP syntax
+        run: php -l component/admin/src/Model/ParticipationbulkModel.php && php -l component/admin/src/View/Participationbulk/HtmlView.php && php -l component/admin/tmpl/participationbulk/default.php
+      - name: Participation bulk CSV contract
+        run: php tests/participation-bulk-csv-contract.php
