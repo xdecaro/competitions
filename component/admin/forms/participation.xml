@@ -23,6 +23,7 @@
     />
     <field name="status" type="list" label="COM_XDECAROCOMPETITIONS_FIELD_PARTICIPATION_STATUS" default="draft">
       <option value="draft">COM_XDECAROCOMPETITIONS_PARTICIPATION_DRAFT</option>
+      <option value="pending">COM_XDECAROCOMPETITIONS_PARTICIPATION_PENDING</option>
       <option value="submitted">COM_XDECAROCOMPETITIONS_PARTICIPATION_SUBMITTED</option>
       <option value="approved">COM_XDECAROCOMPETITIONS_PARTICIPATION_APPROVED</option>
       <option value="rejected">COM_XDECAROCOMPETITIONS_PARTICIPATION_REJECTED</option>
