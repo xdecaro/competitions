@@ -1,2 +1,3 @@
-ALTER TABLE `#__xdecarocompetitions_seasons`
-  ADD COLUMN `workflow_status` VARCHAR(32) NOT NULL DEFAULT 'draft' AFTER `end_date`;
+-- 1.5.58 schema marker.
+-- The installer postflight idempotently ensures the season workflow_status column
+-- for upgrades, while the deterministic build normalizes it into fresh installs.
