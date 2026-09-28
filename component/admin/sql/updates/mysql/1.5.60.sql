@@ -1,0 +1,2 @@
+-- 1.5.60 schema marker.
+-- No structural database change is required: this release only improves Submitted badge contrast.
