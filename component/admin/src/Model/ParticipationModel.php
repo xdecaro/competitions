@@ -32,7 +32,7 @@ final class ParticipationModel extends BaseAdminModel
     {
         $status = strtolower(trim($status));
 
-        if (!in_array($status, ['submitted', 'approved', 'rejected'], true)) {
+        if (!in_array($status, ['pending', 'submitted', 'approved', 'rejected'], true)) {
             throw new InvalidArgumentException('Invalid participation workflow status: ' . $status);
         }
 
