@@ -40,7 +40,7 @@ $requirements = [
     [$mdl, 'participation_id', 'Roster bulk model must scope duplicate checks to participation.'],
     [$mdl, 'person_uuid', 'Roster bulk matching must use People-linked player identity.'],
     [$vw, 'sourceSummary', 'Roster bulk view must expose CSV summary.'],
-    [$vw, "(int) $app->input->getInt('participation_id', 0)", 'Roster bulk view must safely default missing participation_id to integer zero.'],
+    [$vw, '(int) $app->input->getInt(\'participation_id\', 0)', 'Roster bulk view must safely default missing participation_id to integer zero.'],
     [$tpl, 'name="source_csv"', 'Roster bulk page must contain CSV upload.'],
     [$tpl, 'name="participation_id"', 'Roster bulk page must choose one participation.'],
     [$tpl, 'Seleziona tutte', 'Roster bulk page must support select all.'],
