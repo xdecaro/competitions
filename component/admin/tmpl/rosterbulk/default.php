@@ -6,10 +6,20 @@ use Joomla\CMS\Router\Route;
 
 HTMLHelper::_('behavior.formvalidator');
 $hasCsv = $this->sourceFileName !== '';
+$teams = [];
+foreach ($this->participationOptions as $option) {
+    $teamId = (int) $option->team_id;
+    if ($teamId > 0 && !isset($teams[$teamId])) {
+        $teams[$teamId] = trim((string) $option->team_name);
+    }
+}
+natcasesort($teams);
+$selectedTeamId = $this->participation ? (int) $this->participation->team_id : 0;
 ?>
 <style>
 .roster-bulk-shell{max-width:1480px;margin:0 auto;padding:0 12px}
-.roster-bulk-shell .bulk-top{display:grid;grid-template-columns:minmax(320px,1fr) minmax(340px,.9fr);gap:14px;align-items:end}
+.roster-bulk-shell .bulk-top{display:grid;grid-template-columns:minmax(420px,1fr) minmax(340px,.9fr);gap:14px;align-items:end}
+.roster-bulk-shell .bulk-selectors{display:grid;grid-template-columns:minmax(180px,.85fr) minmax(260px,1.15fr) auto;gap:10px;align-items:end}
 .roster-bulk-shell .bulk-box{border:1px solid var(--template-bg-dark-10,#ddd);border-radius:.5rem;padding:12px;background:var(--body-bg,#fff)}
 .roster-bulk-shell .bulk-summary{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
 .roster-bulk-shell .bulk-summary span{font-size:.875rem;padding:.2rem .5rem;border-radius:999px;background:rgba(127,127,127,.12)}
@@ -17,24 +27,36 @@ $hasCsv = $this->sourceFileName !== '';
 .roster-bulk-shell #roster-bulk-table{table-layout:fixed;width:100%;margin-bottom:0}
 .roster-bulk-shell #roster-bulk-table th,.roster-bulk-shell #roster-bulk-table td{padding:.55rem .65rem;vertical-align:middle}
 .roster-bulk-shell #roster-bulk-table th:nth-child(1){width:44px}.roster-bulk-shell #roster-bulk-table th:nth-child(2){width:38%}.roster-bulk-shell #roster-bulk-table th:nth-child(3){width:14%}.roster-bulk-shell #roster-bulk-table th:nth-child(4){width:22%}.roster-bulk-shell #roster-bulk-table th:nth-child(5){width:18%}
-@media(max-width:900px){.roster-bulk-shell .bulk-top{grid-template-columns:1fr}.roster-bulk-shell #roster-bulk-table thead{display:none}.roster-bulk-shell #roster-bulk-table,.roster-bulk-shell #roster-bulk-table tbody,.roster-bulk-shell #roster-bulk-table tr,.roster-bulk-shell #roster-bulk-table td{display:block;width:100%}.roster-bulk-shell #roster-bulk-table tr{position:relative;border:1px solid var(--template-bg-dark-10,#ddd);border-radius:.55rem;margin-bottom:.65rem;padding:.65rem .75rem .65rem 42px}.roster-bulk-shell #roster-bulk-table td{border:0;padding:.18rem 0}.roster-bulk-shell #roster-bulk-table td:first-child{position:absolute;left:12px;top:12px;width:auto}.roster-bulk-shell #roster-bulk-table td:nth-child(3)::before{content:'Numero maglia: ';font-weight:600}.roster-bulk-shell #roster-bulk-table td:nth-child(4)::before{content:'Ruolo: ';font-weight:600}.roster-bulk-shell #roster-bulk-table td:nth-child(5)::before{content:'Giocatore: ';font-weight:600}}
+@media(max-width:1100px){.roster-bulk-shell .bulk-selectors{grid-template-columns:1fr 1fr}.roster-bulk-shell .bulk-selectors .bulk-load{grid-column:1/-1;justify-self:start}}
+@media(max-width:900px){.roster-bulk-shell .bulk-top,.roster-bulk-shell .bulk-selectors{grid-template-columns:1fr}.roster-bulk-shell .bulk-selectors .bulk-load{grid-column:auto}.roster-bulk-shell #roster-bulk-table thead{display:none}.roster-bulk-shell #roster-bulk-table,.roster-bulk-shell #roster-bulk-table tbody,.roster-bulk-shell #roster-bulk-table tr,.roster-bulk-shell #roster-bulk-table td{display:block;width:100%}.roster-bulk-shell #roster-bulk-table tr{position:relative;border:1px solid var(--template-bg-dark-10,#ddd);border-radius:.55rem;margin-bottom:.65rem;padding:.65rem .75rem .65rem 42px}.roster-bulk-shell #roster-bulk-table td{border:0;padding:.18rem 0}.roster-bulk-shell #roster-bulk-table td:first-child{position:absolute;left:12px;top:12px;width:auto}.roster-bulk-shell #roster-bulk-table td:nth-child(3)::before{content:'Numero maglia: ';font-weight:600}.roster-bulk-shell #roster-bulk-table td:nth-child(4)::before{content:'Ruolo: ';font-weight:600}.roster-bulk-shell #roster-bulk-table td:nth-child(5)::before{content:'Giocatore: ';font-weight:600}}
 </style>
 
 <form action="<?= Route::_('index.php?option=com_xdecarocompetitions&view=rosterbulk'); ?>" method="post" enctype="multipart/form-data" name="adminForm" id="adminForm" class="competitions-admin roster-bulk-shell">
   <div class="card mb-3"><div class="card-body"><div class="bulk-top">
     <div>
-      <label class="form-label fw-semibold" for="participation_id">Partecipazione</label>
-      <div class="input-group">
-        <select class="form-select" name="participation_id" id="participation_id" required>
-          <option value="">- Seleziona partecipazione -</option>
-          <?php foreach ($this->participationOptions as $option) : ?>
-            <?php $label = trim((string)$option->team_name).' — '.trim((string)$option->tournament_name).' / '.trim((string)$option->season_name).((int)$option->season_year ? ' ('.(int)$option->season_year.')' : ''); ?>
-            <option value="<?= (int)$option->id; ?>"<?= (int)$option->id === $this->participationId ? ' selected' : ''; ?>><?= $this->escape($label); ?></option>
-          <?php endforeach; ?>
-        </select>
-        <button type="button" class="btn btn-outline-primary" id="load-participation">Carica</button>
+      <div class="bulk-selectors">
+        <div>
+          <label class="form-label fw-semibold" for="team_id">Squadra</label>
+          <select class="form-select" name="team_id" id="team_id">
+            <option value="">- Seleziona squadra -</option>
+            <?php foreach ($teams as $teamId => $teamName) : ?>
+              <option value="<?= (int) $teamId; ?>"<?= (int) $teamId === $selectedTeamId ? ' selected' : ''; ?>><?= $this->escape($teamName); ?></option>
+            <?php endforeach; ?>
+          </select>
+        </div>
+        <div>
+          <label class="form-label fw-semibold" for="participation_id">Stagione / Partecipazione</label>
+          <select class="form-select" name="participation_id" id="participation_id" required<?= $selectedTeamId > 0 ? '' : ' disabled'; ?>>
+            <option value="">- Seleziona stagione -</option>
+            <?php foreach ($this->participationOptions as $option) : ?>
+              <?php $label = trim((string)$option->tournament_name).' — '.trim((string)$option->season_name).((int)$option->season_year ? ' ('.(int)$option->season_year.')' : ''); ?>
+              <option value="<?= (int)$option->id; ?>" data-team-id="<?= (int)$option->team_id; ?>"<?= (int)$option->id === $this->participationId ? ' selected' : ''; ?>><?= $this->escape($label); ?></option>
+            <?php endforeach; ?>
+          </select>
+        </div>
+        <div class="bulk-load"><button type="button" class="btn btn-outline-primary" id="load-participation">Carica</button></div>
       </div>
-      <div class="form-text">Scegli squadra e stagione della rosa da preparare.</div>
+      <div class="form-text mt-2">Scegli prima la squadra, poi la stagione della rosa da preparare.</div>
     </div>
     <div class="bulk-box">
       <label class="form-label fw-semibold mb-1" for="source_csv">Importa elenco da CSV</label>
@@ -79,10 +101,26 @@ $hasCsv = $this->sourceFileName !== '';
 </form>
 <script>
 (() => {
- const form=document.getElementById('adminForm'), participation=document.getElementById('participation_id'), csv=document.getElementById('source_csv'), checks=()=>[...document.querySelectorAll('.roster-check')], master=document.getElementById('master-check');
+ const form=document.getElementById('adminForm'), team=document.getElementById('team_id'), participation=document.getElementById('participation_id'), csv=document.getElementById('source_csv'), checks=()=>[...document.querySelectorAll('.roster-check')], master=document.getElementById('master-check');
+ const allParticipationOptions=participation?[...participation.querySelectorAll('option[data-team-id]')]:[];
+ const filterParticipations=()=>{
+   if(!participation)return;
+   const teamId=Number(team?.value||0);
+   let selectedStillVisible=false;
+   allParticipationOptions.forEach(option=>{
+     const visible=teamId>0&&Number(option.dataset.teamId||0)===teamId;
+     option.hidden=!visible;
+     option.disabled=!visible;
+     if(visible&&option.selected)selectedStillVisible=true;
+   });
+   if(!selectedStillVisible)participation.value='';
+   participation.disabled=teamId<=0;
+ };
  const sync=()=>{const n=checks().filter(x=>x.checked).length,b=form?.querySelector('input[name="boxchecked"]');if(b)b.value=String(n);if(window.Joomla?.isChecked)Joomla.isChecked(n>0);if(master)master.checked=checks().length>0&&n===checks().length;};
- document.getElementById('load-participation')?.addEventListener('click',()=>{const id=Number(participation?.value||0);if(id)location.href='index.php?option=com_xdecarocompetitions&view=rosterbulk&participation_id='+encodeURIComponent(id);});
- document.getElementById('preview-csv')?.addEventListener('click',()=>{if(!Number(participation?.value||0)){alert('Seleziona prima una partecipazione.');return;}if(!csv?.files?.length){alert('Seleziona un file CSV.');return;}window.Joomla?.submitbutton?.('rosterbulk.previewCsv');});
+ team?.addEventListener('change',()=>{filterParticipations();});
+ filterParticipations();
+ document.getElementById('load-participation')?.addEventListener('click',()=>{const id=Number(participation?.value||0);if(!Number(team?.value||0)){alert('Seleziona prima una squadra.');return;}if(!id){alert('Seleziona una stagione.');return;}location.href='index.php?option=com_xdecarocompetitions&view=rosterbulk&participation_id='+encodeURIComponent(id);});
+ document.getElementById('preview-csv')?.addEventListener('click',()=>{if(!Number(team?.value||0)){alert('Seleziona prima una squadra.');return;}if(!Number(participation?.value||0)){alert('Seleziona prima una stagione.');return;}if(!csv?.files?.length){alert('Seleziona un file CSV.');return;}window.Joomla?.submitbutton?.('rosterbulk.previewCsv');});
  document.getElementById('clear-csv')?.addEventListener('click',()=>window.Joomla?.submitbutton?.('rosterbulk.clearCsv'));
  document.getElementById('select-all')?.addEventListener('click',()=>{checks().forEach(x=>x.checked=true);sync();});document.getElementById('select-none')?.addEventListener('click',()=>{checks().forEach(x=>x.checked=false);sync();});master?.addEventListener('change',()=>{checks().forEach(x=>x.checked=master.checked);sync();});checks().forEach(x=>x.addEventListener('change',sync));sync();
  const original=window.Joomla?.submitbutton;if(window.Joomla)window.Joomla.submitbutton=(task)=>{if(task==='rosterbulk.addSelected'){const n=checks().filter(x=>x.checked).length;if(!n){alert('Seleziona almeno un giocatore.');return;}if(!confirm(`Aggiungere ${n} giocatori alla rosa?`))return;}if(typeof original==='function')original(task);else{const t=form.querySelector('input[name="task"]');if(t)t.value=task;form.submit();}};
