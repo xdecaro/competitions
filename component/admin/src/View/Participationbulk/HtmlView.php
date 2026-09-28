@@ -16,6 +16,9 @@ final class HtmlView extends BaseHtmlView
     public array $items = [];
     public int $seasonId = 0;
     public string $seasonLabel = '';
+    public array $sourceTeamNames = [];
+    public string $sourceFileName = '';
+    public array $sourceSummary = ['source' => 0, 'matched' => 0, 'unmatched' => 0];
 
     public function display($tpl = null): void
     {
@@ -35,8 +38,23 @@ final class HtmlView extends BaseHtmlView
 
         $model = $this->getModel();
         $this->seasonOptions = $model->getSeasonOptions();
-        $this->items = $model->getAvailableTeams($this->seasonId);
+        $allAvailable = $model->getAvailableTeams($this->seasonId);
         $this->seasonLabel = $model->getSeasonLabel($this->seasonId);
+
+        $sourceSeasonId = (int) $app->getUserState('com_xdecarocompetitions.participationbulk.source_season_id', 0);
+        if ($this->seasonId > 0 && $sourceSeasonId === $this->seasonId) {
+            $this->sourceTeamNames = (array) $app->getUserState(
+                'com_xdecarocompetitions.participationbulk.source_team_names',
+                []
+            );
+            $this->sourceFileName = (string) $app->getUserState(
+                'com_xdecarocompetitions.participationbulk.source_file_name',
+                ''
+            );
+        }
+
+        $this->sourceSummary = $model->getSourceFilterSummary($allAvailable, $this->sourceTeamNames);
+        $this->items = $model->filterTeamsBySourceNames($allAvailable, $this->sourceTeamNames);
 
         if (count($errors = $this->get('Errors'))) {
             throw new \RuntimeException(implode("\n", $errors));
