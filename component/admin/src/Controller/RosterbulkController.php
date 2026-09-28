@@ -153,6 +153,9 @@ final class RosterbulkController extends BaseController
             $headers = array_map(static function ($h): string {
                 $h = preg_replace('/^\xEF\xBB\xBF/', '', (string) $h) ?? (string) $h;
                 $h = mb_strtolower(trim($h), 'UTF-8');
+                if ($h === '#') {
+                    return 'number';
+                }
                 return preg_replace('/[^a-z0-9]+/', '_', $h) ?? $h;
             }, $headers);
 
@@ -160,7 +163,7 @@ final class RosterbulkController extends BaseController
             $first = $this->findHeaderIndex($headers, ['firstname','first_name','given_name','nome','name']);
             $last = $this->findHeaderIndex($headers, ['lastname','last_name','surname','family_name','cognome']);
             $display = $this->findHeaderIndex($headers, ['display_name','fullname','full_name','person','player','giocatore']);
-            $shirt = $this->findHeaderIndex($headers, ['shirt_number','shirtnumber','number','numero','numero_maglia','jersey_number']);
+            $shirt = $this->findHeaderIndex($headers, ['shirt_number','shirtnumber','number','nr','n','numero','numero_maglia','jersey_number']);
             $role = $this->findHeaderIndex($headers, ['role','ruolo','type','tipo','position','posizione']);
             if ($display === null && $first === null && $last === null) return [];
 
