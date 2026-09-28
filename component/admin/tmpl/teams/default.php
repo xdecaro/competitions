@@ -11,7 +11,7 @@ $listDirn = $this->escape($this->state->get('list.direction'));
 
 $approvalLabels = [
     'pending' => ['COM_XDECAROCOMPETITIONS_APPROVAL_PENDING', 'bg-warning text-dark'],
-    'submitted' => ['COM_XDECAROCOMPETITIONS_APPROVAL_SUBMITTED', 'bg-info text-dark'],
+    'submitted' => ['COM_XDECAROCOMPETITIONS_APPROVAL_SUBMITTED', 'bg-info text-white'],
     'approved' => ['COM_XDECAROCOMPETITIONS_APPROVAL_APPROVED', 'bg-success'],
     'rejected' => ['COM_XDECAROCOMPETITIONS_APPROVAL_REJECTED', 'bg-danger'],
 ];

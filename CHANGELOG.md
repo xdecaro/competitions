@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.5.60 - 2026-09-28
+
+- Improved the **Submitted / Inviata** badge contrast across Teams, Participations, Players and Rosters.
+- Kept the existing blue badge background and changed only the Submitted badge text to white.
+- Pending, Approved and Rejected badge styles are unchanged.
+- Added regression coverage requiring white text for Submitted badges.
+- No database structure changes are required.
+
 ## 1.5.59 - 2026-09-28
 
 - Fixed the workflow bug where the Participations **Pending** toolbar action stored `submitted`, causing the row to appear as Submitted instead of Pending.

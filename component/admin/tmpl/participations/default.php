@@ -13,7 +13,7 @@ $listDirn = $this->escape($this->state->get('list.direction'));
 $statusLabels = [
     'draft' => ['COM_XDECAROCOMPETITIONS_PARTICIPATION_DRAFT', 'bg-secondary'],
     'pending' => ['COM_XDECAROCOMPETITIONS_PARTICIPATION_PENDING', 'bg-warning text-dark'],
-    'submitted' => ['COM_XDECAROCOMPETITIONS_PARTICIPATION_SUBMITTED', 'bg-info text-dark'],
+    'submitted' => ['COM_XDECAROCOMPETITIONS_PARTICIPATION_SUBMITTED', 'bg-info text-white'],
     'approved' => ['COM_XDECAROCOMPETITIONS_PARTICIPATION_APPROVED', 'bg-success'],
     'rejected' => ['COM_XDECAROCOMPETITIONS_PARTICIPATION_REJECTED', 'bg-danger'],
 ];
