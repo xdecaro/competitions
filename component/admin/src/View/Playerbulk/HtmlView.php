@@ -14,6 +14,11 @@ final class HtmlView extends BaseHtmlView
 {
     public array $items = [];
     public string $search = '';
+    public array $sourcePersonNames = [];
+    public string $sourceFileName = '';
+    public array $sourceSummary = ['source' => 0, 'matched' => 0, 'unmatched' => 0];
+    public array $unmatchedSourceNames = [];
+    public int $alreadyLinked = 0;
 
     public function display($tpl = null): void
     {
@@ -26,7 +31,25 @@ final class HtmlView extends BaseHtmlView
 
         UiHelper::loadAssets();
         $this->search = trim($app->input->getString('search', ''));
-        $this->items = $this->getModel()->getAvailablePeople($this->search);
+        $this->sourcePersonNames = (array) $app->getUserState(
+            'com_xdecarocompetitions.playerbulk.source_person_names',
+            []
+        );
+        $this->sourceFileName = (string) $app->getUserState(
+            'com_xdecarocompetitions.playerbulk.source_file_name',
+            ''
+        );
+
+        $model = $this->getModel();
+        if ($this->sourcePersonNames) {
+            $matchedPeople = $model->getPeopleForSourceNames($this->sourcePersonNames);
+            $this->sourceSummary = $model->getSourceFilterSummary($matchedPeople, $this->sourcePersonNames);
+            $this->unmatchedSourceNames = $model->getUnmatchedSourceNames($matchedPeople, $this->sourcePersonNames);
+            $this->items = $model->excludeLinkedPeople($matchedPeople);
+            $this->alreadyLinked = max(0, (int) $this->sourceSummary['matched'] - count($this->items));
+        } else {
+            $this->items = $model->getAvailablePeople($this->search);
+        }
 
         if (count($errors = $this->get('Errors'))) {
             throw new \RuntimeException(implode("\n", $errors));
