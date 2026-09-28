@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.5.58 - 2026-09-28
+
+- Added bulk **Approve / Pending / Reject** workflow actions to Participations and Rosters while preserving the existing Joomla publication state separately.
+- Bulk workflow changes reuse each domain Table validation and LiveSync recording instead of bypassing business rules with raw status updates.
+- Added a dedicated Season organizational lifecycle edited only inside New/Edit: Draft, Awaiting host, Host candidate, Inspection in progress, Venue approved, Preparation, Ready, In progress, Completed and Cancelled.
+- Kept the Season workflow out of the list toolbar so publication actions remain distinct from event-organization progress.
+- Added the season `workflow_status` field with default `draft`, an idempotent installer repair for historical installations and deterministic fresh-install schema normalization.
+- Added Italian/English workflow labels and a dedicated RED/GREEN workflow regression contract.
+
 ## 1.5.57 - 2026-09-28
 
 - Emits `onXdecaroCompetitionSeasonDatesChanged` after a committed season date change.
