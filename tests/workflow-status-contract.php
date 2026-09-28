@@ -12,6 +12,7 @@ $files = [
     'seasonsView' => $root . '/component/admin/src/View/Seasons/HtmlView.php',
     'seasonForm' => $root . '/component/admin/forms/season.xml',
     'seasonTable' => $root . '/component/admin/src/Table/SeasonTable.php',
+    'installer' => $root . '/component/script.php',
     'build' => $root . '/tools/build.py',
     'upgradeSql' => $root . '/component/admin/sql/updates/mysql/1.5.58.sql',
 ];
@@ -53,8 +54,10 @@ $requirements = [
     [$c['seasonForm'], 'value="completed"', 'Season status completed missing.'],
     [$c['seasonForm'], 'value="cancelled"', 'Season status cancelled missing.'],
     [$c['seasonTable'], "'awaiting_host'", 'Season table must validate workflow states.'],
+    [$c['installer'], 'ensureSeasonWorkflowSchema', 'Upgrade installer must repair the season workflow column.'],
+    [$c['installer'], "ADD COLUMN ' . \$db->quoteName('workflow_status')", 'Installer must add workflow_status when missing.'],
     [$c['build'], '`workflow_status` VARCHAR(32) NOT NULL DEFAULT \'draft\'', 'Fresh-install build must normalize the season workflow column.'],
-    [$c['upgradeSql'], 'ADD COLUMN `workflow_status`', 'Upgrade season workflow column missing.'],
+    [$c['upgradeSql'], '1.5.58 schema marker', '1.5.58 schema marker missing.'],
 ];
 
 foreach ($requirements as [$haystack, $needle, $message]) {
