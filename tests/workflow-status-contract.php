@@ -12,7 +12,7 @@ $files = [
     'seasonsView' => $root . '/component/admin/src/View/Seasons/HtmlView.php',
     'seasonForm' => $root . '/component/admin/forms/season.xml',
     'seasonTable' => $root . '/component/admin/src/Table/SeasonTable.php',
-    'installSql' => $root . '/component/admin/sql/install.mysql.utf8mb4.sql',
+    'build' => $root . '/tools/build.py',
     'upgradeSql' => $root . '/component/admin/sql/updates/mysql/1.5.58.sql',
 ];
 
@@ -53,7 +53,7 @@ $requirements = [
     [$c['seasonForm'], 'value="completed"', 'Season status completed missing.'],
     [$c['seasonForm'], 'value="cancelled"', 'Season status cancelled missing.'],
     [$c['seasonTable'], "'awaiting_host'", 'Season table must validate workflow states.'],
-    [$c['installSql'], '`workflow_status` VARCHAR(32) NOT NULL DEFAULT \'draft\'', 'Fresh install season workflow column missing.'],
+    [$c['build'], '`workflow_status` VARCHAR(32) NOT NULL DEFAULT \'draft\'', 'Fresh-install build must normalize the season workflow column.'],
     [$c['upgradeSql'], 'ADD COLUMN `workflow_status`', 'Upgrade season workflow column missing.'],
 ];
 
