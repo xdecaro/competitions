@@ -18,7 +18,7 @@ $statusLabels = [
 ];
 $statusClasses = [
     'pending' => 'bg-warning text-dark',
-    'submitted' => 'bg-info text-dark',
+    'submitted' => 'bg-info text-white',
     'approved' => 'bg-success',
     'rejected' => 'bg-danger',
 ];
