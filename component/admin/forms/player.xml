@@ -21,6 +21,7 @@
     </field>
     <field name="approval_status" type="list" label="COM_XDECAROCOMPETITIONS_FIELD_APPROVAL_STATUS" default="pending">
       <option value="pending">COM_XDECAROCOMPETITIONS_PLAYER_PENDING</option>
+      <option value="submitted">COM_XDECAROCOMPETITIONS_PLAYER_SUBMITTED</option>
       <option value="approved">COM_XDECAROCOMPETITIONS_PLAYER_APPROVED</option>
       <option value="rejected">COM_XDECAROCOMPETITIONS_PLAYER_REJECTED</option>
     </field>
