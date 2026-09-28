@@ -63,6 +63,22 @@ jobs:
           if n1!=1 or n2!=1: raise SystemExit('update feed version/url markers not found')
           feed.write_text(s)
 
+          readme=Path('README.md')
+          s=readme.read_text()
+          s,n=re.subn(r'(## Current version\s+\n\n)\*\*\d+\.\d+\.\d+\*\*', rf'\1**{version}**', s, count=1)
+          if n!=1: raise SystemExit('README current version marker not found')
+          insert=f"\nVersion {version} emits a Joomla event when a saved season changes start/end dates, allowing optional integrations such as Membership to synchronize competition-card validity without direct table coupling.\n"
+          marker=f'**{version}**\n'
+          s=s.replace(marker, marker+insert, 1)
+          readme.write_text(s)
+
+          changelog=Path('CHANGELOG.md')
+          s=changelog.read_text()
+          entry=f"## {version} - 2026-09-28\n\n- Emits `onXdecaroCompetitionSeasonDatesChanged` after a committed season date change.\n- The event exposes season ID, start/end dates and actor user ID to optional Joomla listeners.\n- Listener failures are logged and do not roll back the saved Competitions season.\n- No database structure changes are required.\n\n"
+          if f'## {version} -' not in s:
+              s=s.replace('# Changelog\n\n', '# Changelog\n\n'+entry, 1)
+          changelog.write_text(s)
+
           marker=Path(f'component/admin/sql/updates/mysql/{version}.sql')
           marker.write_text(f'-- Competitions {version}\n-- No schema changes.\n-- Adds the season-date integration event contract; data schema remains unchanged.\n')
 
