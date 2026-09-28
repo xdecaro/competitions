@@ -1,11 +1,11 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <extension type="plugin" group="task" method="upgrade">
   <name>PLG_TASK_XDECAROCOMPETITIONS</name>
   <author>Luca De Caro</author>
   <creationDate>2026-09</creationDate>
   <copyright>Copyright (C) 2026 Luca De Caro. All rights reserved.</copyright>
   <license>GNU General Public License version 2 or later</license>
-  <version>1.5.23</version>
+  <version>1.5.57</version>
   <description>PLG_TASK_XDECAROCOMPETITIONS_XML_DESCRIPTION</description>
   <namespace path="src">xdecaro\Plugin\Task\Xdecarocompetitions</namespace>
   <files>

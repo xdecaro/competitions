@@ -1,0 +1,3 @@
+-- Competitions 1.5.57
+-- No schema changes.
+-- Adds the season-date integration event contract; data schema remains unchanged.

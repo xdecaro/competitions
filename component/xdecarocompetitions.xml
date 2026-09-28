@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <extension type="component" method="upgrade">
   <name>COM_XDECAROCOMPETITIONS</name>
   <author>Luca De Caro</author>
@@ -6,7 +6,7 @@
   <copyright>Copyright (C) 2026 Luca De Caro. All rights reserved.</copyright>
   <license>GNU General Public License version 2 or later</license>
   <authorUrl>https://github.com/xdecaro/competitions</authorUrl>
-  <version>1.5.23</version>
+  <version>1.5.57</version>
   <description>COM_XDECAROCOMPETITIONS_XML_DESCRIPTION</description>
   <targetplatform name="joomla" version="6.*" />
   <namespace path="src">xdecaro\Component\Competitions</namespace>

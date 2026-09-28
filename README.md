@@ -17,7 +17,9 @@ Competitions is the competition-management component in the xdecaro Joomla ecosy
 
 ## Current version
 
-**1.5.23**
+**1.5.57**
+
+Version 1.5.57 emits a Joomla event when a saved season changes start/end dates, allowing optional integrations such as Membership to synchronize competition-card validity without direct table coupling.
 
 Version 1.5.23 automatically backfills existing linked Clubs that still have no local federation mapping during component update. It uses only the public Organizations affiliation provider, requires exactly one active sports federation affiliation, and updates the Club only when that federation is already linked in Competitions. The 1.5.22 national-code labels and incremental refresh on federation save remain unchanged.
 

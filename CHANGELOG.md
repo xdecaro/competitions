@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.5.57 - 2026-09-28
+
+- Emits `onXdecaroCompetitionSeasonDatesChanged` after a committed season date change.
+- The event exposes season ID, start/end dates and actor user ID to optional Joomla listeners.
+- Listener failures are logged and do not roll back the saved Competitions season.
+- No database structure changes are required.
+
 ## 1.5.23 - 2026-09-25
 
 - Added an automatic upgrade backfill for linked Club teams still showing `Federazione non determinata`.
