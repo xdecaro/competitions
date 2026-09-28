@@ -41,7 +41,7 @@ final class RosterTable extends Table
             return false;
         }
 
-        if (!in_array($this->status, ['pending', 'approved', 'rejected'], true)) {
+        if (!in_array($this->status, ['pending', 'submitted', 'approved', 'rejected'], true)) {
             $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_ROSTER_STATUS_INVALID'));
             return false;
         }
@@ -79,8 +79,6 @@ final class RosterTable extends Table
             return false;
         }
 
-        // team_id is deliberately derived server-side from the participation.
-        // Never trust a posted team_id because it is redundant and could be manipulated.
         $this->team_id = (int) $participation->team_id;
 
         $query = $db->getQuery(true)
