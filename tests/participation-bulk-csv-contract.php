@@ -40,6 +40,9 @@ $requirements = [
     [$template, 'Non abbinate', 'Bulk page must show the exact unmatched source names.'],
     [$template, 'participation-bulk-shell', 'Bulk page must use the compact responsive shell.'],
     [$template, 'table-layout:fixed', 'Desktop table must use a compact fixed layout.'],
+    [$template, 'name="boxchecked"', 'Bulk form must expose Joomla boxchecked state for toolbar selection.'],
+    [$template, 'Joomla.isChecked', 'Bulk checkboxes must notify Joomla when selection changes.'],
+    [$template, 'syncSelectionState', 'Bulk select-all actions must synchronize Joomla toolbar state.'],
 ];
 
 foreach ($requirements as [$haystack, $needle, $message]) {
