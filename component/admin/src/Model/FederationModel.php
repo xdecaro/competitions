@@ -12,6 +12,8 @@ use xdecaro\Component\Competitions\Administrator\Service\OrganizationsIntegratio
 
 final class FederationModel extends BaseAdminModel
 {
+    private ?array $countryResolutionIndex = null;
+
     public function getTable($type = 'Federation', $prefix = 'Administrator', $config = []): Table
     {
         return parent::getTable($type, $prefix, $config);
@@ -36,8 +38,10 @@ final class FederationModel extends BaseAdminModel
     /**
      * Map canonical Organizations federation UUIDs to local Competitions country IDs.
      *
-     * The country remains Competition-owned sports scope data, while the ISO alpha-2
-     * source value comes from the canonical organization record.
+     * Exact sovereign ISO alpha-2 mappings are preferred. If Organizations exposes a
+     * sovereign country such as GB while Competitions uses a sports territory such as
+     * England, the fallback is accepted only when exactly one local sports territory
+     * is identified from explicit territory metadata or the federation name.
      *
      * @return array<string, int>
      */
@@ -55,33 +59,14 @@ final class FederationModel extends BaseAdminModel
             return [];
         }
 
-        $db = $this->getDatabase();
-        $query = $db->getQuery(true)
-            ->select([
-                $db->quoteName('id'),
-                $db->quoteName('iso2'),
-            ])
-            ->from($db->quoteName('#__xdecarocompetitions_countries'))
-            ->where($db->quoteName('state') . ' <> -2');
-
-        $countries = [];
-
-        foreach ($db->setQuery($query)->loadObjectList() ?: [] as $country) {
-            $iso2 = strtoupper(trim((string) ($country->iso2 ?? '')));
-
-            if ($iso2 !== '') {
-                $countries[$iso2] = (int) $country->id;
-            }
-        }
-
         $map = [];
 
         foreach ($organizations as $organization) {
             $uuid = strtolower(trim((string) ($organization['uuid'] ?? '')));
-            $countryCode = strtoupper(trim((string) ($organization['country_code'] ?? '')));
+            $countryId = $this->resolveCountryIdFromOrganization($organization);
 
-            if ($uuid !== '' && isset($countries[$countryCode])) {
-                $map[$uuid] = $countries[$countryCode];
+            if ($uuid !== '' && $countryId > 0) {
+                $map[$uuid] = $countryId;
             }
         }
 
@@ -136,14 +121,10 @@ final class FederationModel extends BaseAdminModel
                 $data['logo'] = $this->snapshotText($organization['logo'] ?? null, 512);
                 $data['website'] = $this->snapshotText($organization['website'] ?? null, 512);
 
-                $organizationCountryCode = strtoupper(trim((string) ($organization['country_code'] ?? '')));
+                $countryId = $this->resolveCountryIdFromOrganization($organization);
 
-                if ($organizationCountryCode !== '') {
-                    $countryId = $this->resolveCountryIdFromIso2($organizationCountryCode);
-
-                    if ($countryId > 0) {
-                        $data['country_id'] = $countryId;
-                    }
+                if ($countryId > 0) {
+                    $data['country_id'] = $countryId;
                 }
 
                 $email = trim((string) ($organization['email'] ?? ''));
@@ -329,6 +310,66 @@ final class FederationModel extends BaseAdminModel
         }
     }
 
+    /**
+     * Resolve a canonical Organizations federation to a local Competitions country.
+     *
+     * Sovereign ISO2 codes are exact. Sports territories are a separate namespace and
+     * therefore are considered only when no exact ISO2 country exists. The fallback is
+     * deliberately unique-only so a sovereign code such as GB is never blindly mapped
+     * when multiple sports territories could be plausible.
+     */
+    private function resolveCountryIdFromOrganization(array $organization): int
+    {
+        $countryCode = strtoupper(trim((string) ($organization['country_code'] ?? '')));
+
+        if ($countryCode !== '') {
+            $countryId = $this->resolveCountryIdFromIso2($countryCode);
+
+            if ($countryId > 0) {
+                return $countryId;
+            }
+        }
+
+        $territoryName = trim((string) ($organization['territory_name'] ?? ''));
+        $organizationName = trim((string) ($organization['name'] ?? ''));
+
+        return $this->findUniqueSportsTerritoryMatch($territoryName, $organizationName);
+    }
+
+    private function findUniqueSportsTerritoryMatch(string $territoryName, string $organizationName): int
+    {
+        $index = $this->getCountryResolutionIndex();
+        $explicitTerritory = $this->normalizeTerritoryToken($territoryName);
+        $normalizedOrganization = $this->normalizeTerritoryToken($organizationName);
+        $matches = [];
+
+        foreach ($index['sports'] as $territory) {
+            $id = (int) ($territory['id'] ?? 0);
+            $name = $this->normalizeTerritoryToken((string) ($territory['name'] ?? ''));
+            $code = $this->normalizeTerritoryToken((string) ($territory['code'] ?? ''));
+
+            if ($id <= 0 || $name === '') {
+                continue;
+            }
+
+            $explicitMatch = $explicitTerritory !== ''
+                && ($explicitTerritory === $name || ($code !== '' && $explicitTerritory === $code));
+
+            $nameMatch = false;
+
+            if (!$explicitMatch && $normalizedOrganization !== '') {
+                $pattern = '/(?:^|\s)' . preg_quote($name, '/') . '(?:\s|$)/u';
+                $nameMatch = preg_match($pattern, $normalizedOrganization) === 1;
+            }
+
+            if ($explicitMatch || $nameMatch) {
+                $matches[$id] = true;
+            }
+        }
+
+        return count($matches) === 1 ? (int) array_key_first($matches) : 0;
+    }
+
     private function resolveCountryIdFromIso2(string $countryCode): int
     {
         $countryCode = strtoupper(trim($countryCode));
@@ -337,15 +378,71 @@ final class FederationModel extends BaseAdminModel
             return 0;
         }
 
+        $index = $this->getCountryResolutionIndex();
+
+        return (int) ($index['iso2'][$countryCode] ?? 0);
+    }
+
+    /**
+     * @return array{iso2: array<string, int>, sports: array<int, array{id:int,name:string,code:string}>}
+     */
+    private function getCountryResolutionIndex(): array
+    {
+        if ($this->countryResolutionIndex !== null) {
+            return $this->countryResolutionIndex;
+        }
+
         $db = $this->getDatabase();
         $query = $db->getQuery(true)
-            ->select($db->quoteName('id'))
+            ->select([
+                $db->quoteName('id'),
+                $db->quoteName('name'),
+                $db->quoteName('code'),
+                $db->quoteName('iso2'),
+                $db->quoteName('entity_type'),
+            ])
             ->from($db->quoteName('#__xdecarocompetitions_countries'))
-            ->where($db->quoteName('iso2') . ' = :iso2')
-            ->where($db->quoteName('state') . ' <> -2')
-            ->bind(':iso2', $countryCode, ParameterType::STRING);
+            ->where($db->quoteName('state') . ' <> -2');
 
-        return (int) $db->setQuery($query, 0, 1)->loadResult();
+        $iso2 = [];
+        $sports = [];
+
+        foreach ($db->setQuery($query)->loadObjectList() ?: [] as $country) {
+            $id = (int) ($country->id ?? 0);
+            $alpha2 = strtoupper(trim((string) ($country->iso2 ?? '')));
+            $entityType = strtolower(trim((string) ($country->entity_type ?? '')));
+
+            if ($id <= 0) {
+                continue;
+            }
+
+            if ($alpha2 !== '') {
+                $iso2[$alpha2] = $id;
+            }
+
+            if ($entityType === 'sport_territory') {
+                $sports[] = [
+                    'id' => $id,
+                    'name' => (string) ($country->name ?? ''),
+                    'code' => (string) ($country->code ?? ''),
+                ];
+            }
+        }
+
+        $this->countryResolutionIndex = [
+            'iso2' => $iso2,
+            'sports' => $sports,
+        ];
+
+        return $this->countryResolutionIndex;
+    }
+
+    private function normalizeTerritoryToken(string $value): string
+    {
+        $value = mb_strtolower(trim($value));
+        $value = preg_replace('/[^\p{L}\p{N}]+/u', ' ', $value) ?? '';
+
+        return trim(preg_replace('/\s+/u', ' ', $value) ?? '');
     }
 
     private function snapshotText(mixed $value, int $maxLength): ?string
