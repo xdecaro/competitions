@@ -49,4 +49,24 @@ foreach ($requirements as [$haystack, $needle, $message]) {
     }
 }
 
+// Behavioral regression: the historical CSV often uses plain ASCII while
+// Organizations/Competitions keeps the canonical German spelling.
+if (!defined('_JEXEC')) {
+    define('_JEXEC', 1);
+}
+if (!class_exists('Joomla\\CMS\\MVC\\Model\\BaseDatabaseModel')) {
+    eval('namespace Joomla\\CMS\\MVC\\Model; class BaseDatabaseModel {}');
+}
+require_once $modelPath;
+
+$probe = new \xdecaro\Component\Competitions\Administrator\Model\ParticipationbulkModel();
+$canonical = $probe->normalizeTeamName('G.S.V. DÜSSELDORF');
+$asciiCsv = $probe->normalizeTeamName('G S V DUSSELDORF');
+$punctuatedCsv = $probe->normalizeTeamName('G.S.V. DUSSELDORF');
+
+if ($canonical === '' || $canonical !== $asciiCsv || $canonical !== $punctuatedCsv) {
+    fwrite(STDERR, "Düsseldorf CSV normalization regression: {$canonical} / {$asciiCsv} / {$punctuatedCsv}\n");
+    exit(1);
+}
+
 echo "Participation bulk CSV contract OK\n";
