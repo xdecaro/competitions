@@ -17,7 +17,9 @@ Competitions is the competition-management component in the xdecaro Joomla ecosy
 
 ## Current version
 
-**1.5.57**
+**1.5.58**
+
+Version 1.5.58 adds bulk Approve / Pending / Reject workflows to Participations and Rosters, while Seasons use a separate organizational lifecycle edited only inside the season form: Draft, Awaiting host, Host candidate, Inspection in progress, Venue approved, Preparation, Ready, In progress, Completed and Cancelled. The season workflow state is stored independently from Joomla publication state.
 
 Version 1.5.57 emits a Joomla event when a saved season changes start/end dates, allowing optional integrations such as Membership to synchronize competition-card validity without direct table coupling.
 
@@ -99,7 +101,7 @@ CI performs a real Joomla 6.1.3 installation of the built package. The 1.5.16 ga
 
 ## Data and update policy
 
-Fresh installations create only `#__xdecarocompetitions_*` tables. Version 1.4.0 adds nullable unique `person_uuid` to players and a nullable edition/team `photo` to rosters. Versions 1.5.0 and 1.5.1 do not change the database schema. Version 1.5.2 adds a nullable unique `organization_uuid` to federations; existing federation rows remain valid and unlinked. Versions 1.5.3, 1.5.4 and 1.5.5 change no database structure. Version 1.5.6 repairs the existing 1.5.2 federation UUID schema on historical installations when it is missing; it does not remove or rewrite data. Version 1.5.7 adds a nullable unique `organization_uuid` to teams for canonical Organizations club links; existing teams remain valid and unlinked. Versions 1.5.8 through 1.5.23 change no database structure.
+Fresh installations create only `#__xdecarocompetitions_*` tables. Version 1.4.0 adds nullable unique `person_uuid` to players and a nullable edition/team `photo` to rosters. Versions 1.5.0 and 1.5.1 do not change the database schema. Version 1.5.2 adds a nullable unique `organization_uuid` to federations; existing federation rows remain valid and unlinked. Versions 1.5.3, 1.5.4 and 1.5.5 change no database structure. Version 1.5.6 repairs the existing 1.5.2 federation UUID schema on historical installations when it is missing; it does not remove or rewrite data. Version 1.5.7 adds a nullable unique `organization_uuid` to teams for canonical Organizations club links; existing teams remain valid and unlinked. Versions 1.5.8 through 1.5.57 preserve those structures. Version 1.5.58 adds `workflow_status` to seasons with default `draft`; the installer repair is idempotent and the deterministic fresh-install build includes the column directly.
 
 Existing player records are not auto-linked or auto-merged. Linking to People must be explicit or performed by a separately verified migration workflow.
 

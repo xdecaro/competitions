@@ -1,0 +1,18 @@
+name: Competitions player bulk CSV
+
+on:
+  pull_request:
+
+permissions: {contents: read}
+
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with: {php-version: '8.3', coverage: none}
+      - name: PHP syntax
+        run: php -l tests/player-bulk-csv-contract.php
+      - name: Player bulk CSV contract
+        run: php tests/player-bulk-csv-contract.php

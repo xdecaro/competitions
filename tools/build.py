@@ -61,6 +61,16 @@ def normalize_component_schema(stage: Path, manifest: Path) -> None:
             1,
         )
 
+    season_column_anchor = "  `start_date` DATE DEFAULT NULL,\n  `end_date` DATE DEFAULT NULL,\n  `state` TINYINT NOT NULL DEFAULT 1,"
+    if "`workflow_status` VARCHAR(32) NOT NULL DEFAULT 'draft'" not in base_sql:
+        if season_column_anchor not in base_sql:
+            raise SystemExit("unable to locate seasons column anchor for workflow schema normalization")
+        base_sql = base_sql.replace(
+            season_column_anchor,
+            "  `start_date` DATE DEFAULT NULL,\n  `end_date` DATE DEFAULT NULL,\n  `workflow_status` VARCHAR(32) NOT NULL DEFAULT 'draft',\n  `state` TINYINT NOT NULL DEFAULT 1,",
+            1,
+        )
+
     base_sql_path.write_text(base_sql, encoding="utf-8")
 
     manifest_text = manifest.read_text(encoding="utf-8")
@@ -77,6 +87,7 @@ def validate_reinstall_safe_schema(stage: Path, manifest: Path) -> None:
         "`person_uuid` CHAR(36) NULL",
         "UNIQUE KEY `uq_player_person_uuid` (`person_uuid`)",
         "`photo` VARCHAR(512) NULL",
+        "`workflow_status` VARCHAR(32) NOT NULL DEFAULT 'draft'",
     ]
     for token in required:
         if token not in base_sql:

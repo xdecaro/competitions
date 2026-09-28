@@ -12,6 +12,19 @@ use xdecaro\Component\Competitions\Administrator\Helper\TournamentScopeHelper;
 
 final class SeasonTable extends Table
 {
+    private const WORKFLOW_STATUSES = [
+        'draft',
+        'awaiting_host',
+        'host_candidate',
+        'inspection',
+        'venue_approved',
+        'preparation',
+        'ready',
+        'in_progress',
+        'completed',
+        'cancelled',
+    ];
+
     public function __construct(DatabaseDriver $db)
     {
         parent::__construct('#__xdecarocompetitions_seasons', 'id', $db);
@@ -22,6 +35,7 @@ final class SeasonTable extends Table
         $this->name = trim((string) $this->name);
         $this->tournament_id = (int) $this->tournament_id;
         $this->season_year = (int) $this->season_year ?: null;
+        $this->workflow_status = strtolower(trim((string) ($this->workflow_status ?? ''))) ?: 'draft';
         $this->host_city = trim((string) $this->host_city) ?: null;
         $this->host_country_code = strtoupper(trim((string) $this->host_country_code)) ?: null;
         $this->start_date = trim((string) $this->start_date) ?: null;
@@ -39,6 +53,11 @@ final class SeasonTable extends Table
 
         if ($this->season_year === null || $this->season_year < 1900 || $this->season_year > 2200) {
             $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_SEASON_YEAR_INVALID'));
+            return false;
+        }
+
+        if (!in_array($this->workflow_status, self::WORKFLOW_STATUSES, true)) {
+            $this->setError(Text::_('COM_XDECAROCOMPETITIONS_ERROR_SEASON_WORKFLOW_STATUS_INVALID'));
             return false;
         }
 

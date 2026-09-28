@@ -18,6 +18,7 @@ final class com_xdecarocompetitionsInstallerScript
             $db = Factory::getContainer()->get(DatabaseInterface::class);
             $this->ensureFederationOrganizationLinkSchema($db);
             $this->ensureTeamOrganizationLinkSchema($db);
+            $this->ensureSeasonWorkflowSchema($db);
 
             try {
                 $this->syncUndeterminedTeamFederations($db);
@@ -52,10 +53,7 @@ final class com_xdecarocompetitionsInstallerScript
             )->execute();
         }
 
-        $indexes = (array) $db->setQuery(
-            'SHOW INDEX FROM ' . $db->quoteName($table)
-        )->loadObjectList();
-
+        $indexes = (array) $db->setQuery('SHOW INDEX FROM ' . $db->quoteName($table))->loadObjectList();
         $hasUniqueIndex = false;
 
         foreach ($indexes as $index) {
@@ -70,6 +68,20 @@ final class com_xdecarocompetitionsInstallerScript
                 'ALTER TABLE ' . $db->quoteName($table)
                 . ' ADD UNIQUE KEY ' . $db->quoteName('uq_competitions_federations_organization_uuid')
                 . ' (' . $db->quoteName('organization_uuid') . ')'
+            )->execute();
+        }
+    }
+
+    private function ensureSeasonWorkflowSchema(DatabaseInterface $db): void
+    {
+        $table = $db->replacePrefix('#__xdecarocompetitions_seasons');
+        $columns = $db->getTableColumns($table, false);
+
+        if (!array_key_exists('workflow_status', $columns)) {
+            $db->setQuery(
+                'ALTER TABLE ' . $db->quoteName($table)
+                . ' ADD COLUMN ' . $db->quoteName('workflow_status')
+                . " VARCHAR(32) NOT NULL DEFAULT 'draft' AFTER " . $db->quoteName('end_date')
             )->execute();
         }
     }
@@ -233,10 +245,7 @@ final class com_xdecarocompetitionsInstallerScript
             )->execute();
         }
 
-        $indexes = (array) $db->setQuery(
-            'SHOW INDEX FROM ' . $db->quoteName($table)
-        )->loadObjectList();
-
+        $indexes = (array) $db->setQuery('SHOW INDEX FROM ' . $db->quoteName($table))->loadObjectList();
         $hasUniqueIndex = false;
 
         foreach ($indexes as $index) {

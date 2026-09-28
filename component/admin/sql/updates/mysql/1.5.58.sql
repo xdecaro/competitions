@@ -1,0 +1,3 @@
+-- 1.5.58 schema marker.
+-- The installer postflight idempotently ensures the season workflow_status column
+-- for upgrades, while the deterministic build normalizes it into fresh installs.

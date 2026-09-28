@@ -1,0 +1,25 @@
+name: Competitions roster bulk CSV
+
+on:
+  pull_request:
+    paths:
+      - 'component/admin/src/View/Rosters/HtmlView.php'
+      - 'component/admin/src/Controller/RosterbulkController.php'
+      - 'component/admin/src/Model/RosterbulkModel.php'
+      - 'component/admin/src/View/Rosterbulk/HtmlView.php'
+      - 'component/admin/tmpl/rosterbulk/default.php'
+      - 'tests/roster-bulk-csv-contract.php'
+      - '.github/workflows/roster-bulk-csv.yml'
+
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+      - name: PHP syntax
+        run: php -l tests/roster-bulk-csv-contract.php
+      - name: Roster bulk CSV contract
+        run: php tests/roster-bulk-csv-contract.php
