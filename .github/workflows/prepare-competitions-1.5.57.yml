@@ -65,7 +65,7 @@ jobs:
 
           readme=Path('README.md')
           s=readme.read_text()
-          s,n=re.subn(r'(## Current version\s+\n\n)\*\*\d+\.\d+\.\d+\*\*', rf'\1**{version}**', s, count=1)
+          s,n=re.subn(r'(## Current version\s*\n\s*)\*\*\d+\.\d+\.\d+\*\*', rf'\1**{version}**', s, count=1)
           if n!=1: raise SystemExit('README current version marker not found')
           insert=f"\nVersion {version} emits a Joomla event when a saved season changes start/end dates, allowing optional integrations such as Membership to synchronize competition-card validity without direct table coupling.\n"
           marker=f'**{version}**\n'
