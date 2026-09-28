@@ -32,7 +32,7 @@ final class TeamModel extends BaseAdminModel
     {
         $status = strtolower(trim($status));
 
-        if (!in_array($status, ['pending', 'approved', 'rejected'], true)) {
+        if (!in_array($status, ['pending', 'submitted', 'approved', 'rejected'], true)) {
             throw new InvalidArgumentException('Invalid team approval status: ' . $status);
         }
 
@@ -156,9 +156,6 @@ final class TeamModel extends BaseAdminModel
             $existingUuid = strtolower(trim((string) ($existing->organization_uuid ?? '')));
 
             if ($existingUuid !== '') {
-                // A linked club keeps its canonical Organizations identity.
-                // The normal Competition editor cannot swap it to another club
-                // or convert it into a national team.
                 $organizationUuid = $existingUuid;
                 $teamType = 'club';
                 $data['organization_uuid'] = $existingUuid;
@@ -218,8 +215,6 @@ final class TeamModel extends BaseAdminModel
                 return false;
             }
         } else {
-            // National representative teams remain Competition-native records;
-            // they are not legal/organizational club identities.
             $organizationUuid = '';
             $data['organization_uuid'] = null;
         }
