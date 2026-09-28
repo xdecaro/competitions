@@ -6,6 +6,18 @@
     <field name="tournament_id" type="sql" label="COM_XDECAROCOMPETITIONS_FIELD_TOURNAMENT" query="SELECT id AS value, name AS text FROM #__xdecarocompetitions_tournaments WHERE state &lt;&gt; -2 ORDER BY ordering ASC, name ASC" key_field="value" value_field="text" header="COM_XDECAROCOMPETITIONS_SELECT_TOURNAMENT" required="true" filter="uint" />
     <field name="name" type="text" label="COM_XDECAROCOMPETITIONS_FIELD_NAME" description="COM_XDECAROCOMPETITIONS_SEASON_NAME_DESC" required="true" maxlength="190" />
     <field name="season_year" type="number" label="COM_XDECAROCOMPETITIONS_FIELD_SEASON_YEAR" required="true" min="1900" max="2200" step="1" filter="uint" />
+    <field name="workflow_status" type="list" label="COM_XDECAROCOMPETITIONS_FIELD_SEASON_WORKFLOW_STATUS" default="draft" required="true" filter="cmd">
+      <option value="draft">COM_XDECAROCOMPETITIONS_SEASON_STATUS_DRAFT</option>
+      <option value="awaiting_host">COM_XDECAROCOMPETITIONS_SEASON_STATUS_AWAITING_HOST</option>
+      <option value="host_candidate">COM_XDECAROCOMPETITIONS_SEASON_STATUS_HOST_CANDIDATE</option>
+      <option value="inspection">COM_XDECAROCOMPETITIONS_SEASON_STATUS_INSPECTION</option>
+      <option value="venue_approved">COM_XDECAROCOMPETITIONS_SEASON_STATUS_VENUE_APPROVED</option>
+      <option value="preparation">COM_XDECAROCOMPETITIONS_SEASON_STATUS_PREPARATION</option>
+      <option value="ready">COM_XDECAROCOMPETITIONS_SEASON_STATUS_READY</option>
+      <option value="in_progress">COM_XDECAROCOMPETITIONS_SEASON_STATUS_IN_PROGRESS</option>
+      <option value="completed">COM_XDECAROCOMPETITIONS_SEASON_STATUS_COMPLETED</option>
+      <option value="cancelled">COM_XDECAROCOMPETITIONS_SEASON_STATUS_CANCELLED</option>
+    </field>
     <field name="host_city" type="text" label="COM_XDECAROCOMPETITIONS_FIELD_HOST_CITY" maxlength="190" />
     <field name="host_country_code" type="sql" label="COM_XDECAROCOMPETITIONS_FIELD_HOST_COUNTRY" query="SELECT code AS value, name AS text FROM #__xdecarocompetitions_countries WHERE state &lt;&gt; -2 ORDER BY ordering ASC, name ASC" key_field="value" value_field="text" header="JNONE" filter="cmd" />
     <field name="start_date" type="calendar" label="COM_XDECAROCOMPETITIONS_FIELD_START_DATE" format="%Y-%m-%d" showtime="false" todaybutton="true" filter="raw" />
