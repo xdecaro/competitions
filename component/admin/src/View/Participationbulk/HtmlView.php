@@ -19,6 +19,7 @@ final class HtmlView extends BaseHtmlView
     public array $sourceTeamNames = [];
     public string $sourceFileName = '';
     public array $sourceSummary = ['source' => 0, 'matched' => 0, 'unmatched' => 0];
+    public array $unmatchedSourceNames = [];
 
     public function display($tpl = null): void
     {
@@ -54,6 +55,7 @@ final class HtmlView extends BaseHtmlView
         }
 
         $this->sourceSummary = $model->getSourceFilterSummary($allAvailable, $this->sourceTeamNames);
+        $this->unmatchedSourceNames = $model->getUnmatchedSourceNames($allAvailable, $this->sourceTeamNames);
         $this->items = $model->filterTeamsBySourceNames($allAvailable, $this->sourceTeamNames);
 
         if (count($errors = $this->get('Errors'))) {
