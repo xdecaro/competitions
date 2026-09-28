@@ -173,6 +173,7 @@ $hasSource = !empty($this->sourceTeamNames);
     <?php endif; ?>
 
     <input type="hidden" name="task" value="">
+    <input type="hidden" name="boxchecked" value="0">
     <?= HTMLHelper::_('form.token'); ?>
 </form>
 
@@ -188,6 +189,29 @@ $hasSource = !empty($this->sourceTeamNames);
     const checks = () => [...document.querySelectorAll('.team-check')];
     const visibleChecks = () => checks().filter((box) => box.closest('tr')?.style.display !== 'none');
     const master = document.getElementById('master-check');
+    const boxchecked = form?.querySelector('input[name="boxchecked"]');
+
+    const syncSelectionState = () => {
+        const selected = checks().filter((box) => box.checked).length;
+
+        if (boxchecked) {
+            boxchecked.value = '0';
+        }
+
+        if (window.Joomla?.isChecked) {
+            for (let i = 0; i < selected; i += 1) {
+                Joomla.isChecked(true);
+            }
+        } else if (boxchecked) {
+            boxchecked.value = String(selected);
+        }
+
+        if (master) {
+            const visible = visibleChecks();
+            master.checked = visible.length > 0 && visible.every((box) => box.checked);
+            master.indeterminate = visible.some((box) => box.checked) && !master.checked;
+        }
+    };
 
     load?.addEventListener('click', () => {
         const id = Number(season?.value || 0);
@@ -221,11 +245,27 @@ $hasSource = !empty($this->sourceTeamNames);
         document.querySelectorAll('#bulk-team-table tbody tr').forEach((row) => {
             row.style.display = !q || String(row.dataset.search || '').includes(q) ? '' : 'none';
         });
+        syncSelectionState();
     });
 
-    document.getElementById('select-all')?.addEventListener('click', () => visibleChecks().forEach((box) => { box.checked = true; }));
-    document.getElementById('select-none')?.addEventListener('click', () => checks().forEach((box) => { box.checked = false; }));
-    master?.addEventListener('change', () => visibleChecks().forEach((box) => { box.checked = master.checked; }));
+    checks().forEach((box) => box.addEventListener('change', syncSelectionState));
+
+    document.getElementById('select-all')?.addEventListener('click', () => {
+        visibleChecks().forEach((box) => { box.checked = true; });
+        syncSelectionState();
+    });
+
+    document.getElementById('select-none')?.addEventListener('click', () => {
+        checks().forEach((box) => { box.checked = false; });
+        syncSelectionState();
+    });
+
+    master?.addEventListener('change', () => {
+        visibleChecks().forEach((box) => { box.checked = master.checked; });
+        syncSelectionState();
+    });
+
+    syncSelectionState();
 
     const originalSubmit = window.Joomla?.submitbutton;
     if (window.Joomla) {
