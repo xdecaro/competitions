@@ -57,7 +57,7 @@ final class ParticipationbulkModel extends BaseDatabaseModel
     }
 
     /**
-     * Keep only existing Competition teams whose canonical display name is
+     * Keep only existing Competition teams whose normalized display name is
      * present in the uploaded source list. No team is created or modified.
      *
      * @param array<int, object> $teams
@@ -114,12 +114,72 @@ final class ParticipationbulkModel extends BaseDatabaseModel
         ];
     }
 
+    /**
+     * Return the original CSV labels that do not map to any available team.
+     * This is intentionally exact source text so an operator can diagnose the mismatch.
+     *
+     * @param array<int, object> $teams
+     * @param array<int, string> $sourceNames
+     * @return array<int, string>
+     */
+    public function getUnmatchedSourceNames(array $teams, array $sourceNames): array
+    {
+        if (!$sourceNames) {
+            return [];
+        }
+
+        $available = [];
+        foreach ($teams as $team) {
+            $normalized = $this->normalizeTeamName((string) ($team->name ?? ''));
+            if ($normalized !== '') {
+                $available[$normalized] = true;
+            }
+        }
+
+        $unmatched = [];
+        $seen = [];
+        foreach ($sourceNames as $name) {
+            $original = trim((string) $name);
+            $normalized = $this->normalizeTeamName($original);
+            if ($normalized === '' || isset($seen[$normalized])) {
+                continue;
+            }
+            $seen[$normalized] = true;
+
+            if (!isset($available[$normalized])) {
+                $unmatched[] = $original;
+            }
+        }
+
+        return $unmatched;
+    }
+
     public function normalizeTeamName(string $value): string
     {
         $value = html_entity_decode(trim($value), ENT_QUOTES | ENT_HTML5, 'UTF-8');
         $value = mb_strtoupper($value, 'UTF-8');
-        $value = preg_replace('/[\x{2018}\x{2019}\x{0060}]/u', "'", $value) ?? $value;
-        $value = preg_replace('/\s+/u', ' ', $value) ?? $value;
+        $value = strtr($value, [
+            'Ä' => 'A',
+            'Ö' => 'O',
+            'Ü' => 'U',
+            'ẞ' => 'SS',
+            'ß' => 'SS',
+            'Æ' => 'AE',
+            'Œ' => 'OE',
+            'Ø' => 'O',
+            'Ł' => 'L',
+            'Đ' => 'D',
+        ]);
+
+        if (function_exists('iconv')) {
+            $ascii = @iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $value);
+            if (is_string($ascii) && $ascii !== '') {
+                $value = $ascii;
+            }
+        }
+
+        $value = strtoupper($value);
+        $value = preg_replace('/[^A-Z0-9]+/', '', $value) ?? $value;
 
         return trim($value);
     }
