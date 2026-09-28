@@ -26,6 +26,7 @@
     <field name="photo" type="media" label="COM_XDECAROCOMPETITIONS_FIELD_ROSTER_PHOTO" description="COM_XDECAROCOMPETITIONS_FIELD_ROSTER_PHOTO_DESC" types="images" />
     <field name="status" type="list" label="COM_XDECAROCOMPETITIONS_FIELD_ROSTER_STATUS" default="pending">
       <option value="pending">COM_XDECAROCOMPETITIONS_ROSTER_PENDING</option>
+      <option value="submitted">COM_XDECAROCOMPETITIONS_ROSTER_SUBMITTED</option>
       <option value="approved">COM_XDECAROCOMPETITIONS_ROSTER_APPROVED</option>
       <option value="rejected">COM_XDECAROCOMPETITIONS_ROSTER_REJECTED</option>
     </field>
