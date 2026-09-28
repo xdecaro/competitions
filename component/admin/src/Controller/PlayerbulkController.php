@@ -86,7 +86,6 @@ final class PlayerbulkController extends BaseController
             ->select('COUNT(*)')
             ->from($db->quoteName('#__xdecarocompetitions_players'))
             ->where($db->quoteName('person_uuid') . ' = :personUuid')
-            ->where($db->quoteName('state') . ' <> -2')
             ->bind(':personUuid', $uuid, ParameterType::STRING);
 
         return (int) $db->setQuery($query)->loadResult() > 0;
