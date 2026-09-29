@@ -29,6 +29,9 @@ if (!is_file($servicePath)) {
         "'entity' => 'season'",
         "'entity' => 'participation'",
         "'type' => 'group'",
+        "getResult((int) \$row['draw_id'])",
+        "'result_available'",
+        "'published'",
     ] as $needle) {
         if (!str_contains($service, $needle)) {
             $failures[] = 'Integration service missing contract marker: ' . $needle;
