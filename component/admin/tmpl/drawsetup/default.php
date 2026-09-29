@@ -61,7 +61,7 @@ $canSubmit = $available && $this->canCreate && $this->canCreateDraw && $approved
                 ); ?>
             </div>
             <a class="btn btn-outline-primary" href="<?= Route::_('index.php?option=com_xdecarodraw&view=draw&id=' . (int) $latest['draw_id']); ?>">
-                <?= Text::_('COM_XDECAROCOMPETITIONS_DRAW_OPEN'); ?>
+                <?= Text::_(!empty($latest['published']) ? 'COM_XDECAROCOMPETITIONS_DRAW_RESULT' : 'COM_XDECAROCOMPETITIONS_DRAW_OPEN'); ?>
             </a>
         </div>
     <?php endif; ?>
