@@ -1,0 +1,54 @@
+name: Prepare Draw release docs
+
+on:
+  push:
+    branches: [feature/draw-integration-1.6.0]
+    paths:
+      - '.github/workflows/prepare-draw-release-docs.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/draw-integration-1.6.0
+      - name: Update README and changelog without dropping history
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          readme = Path('README.md')
+          text = readme.read_text(encoding='utf-8')
+          text = text.replace('**1.5.57**', '**1.6.0**', 1)
+          old = 'Version 1.5.57 emits a Joomla event when a saved season changes start/end dates, allowing optional integrations such as Membership to synchronize competition-card validity without direct table coupling.'
+          new = ('Version 1.6.0 adds the optional Draw 1.1.0 integration: after filtering Participations to one season, administrators can open Sorteggio, review approved teams, choose the number of groups and create or reopen the linked Draw session without direct cross-product table access. Persistent competition groups remain a separate Competitions-domain feature.')
+          if old in text:
+              text = text.replace(old, new, 1)
+          marker = '## Optional integrations\n\n'
+          draw_section = '''### Draw\n\nDraw 1.1.0+ is optional. Competitions detects it at runtime through Joomla, calls only `DrawComponent::getIntegrationService()` and exports normalized `xdecaro.draw.request.v1` data. Only published, approved season participations are eligible for the setup view. Competitions owns season eligibility and stores only the local season-to-Draw link, group count and request hash; it never reads `#__xdecarodraw_*`. If Draw is missing or incompatible, Competitions remains fully usable and the setup page explains what is required.\n\nThe current 1.6.0 integration creates generic group targets (`A`, `B`, `C`…) inside Draw. It deliberately does not create permanent Competitions group rows because that authoritative group/bracket domain has not yet been introduced.\n\n'''
+          if '### Draw\n' not in text:
+              text = text.replace(marker, marker + draw_section, 1)
+          readme.write_text(text, encoding='utf-8')
+
+          changelog = Path('CHANGELOG.md')
+          history = changelog.read_text(encoding='utf-8')
+          entry = '''## 1.6.0 - 2026-09-29\n\n- Added optional Draw 1.1.0+ integration through the public `getIntegrationService()` boundary; Competitions never reads Draw private tables.\n- Added a season Draw setup reached from Participations when a specific season is selected. The page lists only approved participations and asks for the number of groups.\n- Added generic A/B/C… group-target generation and normalized `xdecaro.draw.request.v1` export using stable season and participation references.\n- Added idempotent season-to-Draw linking with a request hash, so submitting the same approved participant set and group count reopens the existing Draw instead of creating duplicates.\n- Added Draw availability/version detection, minimum Draw version 1.1.0, Competitions and Draw ACL checks, Joomla CSRF protection and clear fallback messages when Draw is absent or incompatible.\n- Added the non-destructive `#__xdecarocompetitions_draw_links` table. No permanent competition group/bracket model is introduced in this release.\n- Added Italian/English UI strings, responsive setup UI, contract coverage and a real Joomla 6.1.3 Competitions→Draw runtime workflow.\n\n'''
+          if '## 1.6.0 - 2026-09-29' not in history:
+              if not history.startswith('# Changelog\n'):
+                  raise SystemExit('Unexpected CHANGELOG header')
+              history = history.replace('# Changelog\n\n', '# Changelog\n\n' + entry, 1)
+              changelog.write_text(history, encoding='utf-8')
+          PY
+      - name: Commit release docs
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add README.md CHANGELOG.md
+          git diff --cached --quiet && exit 0
+          git commit -m 'docs: document Competitions 1.6.0 Draw integration'
+          git push origin HEAD:feature/draw-integration-1.6.0
