@@ -60,7 +60,7 @@ $requirements = [
     [$ctl, "=== 'all'", 'Roster bulk controller must support an explicit all-teams mode.'],
     [$ctl, 'matchSeasonCsvRows', 'Roster bulk add must revalidate all-team selections against current data.'],
     [$ctl, "preg_match('/^(\\d+):(\\d+)$/'", 'Posted selections must bind participation and player IDs together.'],
-    [$ctl, 'rosterExists($participationId, $playerId)', 'Roster bulk add must recheck roster duplicates server-side.'],
+    [$ctl, '$this->rosterExists(', 'Roster bulk add must recheck roster duplicates server-side.'],
     [$vw, 'seasonOptions', 'Roster bulk view must expose season choices.'],
     [$vw, 'groups', 'Roster bulk view must expose team groups for the accordion.'],
     [$vw, 'unmatchedTeams', 'Roster bulk view must expose unmatched team diagnostics.'],
