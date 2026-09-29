@@ -65,8 +65,13 @@ if (is_file($controllerPath)) {
 if (is_file($participationsViewPath) && !str_contains(file_get_contents($participationsViewPath), 'view=drawsetup&season_id=')) {
     $failures[] = 'Participations toolbar must expose the Draw setup for the selected season.';
 }
-if (is_file($templatePath) && !str_contains(file_get_contents($templatePath), 'participations.createDraw')) {
-    $failures[] = 'Draw setup form must submit to participations.createDraw.';
+if (is_file($templatePath)) {
+    $template = file_get_contents($templatePath);
+    foreach (['participations.createDraw', "\$latest['published']", 'COM_XDECAROCOMPETITIONS_DRAW_RESULT'] as $needle) {
+        if (!str_contains($template, $needle)) {
+            $failures[] = 'Draw setup UI missing marker: ' . $needle;
+        }
+    }
 }
 if (is_file($languageHelperPath) && !str_contains(file_get_contents($languageHelperPath), "com_xdecarocompetitions.160")) {
     $failures[] = 'LanguageHelper must load the 1.6.0 Draw language pack.';
