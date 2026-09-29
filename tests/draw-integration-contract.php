@@ -7,6 +7,7 @@ $controllerPath = $root . '/component/admin/src/Controller/ParticipationsControl
 $participationsViewPath = $root . '/component/admin/src/View/Participations/HtmlView.php';
 $viewPath = $root . '/component/admin/src/View/Drawsetup/HtmlView.php';
 $templatePath = $root . '/component/admin/tmpl/drawsetup/default.php';
+$languageHelperPath = $root . '/component/admin/src/Helper/LanguageHelper.php';
 $sqlPath = $root . '/component/admin/sql/updates/mysql/1.6.0.sql';
 
 $failures = [];
@@ -38,7 +39,7 @@ if (!is_file($servicePath)) {
     }
 }
 
-foreach ([$componentPath, $providerPath, $controllerPath, $participationsViewPath, $viewPath, $templatePath, $sqlPath] as $path) {
+foreach ([$componentPath, $providerPath, $controllerPath, $participationsViewPath, $viewPath, $templatePath, $languageHelperPath, $sqlPath] as $path) {
     if (!is_file($path)) {
         $failures[] = basename($path) . ' is missing.';
     }
@@ -63,6 +64,9 @@ if (is_file($participationsViewPath) && !str_contains(file_get_contents($partici
 }
 if (is_file($templatePath) && !str_contains(file_get_contents($templatePath), 'participations.createDraw')) {
     $failures[] = 'Draw setup form must submit to participations.createDraw.';
+}
+if (is_file($languageHelperPath) && !str_contains(file_get_contents($languageHelperPath), "com_xdecarocompetitions.160")) {
+    $failures[] = 'LanguageHelper must load the 1.6.0 Draw language pack.';
 }
 if (is_file($sqlPath)) {
     $sql = file_get_contents($sqlPath);
