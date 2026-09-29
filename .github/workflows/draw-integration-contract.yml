@@ -1,0 +1,25 @@
+name: Draw integration contract
+
+on:
+  pull_request:
+    paths:
+      - 'component/**'
+      - 'tests/draw-integration-contract.php'
+      - '.github/workflows/draw-integration-contract.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'component/**'
+      - 'tests/draw-integration-contract.php'
+      - '.github/workflows/draw-integration-contract.yml'
+
+permissions: {contents: read}
+
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with: {php-version: '8.3', coverage: none}
+      - run: php tests/draw-integration-contract.php
