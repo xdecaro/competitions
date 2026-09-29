@@ -99,7 +99,7 @@ When Core `CapabilityRegistry` is available, Competitions declares analytics, No
 
 ## Joomla baseline
 
-The current Competitions 1.x line targets Joomla 6 and PHP 8.3+. Compatibility with earlier Joomla versions is not claimed until runtime-tested.
+The current Competitions 1.x line targets Joomla 6 only and PHP 8.3+. Joomla 4 and Joomla 5 are not supported. The verified runtime baseline is Joomla 6.1.3.
 
 CI performs a real Joomla 6.1.3 installation of the built package. The 1.5.16 gate validates Team Import packaging under Joomla media/js plus guarded Web Asset activation, corrected search layout, persistent live search selection, visible-row select-all and team-import asset packaging, the Organizations team-import preview/controller boundary, duplicate-safe UUID handling and Pending defaults, the Teams approval toolbar/controller/model workflow, CSRF/ACL checks and federation-before-approval validation, active sports-affiliation federation derivation, ambiguity/no-affiliation behavior, Club/National federation UI separation, club-team Organizations linking, team UUID schema/migration and editor behavior, schema repair and federation-link persistence, one-time federation linking and immutable canonical links, all edit-form live-sync lock fields, the live-sync reload-loop guard, the federation model method signature, the Organizations public-provider boundary, stable federation UUID schema/migration, public branding, approval-message language loading, the People provider boundary, People UUID schema, roster photo schema, People picker WebAsset path, selected sensitive-profile autofill contract, public person-history provider/runtime, bulk player approval actions and the existing Finance bridge regression coverage.
 
