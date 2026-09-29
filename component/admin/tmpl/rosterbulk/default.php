@@ -62,10 +62,10 @@ $isAllTeams = $this->rosterTarget === 'all';
       <div class="form-text mt-2">Scegli la stagione, poi tutte le squadre oppure una sola partecipazione.</div>
     </div>
     <div class="bulk-box">
-      <label class="form-label fw-semibold mb-1" for="source_csv">Importa elenco da CSV</label>
+      <label class="form-label fw-semibold mb-1" for="source_csv">Importa elenco da CSV o Excel (.xlsx)</label>
       <div class="input-group">
-        <input type="file" class="form-control" name="source_csv" id="source_csv" accept=".csv,.txt,text/csv,text/plain">
-        <button type="button" class="btn btn-outline-primary" id="preview-csv">Carica CSV</button>
+        <input type="file" class="form-control" name="source_csv" id="source_csv" accept=".csv,.txt,.xlsx,text/csv,text/plain,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
+        <button type="button" class="btn btn-outline-primary" id="preview-csv">Carica file</button>
       </div>
       <div class="form-text"><?= $isAllTeams ? 'Il file deve contenere la colonna Squadra/Team. Le squadre non esistenti non vengono create.' : 'Collega solo giocatori già presenti in Competitions e non duplica quelli già presenti nella rosa.'; ?></div>
       <?php if ($hasCsv) : ?>
@@ -92,7 +92,7 @@ $isAllTeams = $this->rosterTarget === 'all';
             </ul>
           </div>
         <?php endif; ?>
-        <button type="button" class="btn btn-sm btn-link px-0 mt-1" id="clear-csv">Rimuovi CSV</button>
+        <button type="button" class="btn btn-sm btn-link px-0 mt-1" id="clear-csv">Rimuovi file</button>
       <?php endif; ?>
     </div>
   </div></div></div>
@@ -105,7 +105,7 @@ $isAllTeams = $this->rosterTarget === 'all';
     </div>
 
     <?php if (!$hasCsv) : ?>
-      <div class="alert alert-info">Carica un CSV per controllare le rose prima dell’aggiunta.</div>
+      <div class="alert alert-info">Carica un file CSV o Excel per controllare le rose prima dell’aggiunta.</div>
     <?php elseif (!$this->groups && !$this->unmatchedTeams) : ?>
       <div class="alert alert-info">Nessun dato utilizzabile trovato nel file.</div>
     <?php endif; ?>
@@ -230,7 +230,7 @@ $isAllTeams = $this->rosterTarget === 'all';
   document.getElementById('preview-csv')?.addEventListener('click', () => {
     if (!Number(season?.value || 0)) { alert('Seleziona prima una stagione.'); return; }
     if (!String(target?.value || '')) { alert('Seleziona tutte le squadre oppure una squadra.'); return; }
-    if (!csv?.files?.length) { alert('Seleziona un file CSV.'); return; }
+    if (!csv?.files?.length) { alert('Seleziona un file CSV o Excel.'); return; }
     window.Joomla?.submitbutton?.('rosterbulk.previewCsv');
   });
 
