@@ -16,6 +16,7 @@ final class RosterbulkModel extends BaseDatabaseModel
             ->select([
                 $db->quoteName('p.id'),
                 $db->quoteName('p.team_id'),
+                $db->quoteName('p.season_id'),
                 $db->quoteName('tm.name', 'team_name'),
                 $db->quoteName('s.name', 'season_name'),
                 $db->quoteName('s.season_year'),
@@ -34,6 +35,40 @@ final class RosterbulkModel extends BaseDatabaseModel
         return (array) $db->setQuery($query)->loadObjectList();
     }
 
+    /** @return array<int, object> */
+    public function getSeasonOptions(): array
+    {
+        $seasons = [];
+        foreach ($this->getParticipationOptions() as $option) {
+            $seasonId = (int) ($option->season_id ?? 0);
+            if ($seasonId <= 0 || isset($seasons[$seasonId])) {
+                continue;
+            }
+
+            $season = new \stdClass();
+            $season->id = $seasonId;
+            $season->name = (string) $option->season_name;
+            $season->season_year = (int) $option->season_year;
+            $season->tournament_name = (string) $option->tournament_name;
+            $seasons[$seasonId] = $season;
+        }
+
+        return array_values($seasons);
+    }
+
+    /** @return array<int, object> */
+    public function getParticipationsForSeason(int $seasonId): array
+    {
+        if ($seasonId <= 0) {
+            return [];
+        }
+
+        return array_values(array_filter(
+            $this->getParticipationOptions(),
+            static fn (object $option): bool => (int) ($option->season_id ?? 0) === $seasonId
+        ));
+    }
+
     public function getParticipation(int $participationId): ?object
     {
         if ($participationId <= 0) {
@@ -47,6 +82,124 @@ final class RosterbulkModel extends BaseDatabaseModel
         }
 
         return null;
+    }
+
+    /**
+     * Match one source file to every existing participation of a season.
+     * Teams are never created and ambiguous team names are never guessed.
+     *
+     * @param array<int, array<string, mixed>> $rows
+     * @return array{
+     *   groups:array<int,array<string,mixed>>,
+     *   unmatched_teams:array<int,array{name:string,players:int,reason:string}>,
+     *   summary:array{teams_in_file:int,matched_teams:int,players:int,existing:int,available:int,unmatched:int}
+     * }
+     */
+    public function matchSeasonCsvRows(int $seasonId, array $rows): array
+    {
+        $participations = $this->getParticipationsForSeason($seasonId);
+        $byTeam = [];
+        foreach ($participations as $participation) {
+            $key = $this->normalizeName((string) $participation->team_name);
+            if ($key !== '') {
+                $byTeam[$key][] = $participation;
+            }
+        }
+
+        $sourceGroups = [];
+        $blankTeamRows = [];
+        foreach ($rows as $row) {
+            $name = trim((string) ($row['name'] ?? ''));
+            if ($name === '') {
+                continue;
+            }
+
+            $teamName = trim((string) ($row['team'] ?? ''));
+            $teamKey = $this->normalizeName($teamName);
+            if ($teamKey === '') {
+                $blankTeamRows[] = $row;
+                continue;
+            }
+
+            if (!isset($sourceGroups[$teamKey])) {
+                $sourceGroups[$teamKey] = [
+                    'name' => $teamName,
+                    'rows' => [],
+                ];
+            }
+            $sourceGroups[$teamKey]['rows'][] = $row;
+        }
+
+        $groups = [];
+        $unmatchedTeams = [];
+        $existing = 0;
+        $available = 0;
+        $unmatchedPeople = 0;
+        $matchedTeams = 0;
+
+        foreach ($sourceGroups as $teamKey => $sourceGroup) {
+            $candidates = $byTeam[$teamKey] ?? [];
+            if (count($candidates) !== 1) {
+                $unmatchedTeams[] = [
+                    'name' => (string) $sourceGroup['name'],
+                    'players' => count((array) $sourceGroup['rows']),
+                    'reason' => count($candidates) > 1 ? 'ambiguous' : 'missing',
+                ];
+                continue;
+            }
+
+            $participation = $candidates[0];
+            $match = $this->matchCsvRows((int) $participation->id, (array) $sourceGroup['rows']);
+            $items = [];
+            foreach ($match['items'] as $item) {
+                $item['participation_id'] = (int) $participation->id;
+                $item['team_name'] = (string) $participation->team_name;
+                $items[] = $item;
+            }
+
+            $group = [
+                'participation_id' => (int) $participation->id,
+                'team_id' => (int) $participation->team_id,
+                'team_name' => (string) $participation->team_name,
+                'source' => count((array) $sourceGroup['rows']),
+                'matched' => (int) $match['matched'],
+                'existing' => (int) $match['existing'],
+                'available' => count($items),
+                'unmatched' => array_values((array) $match['unmatched']),
+                'items' => $items,
+            ];
+            $groups[] = $group;
+            $matchedTeams++;
+            $existing += $group['existing'];
+            $available += $group['available'];
+            $unmatchedPeople += count($group['unmatched']);
+        }
+
+        if ($blankTeamRows !== []) {
+            $unmatchedTeams[] = [
+                'name' => 'Squadra mancante nel file',
+                'players' => count($blankTeamRows),
+                'reason' => 'missing_name',
+            ];
+        }
+
+        usort($groups, static fn (array $a, array $b): int => strnatcasecmp((string) $a['team_name'], (string) $b['team_name']));
+        usort($unmatchedTeams, static fn (array $a, array $b): int => strnatcasecmp((string) $a['name'], (string) $b['name']));
+
+        $unmatchedTeamPlayers = array_sum(array_map(static fn (array $item): int => (int) $item['players'], $unmatchedTeams));
+
+        return [
+            'groups' => $groups,
+            'unmatched_teams' => $unmatchedTeams,
+            'summary' => [
+                'teams_in_file' => count($sourceGroups),
+                'matched_teams' => $matchedTeams,
+                'players' => count($rows),
+                'existing' => $existing,
+                'available' => $available,
+                'unmatched' => $unmatchedTeamPlayers + $unmatchedPeople,
+            ],
+        ];
     }
 
     /**
