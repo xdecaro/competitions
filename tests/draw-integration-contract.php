@@ -4,6 +4,7 @@ $servicePath = $root . '/component/admin/src/Service/DrawIntegrationService.php'
 $componentPath = $root . '/component/admin/src/Extension/CompetitionsComponent.php';
 $providerPath = $root . '/component/admin/services/provider.php';
 $controllerPath = $root . '/component/admin/src/Controller/ParticipationsController.php';
+$participationsViewPath = $root . '/component/admin/src/View/Participations/HtmlView.php';
 $viewPath = $root . '/component/admin/src/View/Drawsetup/HtmlView.php';
 $templatePath = $root . '/component/admin/tmpl/drawsetup/default.php';
 $sqlPath = $root . '/component/admin/sql/updates/mysql/1.6.0.sql';
@@ -37,7 +38,7 @@ if (!is_file($servicePath)) {
     }
 }
 
-foreach ([$componentPath, $providerPath, $controllerPath, $viewPath, $templatePath, $sqlPath] as $path) {
+foreach ([$componentPath, $providerPath, $controllerPath, $participationsViewPath, $viewPath, $templatePath, $sqlPath] as $path) {
     if (!is_file($path)) {
         $failures[] = basename($path) . ' is missing.';
     }
@@ -56,6 +57,12 @@ if (is_file($controllerPath)) {
             $failures[] = 'ParticipationsController missing security/action marker: ' . $needle;
         }
     }
+}
+if (is_file($participationsViewPath) && !str_contains(file_get_contents($participationsViewPath), 'view=drawsetup&season_id=')) {
+    $failures[] = 'Participations toolbar must expose the Draw setup for the selected season.';
+}
+if (is_file($templatePath) && !str_contains(file_get_contents($templatePath), 'participations.createDraw')) {
+    $failures[] = 'Draw setup form must submit to participations.createDraw.';
 }
 if (is_file($sqlPath)) {
     $sql = file_get_contents($sqlPath);
