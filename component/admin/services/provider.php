@@ -14,6 +14,7 @@ use xdecaro\Component\Competitions\Administrator\Service\AnalyticsSourceService;
 use xdecaro\Component\Competitions\Administrator\Service\CompetitionPhotoService;
 use xdecaro\Component\Competitions\Administrator\Service\CoreIntegrationService;
 use xdecaro\Component\Competitions\Administrator\Service\CrossProductIntegrationService;
+use xdecaro\Component\Competitions\Administrator\Service\DrawIntegrationService;
 use xdecaro\Component\Competitions\Administrator\Service\MatchReminderService;
 use xdecaro\Component\Competitions\Administrator\Service\OrganizationsIntegrationService;
 use xdecaro\Component\Competitions\Administrator\Service\PeopleIntegrationService;
@@ -27,6 +28,7 @@ return new class () implements ServiceProviderInterface {
 
         $container->share(CoreIntegrationService::class, static fn (): CoreIntegrationService => new CoreIntegrationService());
         $container->share(CrossProductIntegrationService::class, static fn (): CrossProductIntegrationService => new CrossProductIntegrationService());
+        $container->share(DrawIntegrationService::class, static fn (Container $container): DrawIntegrationService => new DrawIntegrationService($container->get(DatabaseInterface::class)));
         $container->share(AnalyticsSourceService::class, static fn (Container $container): AnalyticsSourceService => new AnalyticsSourceService($container->get(DatabaseInterface::class)));
         $container->share(MatchReminderService::class, static fn (Container $container): MatchReminderService => new MatchReminderService($container->get(DatabaseInterface::class), $container->get(CrossProductIntegrationService::class)));
         $container->share(PeopleIntegrationService::class, static fn (): PeopleIntegrationService => new PeopleIntegrationService());
@@ -41,6 +43,7 @@ return new class () implements ServiceProviderInterface {
                 $component->setMVCFactory($container->get(MVCFactoryInterface::class));
                 $component->setCoreIntegrationService($container->get(CoreIntegrationService::class));
                 $component->setCrossProductIntegrationService($container->get(CrossProductIntegrationService::class));
+                $component->setDrawIntegrationService($container->get(DrawIntegrationService::class));
                 $component->setAnalyticsSourceService($container->get(AnalyticsSourceService::class));
                 $component->setMatchReminderService($container->get(MatchReminderService::class));
                 $component->setPeopleIntegrationService($container->get(PeopleIntegrationService::class));
