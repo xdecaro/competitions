@@ -130,7 +130,7 @@ final class HtmlView extends BaseHtmlView
             ];
         }
 
-        ToolbarHelper::title('Aggiungi rosa da CSV', 'users');
+        ToolbarHelper::title('Aggiungi rosa da file', 'users');
         ToolbarHelper::custom('rosterbulk.addSelected', 'plus', 'plus', 'Aggiungi selezionati', true);
         ToolbarHelper::link(Route::_('index.php?option=com_xdecarocompetitions&view=rosters'), Text::_('JTOOLBAR_CLOSE'), 'cancel');
         $this->addTemplatePath(JPATH_COMPONENT_ADMINISTRATOR . '/tmpl/rosterbulk');
