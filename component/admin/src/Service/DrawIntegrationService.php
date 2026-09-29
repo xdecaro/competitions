@@ -28,6 +28,9 @@ final class DrawIntegrationService
 
     public function getAvailability(): array
     {
+        $extensionType = 'component';
+        $drawElement = self::DRAW_COMPONENT;
+
         $query = $this->db->getQuery(true)
             ->select([
                 $this->db->quoteName('enabled'),
@@ -36,8 +39,8 @@ final class DrawIntegrationService
             ->from($this->db->quoteName('#__extensions'))
             ->where($this->db->quoteName('type') . ' = :type')
             ->where($this->db->quoteName('element') . ' = :element')
-            ->bind(':type', 'component')
-            ->bind(':element', self::DRAW_COMPONENT)
+            ->bind(':type', $extensionType)
+            ->bind(':element', $drawElement)
             ->order($this->db->quoteName('extension_id') . ' DESC');
 
         $extension = $this->db->setQuery($query, 0, 1)->loadAssoc();
@@ -118,6 +121,7 @@ final class DrawIntegrationService
             throw new DomainException('Competition season not found.');
         }
 
+        $approvedStatus = self::APPROVED_STATUS;
         $query = $this->db->getQuery(true)
             ->select([
                 $this->db->quoteName('p.id', 'participation_id'),
@@ -138,7 +142,7 @@ final class DrawIntegrationService
             ->where($this->db->quoteName('p.state') . ' = 1')
             ->where($this->db->quoteName('tm.state') . ' = 1')
             ->bind(':participationSeasonId', $seasonId, ParameterType::INTEGER)
-            ->bind(':approvedStatus', self::APPROVED_STATUS)
+            ->bind(':approvedStatus', $approvedStatus)
             ->order($this->db->quoteName('tm.name') . ' ASC')
             ->order($this->db->quoteName('p.id') . ' ASC');
 
@@ -230,13 +234,14 @@ final class DrawIntegrationService
 
     public function getLatestLink(int $seasonId): ?array
     {
+        $boundSeasonId = max(1, $seasonId);
         $query = $this->db->getQuery(true)
             ->select('*')
             ->from($this->db->quoteName('#__xdecarocompetitions_draw_links'))
             ->where($this->db->quoteName('season_id') . ' = :seasonId')
             ->order($this->db->quoteName('state') . ' DESC')
             ->order($this->db->quoteName('id') . ' DESC')
-            ->bind(':seasonId', max(1, $seasonId), ParameterType::INTEGER);
+            ->bind(':seasonId', $boundSeasonId, ParameterType::INTEGER);
 
         $row = $this->db->setQuery($query, 0, 1)->loadAssoc();
         if (!$row) {
