@@ -4,6 +4,7 @@
   <author>xdecaro</author><creationDate>2026-09-06</creationDate><copyright>(C) 2026 xdecaro</copyright>
   <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
   <version>1.6.0</version><description>MOD_XDECAROCOMPETITIONS_MATCHTIMELINE_XML_DESCRIPTION</description>
+  <targetplatform name="joomla" version="6.*" />
   <namespace path="src">xdecaro\Module\CompetitionsMatchTimeline</namespace>
   <files><folder module="mod_xdecarocompetitions_matchtimeline">services</folder><folder>src</folder><folder>tmpl</folder></files>
   <media destination="mod_xdecarocompetitions_matchtimeline" folder="media"><folder>css</folder></media>
