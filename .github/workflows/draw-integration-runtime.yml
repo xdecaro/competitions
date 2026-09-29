@@ -150,7 +150,18 @@ jobs:
           if ($targets !== $expected) {
               fwrite(STDERR, "Group target generation failed: " . json_encode($targets) . "\n"); exit(1);
           }
-          echo "Competitions to Draw integration OK: Draw #{$drawId}\n";
+          $drawComponent = $app->bootComponent('com_xdecarodraw');
+          $drawService = $drawComponent->getDrawService();
+          $drawService->execute($drawId, 'competitions-runtime-seed', 1);
+          for ($i = 0; $i < 4; $i++) {
+              $drawService->revealNext($drawId, 1);
+          }
+          $drawService->publish($drawId, 1);
+          $latest = $service->getLatestLink(9001);
+          if (($latest['status'] ?? '') !== 'published' || empty($latest['result_available']) || empty($latest['published'])) {
+              fwrite(STDERR, "Published Draw result status was not surfaced through the public integration.\n"); exit(1);
+          }
+          echo "Competitions to Draw integration OK: Draw #{$drawId} published\n";
           PHP
           php draw-runtime-probe.php
           rm draw-runtime-probe.php
