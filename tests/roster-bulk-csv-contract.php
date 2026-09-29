@@ -81,6 +81,13 @@ $requirements = [
     [$ctl, "'xlsx'", 'Roster bulk upload must explicitly allow the XLSX extension.'],
     [$tpl, '.xlsx', 'Roster bulk file picker must advertise XLSX support.'],
     [$tpl, 'CSV o Excel', 'Roster bulk UI must describe CSV/Excel support.'],
+
+    // Preview polish: file-based title, localized technical values and hidden UUID metadata.
+    [$vw, "ToolbarHelper::title('Aggiungi rosa da file'", 'Roster bulk toolbar must describe the CSV/XLSX file workflow.'],
+    [$tpl, 'COM_XDECAROCOMPETITIONS_FIELD_PLAYER', 'PLAYER role must be presented with the Joomla language label.'],
+    [$tpl, 'COM_XDECAROCOMPETITIONS_PLAYER_APPROVED', 'Approved player status must use the Joomla language system.'],
+    [$tpl, 'text-bg-success', 'Approved player status must be visually distinguishable with a semantic badge.'],
+    [$tpl, 'roster-player-meta', 'People UUID must be collapsed into technical details instead of always visible.'],
 ];
 
 foreach ($requirements as [$haystack, $needle, $message]) {
