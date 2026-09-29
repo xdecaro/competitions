@@ -74,6 +74,13 @@ $requirements = [
     [$tpl, 'selection[]', 'Roster bulk rows must post participation/player selection keys.'],
     [$tpl, 'Squadre non riconosciute', 'Roster bulk preview must clearly show unmatched teams.'],
     [$tpl, 'Persone non riconosciute', 'Roster bulk preview must clearly show unmatched people.'],
+
+    // Excel support without an external runtime dependency.
+    [$ctl, 'parseXlsxRosterRows', 'Roster bulk import must support XLSX files.'],
+    [$ctl, 'ZipArchive', 'XLSX support must use the native ZIP reader when available.'],
+    [$ctl, "'xlsx'", 'Roster bulk upload must explicitly allow the XLSX extension.'],
+    [$tpl, '.xlsx', 'Roster bulk file picker must advertise XLSX support.'],
+    [$tpl, 'CSV o Excel', 'Roster bulk UI must describe CSV/Excel support.'],
 ];
 
 foreach ($requirements as [$haystack, $needle, $message]) {
@@ -83,4 +90,4 @@ foreach ($requirements as [$haystack, $needle, $message]) {
     }
 }
 
-echo "Roster bulk CSV contract OK\n";
+echo "Roster bulk CSV/XLSX contract OK\n";
