@@ -17,9 +17,9 @@ Competitions is the competition-management component in the xdecaro Joomla ecosy
 
 ## Current version
 
-**1.5.57**
+**1.6.0**
 
-Version 1.5.57 emits a Joomla event when a saved season changes start/end dates, allowing optional integrations such as Membership to synchronize competition-card validity without direct table coupling.
+Version 1.6.0 adds the optional Draw 1.1.0 integration: after filtering Participations to one season, administrators can open Sorteggio, review approved teams, choose the number of groups and create or reopen the linked Draw session without direct cross-product table access. Persistent competition groups remain a separate Competitions-domain feature.
 
 Version 1.5.23 automatically backfills existing linked Clubs that still have no local federation mapping during component update. It uses only the public Organizations affiliation provider, requires exactly one active sports federation affiliation, and updates the Club only when that federation is already linked in Competitions. The 1.5.22 national-code labels and incremental refresh on federation save remain unchanged.
 
@@ -44,6 +44,12 @@ Other products own their own domains. Competitions must not read or write anothe
 Core integration remains infrastructure-only: public references, shared administrator design assets, diagnostics, capabilities and reusable technical services. Competition rules and sports-domain behavior remain in this repository.
 
 ## Optional integrations
+
+### Draw
+
+Draw 1.1.0+ is optional. Competitions detects it at runtime through Joomla, calls only `DrawComponent::getIntegrationService()` and exports normalized `xdecaro.draw.request.v1` data. Only published, approved season participations are eligible for the setup view. Competitions owns season eligibility and stores only the local season-to-Draw link, group count and request hash; it never reads `#__xdecarodraw_*`. If Draw is missing or incompatible, Competitions remains fully usable and the setup page explains what is required.
+
+The current 1.6.0 integration creates generic group targets (`A`, `B`, `C`…) inside Draw. It deliberately does not create permanent Competitions group rows because that authoritative group/bracket domain has not yet been introduced.
 
 ### People
 
