@@ -17,9 +17,9 @@ Competitions is the competition-management component in the xdecaro Joomla ecosy
 
 ## Current version
 
-**1.5.57**
+**1.6.0**
 
-Version 1.5.57 emits a Joomla event when a saved season changes start/end dates, allowing optional integrations such as Membership to synchronize competition-card validity without direct table coupling.
+Version 1.6.0 adds the optional Draw 1.1.0 integration: after filtering Participations to one season, administrators can open Sorteggio, review approved teams, choose the number of groups and create or reopen the linked Draw session without direct cross-product table access. Persistent competition groups remain a separate Competitions-domain feature.
 
 Version 1.5.23 automatically backfills existing linked Clubs that still have no local federation mapping during component update. It uses only the public Organizations affiliation provider, requires exactly one active sports federation affiliation, and updates the Club only when that federation is already linked in Competitions. The 1.5.22 national-code labels and incremental refresh on federation save remain unchanged.
 
@@ -44,6 +44,12 @@ Other products own their own domains. Competitions must not read or write anothe
 Core integration remains infrastructure-only: public references, shared administrator design assets, diagnostics, capabilities and reusable technical services. Competition rules and sports-domain behavior remain in this repository.
 
 ## Optional integrations
+
+### Draw
+
+Draw 1.1.0+ is optional. Competitions detects it at runtime through Joomla, calls only `DrawComponent::getIntegrationService()` and exports normalized `xdecaro.draw.request.v1` data. Only published, approved season participations are eligible for the setup view. Competitions owns season eligibility and stores only the local season-to-Draw link, group count and request hash; it never reads `#__xdecarodraw_*`. If Draw is missing or incompatible, Competitions remains fully usable and the setup page explains what is required.
+
+The current 1.6.0 integration creates generic group targets (`A`, `B`, `C`…) inside Draw. It deliberately does not create permanent Competitions group rows because that authoritative group/bracket domain has not yet been introduced.
 
 ### People
 
@@ -93,7 +99,7 @@ When Core `CapabilityRegistry` is available, Competitions declares analytics, No
 
 ## Joomla baseline
 
-The current Competitions 1.x line targets Joomla 6 and PHP 8.3+. Compatibility with earlier Joomla versions is not claimed until runtime-tested.
+The current Competitions 1.x line targets Joomla 6 only and PHP 8.3+. Joomla 4 and Joomla 5 are not supported. The verified runtime baseline is Joomla 6.1.3.
 
 CI performs a real Joomla 6.1.3 installation of the built package. The 1.5.16 gate validates Team Import packaging under Joomla media/js plus guarded Web Asset activation, corrected search layout, persistent live search selection, visible-row select-all and team-import asset packaging, the Organizations team-import preview/controller boundary, duplicate-safe UUID handling and Pending defaults, the Teams approval toolbar/controller/model workflow, CSRF/ACL checks and federation-before-approval validation, active sports-affiliation federation derivation, ambiguity/no-affiliation behavior, Club/National federation UI separation, club-team Organizations linking, team UUID schema/migration and editor behavior, schema repair and federation-link persistence, one-time federation linking and immutable canonical links, all edit-form live-sync lock fields, the live-sync reload-loop guard, the federation model method signature, the Organizations public-provider boundary, stable federation UUID schema/migration, public branding, approval-message language loading, the People provider boundary, People UUID schema, roster photo schema, People picker WebAsset path, selected sensitive-profile autofill contract, public person-history provider/runtime, bulk player approval actions and the existing Finance bridge regression coverage.
 

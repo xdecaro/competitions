@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.6.0 - 2026-09-29
+
+- Added optional Draw 1.1.0+ integration through the public `getIntegrationService()` boundary; Competitions never reads Draw private tables.
+- Added a season Draw setup reached from Participations when a specific season is selected. The page lists only approved participations and asks for the number of groups.
+- Added generic A/B/C… group-target generation and normalized `xdecaro.draw.request.v1` export using stable season and participation references.
+- Added idempotent season-to-Draw linking with a request hash, so submitting the same approved participant set and group count reopens the existing Draw instead of creating duplicates.
+- Added Draw availability/version detection, minimum Draw version 1.1.0, Competitions and Draw ACL checks, Joomla CSRF protection and clear fallback messages when Draw is absent or incompatible.
+- Added the non-destructive `#__xdecarocompetitions_draw_links` table. No permanent competition group/bracket model is introduced in this release.
+- Added Italian/English UI strings, responsive setup UI, contract coverage and a real Joomla 6.1.3 Competitions→Draw runtime workflow.
+
 ## 1.5.57 - 2026-09-28
 
 - Emits `onXdecaroCompetitionSeasonDatesChanged` after a committed season date change.

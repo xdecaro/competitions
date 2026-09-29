@@ -9,6 +9,7 @@ use xdecaro\Component\Competitions\Administrator\Service\AnalyticsSourceService;
 use xdecaro\Component\Competitions\Administrator\Service\CompetitionPhotoService;
 use xdecaro\Component\Competitions\Administrator\Service\CoreIntegrationService;
 use xdecaro\Component\Competitions\Administrator\Service\CrossProductIntegrationService;
+use xdecaro\Component\Competitions\Administrator\Service\DrawIntegrationService;
 use xdecaro\Component\Competitions\Administrator\Service\MatchReminderService;
 use xdecaro\Component\Competitions\Administrator\Service\PeopleIntegrationService;
 use xdecaro\Component\Competitions\Administrator\Service\OrganizationsIntegrationService;
@@ -19,6 +20,7 @@ final class CompetitionsComponent extends MVCComponent
 {
     private ?CoreIntegrationService $core = null;
     private ?CrossProductIntegrationService $crossProduct = null;
+    private ?DrawIntegrationService $draw = null;
     private ?AnalyticsSourceService $analytics = null;
     private ?MatchReminderService $matchReminders = null;
     private ?PeopleIntegrationService $people = null;
@@ -28,6 +30,7 @@ final class CompetitionsComponent extends MVCComponent
 
     public function setCoreIntegrationService(CoreIntegrationService $service): void { $this->core = $service; }
     public function setCrossProductIntegrationService(CrossProductIntegrationService $service): void { $this->crossProduct = $service; }
+    public function setDrawIntegrationService(DrawIntegrationService $service): void { $this->draw = $service; }
     public function setAnalyticsSourceService(AnalyticsSourceService $service): void { $this->analytics = $service; }
     public function setMatchReminderService(MatchReminderService $service): void { $this->matchReminders = $service; }
     public function setPeopleIntegrationService(PeopleIntegrationService $service): void { $this->people = $service; }
@@ -43,6 +46,11 @@ final class CompetitionsComponent extends MVCComponent
     public function getCrossProductIntegrationService(): CrossProductIntegrationService
     {
         return $this->crossProduct ?? throw new RuntimeException('Competitions cross-product integration service is unavailable.');
+    }
+
+    public function getDrawIntegrationService(): DrawIntegrationService
+    {
+        return $this->draw ?? throw new RuntimeException('Competitions Draw integration service is unavailable.');
     }
 
     public function getAnalyticsSourceService(): AnalyticsSourceService

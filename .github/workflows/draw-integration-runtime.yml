@@ -1,0 +1,167 @@
+name: Draw integration runtime
+
+on:
+  pull_request:
+    paths:
+      - 'component/**'
+      - 'package/**'
+      - 'VERSION'
+      - 'tools/**'
+      - '.github/workflows/draw-integration-runtime.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'component/**'
+      - 'package/**'
+      - 'VERSION'
+      - 'tools/**'
+      - '.github/workflows/draw-integration-runtime.yml'
+
+permissions: {contents: read}
+
+jobs:
+  runtime:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.0
+        env: {MYSQL_ALLOW_EMPTY_PASSWORD: 'yes', MYSQL_DATABASE: joomla}
+        ports: ['3306:3306']
+        options: >-
+          --health-cmd="mysqladmin ping -h localhost" --health-interval=10s --health-timeout=5s --health-retries=10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with: {php-version: '8.3', extensions: 'mysqli,zip,simplexml', coverage: none}
+      - name: Build Competitions package
+        run: python3 tools/build.py
+      - name: Download verified Joomla and Draw
+        run: |
+          curl -fL --retry 3 'https://github.com/joomla/joomla-cms/releases/download/6.1.3/Joomla_6.1.3-Stable-Full_Package.zip' -o /tmp/joomla.zip
+          echo 'a49305652503f9344d046d55471f324a07882996132ed967c3b0fe34707ae4a1  /tmp/joomla.zip' | sha256sum --check --strict
+          curl -fL --retry 3 'https://github.com/xdecaro/draw/releases/download/v1.1.0/pkg_xdecarodraw_1.1.0.zip' -o /tmp/draw.zip
+          echo '6234e5782ef2e594fa4f1befff6a1dfab43c69ca7ff1e1750196e880b527aeae  /tmp/draw.zip' | sha256sum --check --strict
+          mkdir joomla && unzip -q /tmp/joomla.zip -d joomla
+      - name: Install Joomla and Competitions
+        run: |
+          cd joomla
+          php installation/joomla.php install --site-name='Competitions Draw CI' --admin-user='CI Admin' --admin-username=admin --admin-password="CompDraw-${GITHUB_RUN_ID}!" --admin-email=admin@example.invalid --db-type=mysqli --db-host=127.0.0.1 --db-user=root --db-pass='' --db-name=joomla --db-prefix=cmp_ --db-encryption=0 --no-interaction
+          VERSION="$(cat "$GITHUB_WORKSPACE/VERSION")"
+          php cli/joomla.php extension:install --path="$GITHUB_WORKSPACE/dist/pkg_xdecarocompetitions_${VERSION}.zip" -vvv
+      - name: Verify Draw-absent fallback
+        run: |
+          cd joomla
+          cat > draw-absent-probe.php <<'PHP'
+          <?php
+          define('_JEXEC', 1);
+          define('JPATH_BASE', __DIR__);
+          require JPATH_BASE . '/includes/defines.php';
+          require JPATH_BASE . '/includes/framework.php';
+          $container = \Joomla\CMS\Factory::getContainer();
+          $container->alias('session', 'session.cli')
+              ->alias('JSession', 'session.cli')
+              ->alias(\Joomla\CMS\Session\Session::class, 'session.cli')
+              ->alias(\Joomla\Session\Session::class, 'session.cli')
+              ->alias(\Joomla\Session\SessionInterface::class, 'session.cli');
+          $app = $container->get(\Joomla\Console\Application::class);
+          \Joomla\CMS\Factory::$application = $app;
+          $app->createExtensionNamespaceMap();
+          $component = $app->bootComponent('com_competitions');
+          $availability = $component->getDrawIntegrationService()->getAvailability();
+          if (!empty($availability['available']) || ($availability['reason'] ?? '') !== 'missing') {
+              fwrite(STDERR, "Draw-absent fallback is incorrect.\n"); exit(1);
+          }
+          echo "Draw-absent fallback OK\n";
+          PHP
+          php draw-absent-probe.php
+          rm draw-absent-probe.php
+      - name: Install Draw 1.1.0
+        run: |
+          cd joomla
+          php cli/joomla.php extension:install --path=/tmp/draw.zip -vvv
+      - name: Seed approved season participations
+        run: |
+          mysql --protocol=TCP -h127.0.0.1 -uroot joomla <<'SQL'
+          INSERT INTO cmp_xdecarocompetitions_tournaments (id,name,code,state) VALUES (9001,'DCL Futsal Men','FUTSAL-MEN',1);
+          INSERT INTO cmp_xdecarocompetitions_seasons (id,tournament_id,name,season_year,state) VALUES (9001,9001,'DCL Futsal Men 2026',2026,1);
+          INSERT INTO cmp_xdecarocompetitions_teams (id,name,short_name,country_code,approval_status,state) VALUES
+            (9101,'Club Alpha','Alpha','ITA','approved',1),
+            (9102,'Club Beta','Beta','ESP','approved',1),
+            (9103,'Club Gamma','Gamma','FRA','approved',1),
+            (9104,'Club Delta','Delta','GER','approved',1);
+          INSERT INTO cmp_xdecarocompetitions_participations (id,team_id,season_id,status,state) VALUES
+            (9201,9101,9001,'approved',1),
+            (9202,9102,9001,'approved',1),
+            (9203,9103,9001,'approved',1),
+            (9204,9104,9001,'approved',1);
+          SQL
+      - name: Exercise Competitions to Draw integration
+        run: |
+          cd joomla
+          cat > draw-runtime-probe.php <<'PHP'
+          <?php
+          define('_JEXEC', 1);
+          define('JPATH_BASE', __DIR__);
+          require JPATH_BASE . '/includes/defines.php';
+          require JPATH_BASE . '/includes/framework.php';
+          use Joomla\CMS\Factory;
+          use Joomla\Database\DatabaseInterface;
+          $container = Factory::getContainer();
+          $container->alias('session', 'session.cli')
+              ->alias('JSession', 'session.cli')
+              ->alias(\Joomla\CMS\Session\Session::class, 'session.cli')
+              ->alias(\Joomla\Session\Session::class, 'session.cli')
+              ->alias(\Joomla\Session\SessionInterface::class, 'session.cli');
+          $app = $container->get(\Joomla\Console\Application::class);
+          Factory::$application = $app;
+          $app->createExtensionNamespaceMap();
+          $component = $app->bootComponent('com_competitions');
+          $service = $component->getDrawIntegrationService();
+          $availability = $service->getAvailability();
+          if (empty($availability['available']) || ($availability['version'] ?? '') !== '1.1.0') {
+              fwrite(STDERR, "Draw availability/version detection failed.\n"); exit(1);
+          }
+          $context = $service->getSeasonContext(9001);
+          if ((int) ($context['approved_count'] ?? 0) !== 4) {
+              fwrite(STDERR, "Approved participation export failed.\n"); exit(1);
+          }
+          $first = $service->createSeasonDraw(9001, 2, 1);
+          $second = $service->createSeasonDraw(9001, 2, 1);
+          $drawId = (int) ($first['draw_id'] ?? 0);
+          if ($drawId < 1 || !empty($first['reused']) || empty($second['reused']) || (int) ($second['draw_id'] ?? 0) !== $drawId) {
+              fwrite(STDERR, "Draw create/idempotency failed.\n"); exit(1);
+          }
+          /** @var DatabaseInterface $db */
+          $db = $container->get(DatabaseInterface::class);
+          $linkCount = (int) $db->setQuery('SELECT COUNT(*) FROM ' . $db->quoteName('#__xdecarocompetitions_draw_links') . ' WHERE season_id=9001')->loadResult();
+          if ($linkCount !== 1) {
+              fwrite(STDERR, "Draw link persistence failed.\n"); exit(1);
+          }
+          $targets = $db->setQuery(
+              'SELECT target_key, position_no FROM ' . $db->quoteName('#__xdecarodraw_targets')
+              . ' WHERE draw_id=' . $drawId . ' ORDER BY id ASC'
+          )->loadAssocList();
+          $expected = [
+              ['target_key' => 'A', 'position_no' => '1'],
+              ['target_key' => 'B', 'position_no' => '1'],
+              ['target_key' => 'A', 'position_no' => '2'],
+              ['target_key' => 'B', 'position_no' => '2'],
+          ];
+          if ($targets !== $expected) {
+              fwrite(STDERR, "Group target generation failed: " . json_encode($targets) . "\n"); exit(1);
+          }
+          $drawComponent = $app->bootComponent('com_xdecarodraw');
+          $drawService = $drawComponent->getDrawService();
+          $drawService->execute($drawId, 'competitions-runtime-seed', 1);
+          for ($i = 0; $i < 4; $i++) {
+              $drawService->revealNext($drawId, 1);
+          }
+          $drawService->publish($drawId, 1);
+          $latest = $service->getLatestLink(9001);
+          if (($latest['status'] ?? '') !== 'published' || empty($latest['result_available']) || empty($latest['published'])) {
+              fwrite(STDERR, "Published Draw result status was not surfaced through the public integration.\n"); exit(1);
+          }
+          echo "Competitions to Draw integration OK: Draw #{$drawId} published\n";
+          PHP
+          php draw-runtime-probe.php
+          rm draw-runtime-probe.php

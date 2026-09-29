@@ -42,6 +42,7 @@ jobs:
           php tests/people-history-contract.php
           php tests/public-branding-messages-contract.php
           php tests/competitions-1.5.56-season-date-event-contract.php
+          php tests/draw-integration-contract.php
           python3 tools/validate_release.py
       - name: Build twice and verify determinism
         run: |
@@ -80,4 +81,4 @@ jobs:
             "dist/mod_xdecarocompetitions_countriesfederations_${VERSION}.zip" \
             "dist/pkg_xdecarocompetitions_${VERSION}.zip" \
             "dist/SHA256SUMS.txt" --target main --title "Competitions ${VERSION}" \
-            --notes "Competitions ${VERSION}: dispatches a Joomla event when season dates change so optional integrations such as Membership can synchronize linked records without direct table coupling. Joomla 6 only."
+            --notes "Competitions ${VERSION}: optional Draw 1.1.0+ integration from approved season participations, generic group-target setup, idempotent season-to-Draw linking, published-result status, ACL/CSRF protection and graceful fallback when Draw is unavailable. Joomla 6 only."
