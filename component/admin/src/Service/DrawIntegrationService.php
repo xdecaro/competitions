@@ -239,8 +239,27 @@ final class DrawIntegrationService
             ->bind(':seasonId', max(1, $seasonId), ParameterType::INTEGER);
 
         $row = $this->db->setQuery($query, 0, 1)->loadAssoc();
+        if (!$row) {
+            return null;
+        }
 
-        return $row ?: null;
+        $row['result_available'] = false;
+        $row['published'] = false;
+
+        try {
+            $result = $this->bootIntegration()->getResult((int) $row['draw_id']);
+            if ((string) ($result['schema'] ?? '') !== self::RESULT_SCHEMA) {
+                throw new DomainException('Unsupported Draw result schema.');
+            }
+            $row['status'] = (string) ($result['status'] ?? $row['status']);
+            $row['result_available'] = true;
+            $row['published'] = !empty($result['published']);
+            $row['result'] = $result;
+        } catch (Throwable) {
+            // Ready/draft draws have no public result yet. Existing local link stays valid.
+        }
+
+        return $row;
     }
 
     private function buildPayload(array $context, int $groupCount): array
