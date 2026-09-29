@@ -18,6 +18,7 @@ if (!is_file($servicePath)) {
         'final class DrawIntegrationService',
         "MIN_DRAW_VERSION = '1.1.0'",
         "DRAW_COMPONENT = 'com_xdecarodraw'",
+        "APPROVED_STATUS = 'approved'",
         'function getAvailability',
         'function getSeasonContext',
         'function createSeasonDraw',
@@ -25,8 +26,7 @@ if (!is_file($servicePath)) {
         "'schema' => 'xdecaro.draw.request.v1'",
         "'entity' => 'season'",
         "'entity' => 'participation'",
-        "'status' => 'approved'",
-        "'target_type' => 'group'",
+        "'type' => 'group'",
     ] as $needle) {
         if (!str_contains($service, $needle)) {
             $failures[] = 'Integration service missing contract marker: ' . $needle;
