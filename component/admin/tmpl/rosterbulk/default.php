@@ -2,6 +2,7 @@
 defined('_JEXEC') or die;
 
 use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\Router\Route;
 
 HTMLHelper::_('behavior.formvalidator');
@@ -29,8 +30,11 @@ $isAllTeams = $this->rosterTarget === 'all';
 .roster-bulk-shell .roster-bulk-table{table-layout:fixed;width:100%;margin-bottom:0}
 .roster-bulk-shell .roster-bulk-table th,.roster-bulk-shell .roster-bulk-table td{padding:.55rem .65rem;vertical-align:middle}
 .roster-bulk-shell .roster-bulk-table th:nth-child(1){width:44px}.roster-bulk-shell .roster-bulk-table th:nth-child(2){width:38%}.roster-bulk-shell .roster-bulk-table th:nth-child(3){width:14%}.roster-bulk-shell .roster-bulk-table th:nth-child(4){width:22%}.roster-bulk-shell .roster-bulk-table th:nth-child(5){width:18%}
+.roster-bulk-shell .roster-player-meta{margin-top:.2rem;font-size:.78rem;color:var(--secondary-color,#6c757d)}
+.roster-bulk-shell .roster-player-meta summary{display:inline-flex;align-items:center;gap:.25rem;cursor:pointer;user-select:none}
+.roster-bulk-shell .roster-player-meta code{display:block;margin-top:.2rem;overflow-wrap:anywhere;color:inherit}
 @media(max-width:1100px){.roster-bulk-shell .bulk-selectors{grid-template-columns:1fr 1fr}.roster-bulk-shell .bulk-selectors .bulk-load{grid-column:1/-1;justify-self:start}}
-@media(max-width:900px){.roster-bulk-shell .bulk-top,.roster-bulk-shell .bulk-selectors{grid-template-columns:1fr}.roster-bulk-shell .bulk-selectors .bulk-load{grid-column:auto}.roster-bulk-shell .roster-team-accordion>summary{align-items:flex-start}.roster-bulk-shell .roster-team-title{align-items:flex-start}.roster-bulk-shell .roster-bulk-table thead{display:none}.roster-bulk-shell .roster-bulk-table,.roster-bulk-shell .roster-bulk-table tbody,.roster-bulk-shell .roster-bulk-table tr,.roster-bulk-shell .roster-bulk-table td{display:block;width:100%}.roster-bulk-shell .roster-bulk-table tr{position:relative;border:1px solid var(--template-bg-dark-10,#ddd);border-radius:.55rem;margin-bottom:.65rem;padding:.65rem .75rem .65rem 42px}.roster-bulk-shell .roster-bulk-table td{border:0;padding:.18rem 0}.roster-bulk-shell .roster-bulk-table td:first-child{position:absolute;left:12px;top:12px;width:auto}.roster-bulk-shell .roster-bulk-table td:nth-child(3)::before{content:'Numero maglia: ';font-weight:600}.roster-bulk-shell .roster-bulk-table td:nth-child(4)::before{content:'Ruolo: ';font-weight:600}.roster-bulk-shell .roster-bulk-table td:nth-child(5)::before{content:'Giocatore: ';font-weight:600}}
+@media(max-width:900px){.roster-bulk-shell .bulk-top,.roster-bulk-shell .bulk-selectors{grid-template-columns:1fr}.roster-bulk-shell .bulk-selectors .bulk-load{grid-column:auto}.roster-bulk-shell .roster-team-accordion>summary{align-items:flex-start}.roster-bulk-shell .roster-team-title{align-items:flex-start}.roster-bulk-shell .roster-bulk-table thead{display:none}.roster-bulk-shell .roster-bulk-table,.roster-bulk-shell .roster-bulk-table tbody,.roster-bulk-shell .roster-bulk-table tr,.roster-bulk-shell .roster-bulk-table td{display:block;width:100%}.roster-bulk-shell .roster-bulk-table tr{position:relative;border:1px solid var(--template-bg-dark-10,#ddd);border-radius:.55rem;margin-bottom:.65rem;padding:.65rem .75rem .65rem 42px}.roster-bulk-shell .roster-bulk-table td{border:0;padding:.18rem 0}.roster-bulk-shell .roster-bulk-table td:first-child{position:absolute;left:12px;top:12px;width:auto}.roster-bulk-shell .roster-bulk-table td:nth-child(3)::before{content:'Numero maglia: ';font-weight:600}.roster-bulk-shell .roster-bulk-table td:nth-child(4)::before{content:'Ruolo: ';font-weight:600}.roster-bulk-shell .roster-bulk-table td:nth-child(5)::before{content:'Stato giocatore: ';font-weight:600}}
 </style>
 
 <form action="<?= Route::_('index.php?option=com_xdecarocompetitions&view=rosterbulk'); ?>" method="post" enctype="multipart/form-data" name="adminForm" id="adminForm" class="competitions-admin roster-bulk-shell">
@@ -145,12 +149,39 @@ $isAllTeams = $this->rosterTarget === 'all';
               <thead><tr><th></th><th>Giocatore</th><th>Numero maglia</th><th>Ruolo</th><th>Stato giocatore</th></tr></thead>
               <tbody>
               <?php foreach ((array) $group['items'] as $item) : ?>
+                <?php
+                  $rawRole = trim((string) ($item['role'] ?? ''));
+                  $roleLabel = strtoupper($rawRole) === 'PLAYER'
+                      ? Text::_('COM_XDECAROCOMPETITIONS_FIELD_PLAYER')
+                      : ($rawRole !== '' ? $rawRole : '—');
+                  $rawStatus = strtolower(trim((string) ($item['approval_status'] ?? '')));
+                  $statusLabel = match ($rawStatus) {
+                      'approved' => Text::_('COM_XDECAROCOMPETITIONS_PLAYER_APPROVED'),
+                      'pending' => Text::_('COM_XDECAROCOMPETITIONS_PLAYER_PENDING'),
+                      'rejected' => Text::_('COM_XDECAROCOMPETITIONS_PLAYER_REJECTED'),
+                      default => $rawStatus !== '' ? $rawStatus : '—',
+                  };
+                  $statusClass = match ($rawStatus) {
+                      'approved' => 'text-bg-success',
+                      'pending' => 'text-bg-warning',
+                      'rejected' => 'text-bg-danger',
+                      default => 'text-bg-secondary',
+                  };
+                ?>
                 <tr>
                   <td><input class="form-check-input roster-check" type="checkbox" name="selection[]" value="<?= $pid; ?>:<?= (int) $item['player_id']; ?>" data-participation-id="<?= $pid; ?>"></td>
-                  <td><div class="fw-semibold"><?= $this->escape((string) $item['name']); ?></div><div class="small text-muted"><?= $this->escape((string) $item['person_uuid']); ?></div></td>
+                  <td>
+                    <div class="fw-semibold"><?= $this->escape((string) $item['name']); ?></div>
+                    <?php if (!empty($item['person_uuid'])) : ?>
+                      <details class="roster-player-meta">
+                        <summary><?= Text::_('JDETAILS'); ?></summary>
+                        <code>UUID: <?= $this->escape((string) $item['person_uuid']); ?></code>
+                      </details>
+                    <?php endif; ?>
+                  </td>
                   <td><?= $item['shirt_number'] !== null ? (int) $item['shirt_number'] : '—'; ?></td>
-                  <td><?= $this->escape((string) ($item['role'] ?: '—')); ?></td>
-                  <td><?= $this->escape((string) $item['approval_status']); ?></td>
+                  <td><?= $this->escape($roleLabel); ?></td>
+                  <td><span class="badge <?= $statusClass; ?>"><?= $this->escape($statusLabel); ?></span></td>
                 </tr>
               <?php endforeach; ?>
               </tbody>
